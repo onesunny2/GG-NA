@@ -72,4 +72,13 @@ enum ThemeColor {
         )
         }
     }
+    
+    func setLaunchImage(for theme: Theme) -> UIImage? {
+        switch (theme, self) {
+        case (.light, .primary): return UIImage(named: "lightPinkIcon")
+        case (.light, .secondary): return UIImage(named: "lightMintIcon")
+        case (.dark, .primary): return UIImage(named: "darkPinkIcon")
+        case (.dark, .secondary): return UIImage(named: "darkPurpleIcon")
+        }
+    }
 }
