@@ -14,7 +14,7 @@
 		43D12F442D944A50001E2C93 /* Exceptions for "GGNA" folder in "GGNA" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resource/Info.plist,
 			);
 			target = 43D12F312D944A4E001E2C93 /* GGNA */;
 		};
@@ -147,7 +147,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6CQ3CNQ79S;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = GGNA/Info.plist;
+				INFOPLIST_FILE = GGNA/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "끄나";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -180,7 +180,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6CQ3CNQ79S;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = GGNA/Info.plist;
+				INFOPLIST_FILE = GGNA/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "끄나";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
