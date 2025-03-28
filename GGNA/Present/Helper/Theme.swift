@@ -19,19 +19,19 @@ enum Theme {
     }
 }
 
+typealias ColorSet = (
+    background: UIColor,
+    tabBar: UIColor,
+    main: UIColor,
+    main80: UIColor,
+    text: UIColor,
+    gray: UIColor
+)
+
 enum ThemeColor {
     case primary
     case secondary
-    
-    typealias ColorSet = (
-        background: UIColor,
-        tabBar: UIColor,
-        main: UIColor,
-        main80: UIColor,
-        text: UIColor,
-        gray: UIColor
-    )
-    
+
     func setColor(for theme: Theme) -> ColorSet {
         
         switch (theme, self) {
