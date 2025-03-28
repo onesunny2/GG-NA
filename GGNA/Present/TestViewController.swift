@@ -32,6 +32,13 @@ final class TestViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         configure()
+        for family in UIFont.familyNames {
+            print(family)
+            
+            for name in UIFont.fontNames(forFamilyName: family) {
+                print(">>> \(name)")
+            }
+        }
     }
 
     func configure() {
@@ -75,6 +82,7 @@ final class TestViewController: UIViewController {
         
         testView.backgroundColor = .systemPink
         testLabel.text = "현재 테마의 텍스트 색상입니다."
+        testLabel.font = FontLiterals.folderCount
         testLabel.textColor = .label
     }
 }
