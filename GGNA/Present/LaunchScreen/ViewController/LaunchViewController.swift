@@ -13,36 +13,39 @@ import RxSwift
 
 final class LaunchViewController: BaseViewController {
     
+    private let viewModel: LaunchScreenViewModel
     private let disposeBag = DisposeBag()
     
-    // TODO: 메인화면에서 테마 변경기능 생기면 지우기
-    private let button: UIButton = {
-       
-        let button = UIButton()
-        button.setTitle("바뀌어라 얍", for: .normal)
-        
-        return button
-    }()
     private let launchImage = BaseUIImageView(image: nil)
 
+    init(viewModel: LaunchScreenViewModel) {
+        self.viewModel = viewModel
+        super.init()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
     }
     
     override func configureBind() {
-        button.rx.tap
-            .bind(with: self) { owner, _ in
-                
-                let list: [ThemeSet] = [(.light, .primary), (.light, .secondary), (.dark, .primary), (.dark, .secondary)]
-                
-                CurrentTheme.currentTheme = list.randomElement()!
-                print("버튼 클릭 후 테마: \(CurrentTheme.currentTheme)")
-                
-                owner.view.window?.overrideUserInterfaceStyle = CurrentTheme.currentTheme.theme.userInterfaceStyle
-                
+        
+        let input = LaunchScreenViewModel.Input(
+            viewDidLoad: Observable.just(())
+        )
+        
+        let output = viewModel.transform(from: input)
+        
+        output.endTimer
+            .drive(with: self) { owner, _ in
+                let vc = TestViewController()
+                owner.viewTransition(type: .changeRootVC, vc: vc)
             }
             .disposed(by: disposeBag)
+    }
+    
+    override func configureNavigation() {
+        navigationController?.navigationBar.isHidden = true
     }
 
     override func configureView() {
@@ -57,21 +60,14 @@ final class LaunchViewController: BaseViewController {
                 owner.launchImage.image = image
             }
             .disposed(by: disposeBag)
-        
-        button.setTitleColor(.label, for: .normal)
     }
     
     override func configureHierarchy() {
         view.addSubview(launchImage)
-        view.addSubview(button)
         
     }
     
     override func configureLayout() {
-        button.snp.makeConstraints {
-            $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
-        }
-        
         launchImage.snp.makeConstraints {
             $0.center.equalTo(view.safeAreaLayoutGuide)
         }
