@@ -17,7 +17,7 @@ extension UIViewController {
         case .changeRootVC:
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first else { return }
             
-            window.rootViewController = UINavigationController(rootViewController: vc)
+            window.rootViewController = vc
             window.makeKeyAndVisible()
         }
     }

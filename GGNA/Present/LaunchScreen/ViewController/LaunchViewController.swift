@@ -38,7 +38,7 @@ final class LaunchViewController: BaseViewController {
         
         output.endTimer
             .drive(with: self) { owner, _ in
-                let vc = TestViewController()
+                let vc = CustomTabBarController.create()
                 owner.viewTransition(type: .changeRootVC, vc: vc)
             }
             .disposed(by: disposeBag)
