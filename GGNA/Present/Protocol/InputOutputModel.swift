@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+protocol InputOutputModel {
+    associatedtype Input
+    associatedtype Output
+    
+    func transform(from input: Input) -> Output
+}
