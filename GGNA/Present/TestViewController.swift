@@ -41,6 +41,8 @@ final class TestViewController: UIViewController {
 
     func configure() {
         
+        navigationController?.navigationBar.isHidden = true
+        
         [button, testView, testLabel].forEach {
             view.addSubview($0)
         }

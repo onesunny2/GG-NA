@@ -22,6 +22,8 @@ enum Theme {
 typealias ColorSet = (
     background: UIColor,
     tabBar: UIColor,
+    unselectedTabBar: UIColor,
+    plusBtn: UIColor,
     main: UIColor,
     main80: UIColor,
     text: UIColor,
@@ -37,7 +39,9 @@ enum ThemeColor {
         switch (theme, self) {
         case (.light, .primary): return (
             .ggLightPinkBG,
-            .ggTabbarBG,
+            .ggLightPinkTabbarBG,
+            .ggLightUnselectedTabBar,
+            .ggTabBarPlusBG,
             .ggLightPink,
             .ggLightPink80,
             .ggLightBlack,
@@ -46,7 +50,9 @@ enum ThemeColor {
             
         case (.light, .secondary): return (
             .ggLightMintBG,
-            .ggTabbarBG,
+            .ggLightMintTabbarBG,
+            .ggLightUnselectedTabBar,
+            .ggTabBarPlusBG,
             .ggLightMint,
             .ggLightMint80,
             .ggLightBlack,
@@ -55,7 +61,9 @@ enum ThemeColor {
             
         case (.dark, .primary): return (
             .ggDarkBlack,
-            .ggTabbarBG,
+            .ggDarkTabbarBG,
+            .ggDarkUnselectedTabBar,
+            .ggTabBarPlusBG,
             .ggDarkPink,
             .ggDarkPink80,
             .ggDarkBlack,
@@ -64,7 +72,9 @@ enum ThemeColor {
             
         case (.dark, .secondary): return (
             .ggDarkBlack,
-            .ggTabbarBG,
+            .ggDarkTabbarBG,
+            .ggDarkUnselectedTabBar,
+            .ggTabBarPlusBG,
             .ggDarkPurple,
             .ggDarkPurple80,
             .ggDarkBlack,
