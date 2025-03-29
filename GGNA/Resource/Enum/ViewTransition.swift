@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+enum ViewTransition {
+    case navigation
+    case changeRootVC
+}
