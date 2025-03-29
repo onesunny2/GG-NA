@@ -66,7 +66,7 @@ enum ThemeColor {
             .ggTabBarPlusBG,
             .ggDarkPink,
             .ggDarkPink80,
-            .ggDarkBlack,
+            .ggDarkWhite,
             .ggGray
         )
             
@@ -77,7 +77,7 @@ enum ThemeColor {
             .ggTabBarPlusBG,
             .ggDarkPurple,
             .ggDarkPurple80,
-            .ggDarkBlack,
+            .ggDarkWhite,
             .ggGray
         )
         }
