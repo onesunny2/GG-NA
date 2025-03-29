@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "lightMintIcon.png",
+      "filename" : "lightMintLaunch.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "lightMintIcon@2x.png",
+      "filename" : "lightMintLaunch@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "lightMintIcon@3x.png",
+      "filename" : "lightMintLaunch@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -28,8 +28,6 @@ final class TestViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .systemBackground
         
         configure()
         for family in UIFont.familyNames {
@@ -72,17 +70,24 @@ final class TestViewController: UIViewController {
                 
                 owner.view.window?.overrideUserInterfaceStyle = CurrentTheme.currentTheme.theme.userInterfaceStyle
                 
-                let colors = CurrentTheme.currentTheme.color.setColor(for: CurrentTheme.currentTheme.theme)
-                owner.view.backgroundColor = colors.background
-                owner.testView.backgroundColor = colors.main
-                owner.testLabel.textColor = colors.text
-                owner.button.setTitleColor(.label, for: .normal)
             }
             .disposed(by: disposBag)
         
-        testView.backgroundColor = .systemPink
         testLabel.text = "현재 테마의 텍스트 색상입니다."
         testLabel.font = FontLiterals.folderCount
         testLabel.textColor = .label
+
+        button.setTitleColor(.label, for: .normal)
+        
+        CurrentTheme.$currentTheme
+            .bind(with: self) { this, value in
+                
+                let colors = value.color.setColor(for: value.theme)
+                
+                this.testLabel.textColor = colors.text
+                this.testView.backgroundColor = colors.main
+                this.view.backgroundColor = colors.background
+            }
+            .disposed(by: disposBag)
     }
 }
