@@ -181,9 +181,9 @@ final class CustomTabBarController: UITabBarController {
     // MARK: 플러스 버튼 액션
     private func presentAddScreen() {
         
-        let viewController = TestViewController()
-        viewController.modalPresentationStyle = .fullScreen
-        present(viewController, animated: true)
+        let vc = CreateCardViewController()
+        let nv = UINavigationController(rootViewController: vc)
+        viewTransition(type: .fullScreen, vc: nv)
     }
     
     private func adjustSafeAreaForCustomTabBar() {

@@ -19,6 +19,9 @@ extension UIViewController {
             
             window.rootViewController = vc
             window.makeKeyAndVisible()
+        case .fullScreen:
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
         }
     }
 }
