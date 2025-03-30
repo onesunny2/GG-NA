@@ -12,7 +12,6 @@ import RxSwift
 
 final class HomeViewController: BaseViewController {
     
-    private let mainView = HomeCardView()
     private let viewModel: HomeViewModel
     private let disposeBag = DisposeBag()
     
@@ -20,15 +19,14 @@ final class HomeViewController: BaseViewController {
     private let palleteButton = CustomBarButton(ImageLiterals.paintpalette)
     private let rightStackView = UIStackView()
     
+    private let theme1BgCardView = UIView()
+    private let theme1FirstCardView = FisrtThemeCardView()
+    
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         super.init()
     }
 
-    override func loadView() {
-        view = mainView
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -42,7 +40,9 @@ final class HomeViewController: BaseViewController {
         
         output.currentPhotos
             .drive(with: self) { owner, photos in
-                owner.mainView.setImage(photos)
+                
+                guard let photo = photos.first else { return }
+                owner.theme1FirstCardView.setImage(photo)
             }
             .disposed(by: disposeBag)
         
@@ -57,7 +57,7 @@ final class HomeViewController: BaseViewController {
                 
                 owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
                 owner.navigationController?.navigationBar.tintColor = colors.text
-                owner.mainView.setColor(colors)
+                owner.theme1BgCardView.backgroundColor = colors.main
             }
             .disposed(by: disposeBag)
     }
@@ -76,9 +76,29 @@ final class HomeViewController: BaseViewController {
         rightStackView.axis = .horizontal
         rightStackView.alignment = .center
         rightStackView.spacing = 15
+        
+        theme1BgCardView.cornerRadius()
+        theme1BgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 60)
     }
     
     override func configureHierarchy() {
         rightStackView.addArrangedSubviews(suffleButton, palleteButton)
+        view.addSubviews(theme1BgCardView, theme1FirstCardView)
+    }
+    
+    override func configureLayout() {
+        theme1BgCardView.snp.makeConstraints {
+            $0.centerX.equalTo(view.safeAreaLayoutGuide)
+            $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(17)
+            $0.width.equalTo(view.snp.width).multipliedBy(0.8)
+            $0.height.equalTo(view.snp.height).multipliedBy(0.6)
+        }
+        
+        theme1FirstCardView.snp.makeConstraints {
+            $0.centerX.equalTo(view.safeAreaLayoutGuide)
+            $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(17)
+            $0.width.equalTo(view.snp.width).multipliedBy(0.8)
+            $0.height.equalTo(view.snp.height).multipliedBy(0.6)
+        }
     }
 }
