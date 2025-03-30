@@ -16,7 +16,7 @@ final class HomeViewModel: InputOutputModel {
     }
     
     struct Output {
-        let currentPhotos: Driver<[PhotoCardRecord]>
+        let currentPhotos: Driver<[HomePhotoCardEntity]>
     }
     
     private let repository: HomePhotoRepository
@@ -32,7 +32,7 @@ final class HomeViewModel: InputOutputModel {
     
     func transform(from input: Input) -> Output {
         
-        let currentPhotos = BehaviorRelay<[PhotoCardRecord]>(value: repository.getPhotosFromFolder())
+        let currentPhotos = BehaviorRelay<[HomePhotoCardEntity]>(value: repository.getPhotosFromFolder())
         
         input.viewDidLoad
             .bind(with: self) { owner, _ in
