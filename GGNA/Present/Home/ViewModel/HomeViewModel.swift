@@ -12,15 +12,18 @@ import RxSwift
 final class HomeViewModel: InputOutputModel {
     
     struct Input {
-        
+        let viewDidLoad: Observable<Void>
     }
     
     struct Output {
-        
+        let currentPhotos: Driver<[PhotoCardRecord]>
     }
     
-    init() {
-        
+    private let repository: HomePhotoRepository
+    private let disposeBag = DisposeBag()
+    
+    init(repository: HomePhotoRepository) {
+        self.repository = repository
     }
     
     deinit {
@@ -28,6 +31,17 @@ final class HomeViewModel: InputOutputModel {
     }
     
     func transform(from input: Input) -> Output {
-        return Output()
+        
+        let currentPhotos = BehaviorRelay<[PhotoCardRecord]>(value: repository.getPhotosFromFolder())
+        
+        input.viewDidLoad
+            .bind(with: self) { owner, _ in
+                currentPhotos.accept(owner.repository.getPhotosFromFolder())
+            }
+            .disposed(by: disposeBag)
+        
+        return Output(
+            currentPhotos: currentPhotos.asDriver()
+        )
     }
 }
