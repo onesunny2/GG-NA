@@ -23,6 +23,7 @@ final class CustomTabBarController: UITabBarController {
         setupTabBarItems()
         setupCenterButton()
         configureBind()
+        adjustSafeAreaForCustomTabBar()
     }
     
     override func viewDidLayoutSubviews() {
@@ -37,13 +38,13 @@ final class CustomTabBarController: UITabBarController {
     }
     
     private func positionCustomTabBar() {
-        customTabBarView.snp.makeConstraints {
-            $0.width.equalTo(290)
-            $0.height.equalTo(65)
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
+            customTabBarView.snp.makeConstraints {
+                $0.width.equalTo(290)
+                $0.height.equalTo(65)
+                $0.centerX.equalToSuperview()
+                $0.bottom.equalTo(view.snp.bottom).offset(-40) 
+            }
         }
-    }
     
     private func setupTabBarItems() {
 
@@ -184,6 +185,12 @@ final class CustomTabBarController: UITabBarController {
         viewController.modalPresentationStyle = .fullScreen
         present(viewController, animated: true)
     }
+    
+    private func adjustSafeAreaForCustomTabBar() {
+        let customTabBarHeight: CGFloat = 65
+        let bottomOffset: CGFloat = 40
+        additionalSafeAreaInsets = UIEdgeInsets(top: 0, left: 0, bottom: customTabBarHeight + bottomOffset, right: 0)
+    }
 }
 
 extension CustomTabBarController {
@@ -191,7 +198,9 @@ extension CustomTabBarController {
         
         let tabBarController = CustomTabBarController()
         
-        let homeVC = TestViewController()
+        let homeRP = DummyHomePhotoRepository()
+        let homeVM = HomeViewModel(repository: homeRP)
+        let homeVC = HomeViewController(viewModel: homeVM)
         let homeNav = UINavigationController(rootViewController: homeVC)
         
         let folderVC = TestViewController()

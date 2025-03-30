@@ -14,4 +14,9 @@ extension UIView {
             self.addSubview($0)
         }
     }
+    
+    func cornerRadius() {
+        layer.cornerRadius = 30
+        clipsToBounds = true
+    }
 }

@@ -11,7 +11,8 @@ final class BaseUIImageView: UIImageView {
     
     init(
         isCornered: Bool = true,
-        image: UIImage?
+        image: UIImage?,
+        cornerRadius: CGFloat = 5
     ) {
         super.init(frame: .zero)
         
@@ -19,7 +20,7 @@ final class BaseUIImageView: UIImageView {
         contentMode = .scaleAspectFill
         
         guard isCornered else { return }
-        layer.cornerRadius = 5
+        layer.cornerRadius = cornerRadius
         clipsToBounds = true
     }
     
