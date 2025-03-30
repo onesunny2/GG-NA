@@ -21,7 +21,7 @@ enum FontLiterals {
     static let bigLaunch: UIFont = .systemFont(ofSize: 35, weight: .semibold)
     
     // MARK: Home View
-    static let normalCardTitle: UIFont = .systemFont(ofSize: 50, weight: .black)
+    static let normalCardTitle: UIFont = UIFont(name: "MungyeongGamhongApple", size: 30) ?? .systemFont(ofSize: 15, weight: .heavy)
     static let underlineCardTitle: UIFont = .systemFont(ofSize: 40, weight: .heavy)
     
     // MARK: CustomFont
