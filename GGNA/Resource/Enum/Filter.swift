@@ -6,3 +6,13 @@
 //
 
 import Foundation
+
+enum Filter {
+    case original
+    
+    var name: String {
+        switch self {
+        case .original: return "original"
+        }
+    }
+}
