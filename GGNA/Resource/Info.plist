@@ -5,6 +5,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>MungyeongGamhongApple.otf</string>
+		<string>SangSangRockOTF.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
