@@ -18,7 +18,7 @@ extension UIViewController {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first else { return }
             
-            DispatchQueue.main.async {
+            Task {
                 UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
                     window.rootViewController = vc
                     window.makeKeyAndVisible()
