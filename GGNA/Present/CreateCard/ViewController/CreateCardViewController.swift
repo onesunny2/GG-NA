@@ -122,7 +122,8 @@ final class CreateCardViewController: BaseViewController {
         appearance.titleTextAttributes = [.foregroundColor: colors.text]
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.tintColor = colors.text
+        closeButton.setTitleColor(colors.text, for: .normal)
+        saveButton.setTitleColor(colors.text, for: .normal)
     }
     
     override func configureView() {
