@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 import RxCocoa
 import RxSwift
 
@@ -23,15 +24,34 @@ final class CreateCardViewController: BaseViewController {
         button.setTitle(CreateCardBarButton.save.title, for: .normal)
         return button
     }()
+    
+    private let switchStackView = UIStackView()
+    private let photoButton = OnlyImageButton(image: ImageLiterals.photoCircleFill, isSelected: true)
+    private let writingButton = OnlyImageButton(image: ImageLiterals.pencilCircleFill, isSelected: false)
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
-    override func configureView() {
-    }
-    
+
     override func configureBind() {
+        
+        photoButton.rx.tap
+            .bind(with: self) { owner, _ in
+                        
+                guard !owner.photoButton.isSelected else { return }
+                owner.photoButton.isSelected = true
+                owner.writingButton.isSelected = false
+            }
+            .disposed(by: disposeBag)
+                
+        writingButton.rx.tap
+            .bind(with: self) { owner, _ in
+                        
+                guard !owner.writingButton.isSelected else { return }
+                owner.photoButton.isSelected = false
+                owner.writingButton.isSelected = true
+            }
+            .disposed(by: disposeBag)
         
         CurrentTheme.$currentTheme
             .bind(with: self) { owner, value in
@@ -39,9 +59,11 @@ final class CreateCardViewController: BaseViewController {
                 let theme = value.theme
                 let color = value.color
                 let colors = color.setColor(for: theme)
-                
-                owner.navigationController?.navigationBar.tintColor = colors.text
+
                 owner.view.backgroundColor = colors.background
+                owner.closeButton.setTitleColor(colors.text, for: .normal)
+                owner.saveButton.setTitleColor(colors.text, for: .normal)
+                owner.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: colors.text]
             }
             .disposed(by: disposeBag)
     }
@@ -56,6 +78,24 @@ final class CreateCardViewController: BaseViewController {
         appearance.backgroundColor = .clear
         self.navigationController?.navigationBar.standardAppearance = appearance
         self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+    }
+    
+    override func configureView() {
+        switchStackView.axis = .horizontal
+        switchStackView.spacing = 12
+        switchStackView.alignment = .fill
+    }
+    
+    override func configureHierarchy() {
+        view.addSubviews(switchStackView)
+        switchStackView.addArrangedSubviews(photoButton, writingButton)
+    }
+    
+    override func configureLayout() {
+        switchStackView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.centerX.equalTo(view.safeAreaLayoutGuide)
+        }
     }
 }
 
