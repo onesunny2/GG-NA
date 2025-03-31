@@ -58,6 +58,7 @@ final class HomeViewController: BaseViewController {
                 owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
                 owner.navigationController?.navigationBar.tintColor = colors.text
                 owner.theme1BgCardView.backgroundColor = colors.main
+                owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
     }
