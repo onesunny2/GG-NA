@@ -47,14 +47,17 @@ struct ThemeDefaults {
         
         return Observable.combineLatest(theme, color)
             .map { _ in
-                getThemeInfo(for: key.rawValue) ?? defaultTheme
+                getThemeInfo(for: key.rawValue)
             }
     }
     
-    private func getThemeInfo(for key: String) -> ThemeSet? {
-        
+    private func getThemeInfo(for key: String) -> ThemeSet {
         let themeName = UserDefaults.standard.string(forKey: key + "Theme")
         let colorName = UserDefaults.standard.string(forKey: key + "Color")
+        
+        if themeName == nil && colorName == nil {
+            return defaultTheme
+        }
         
         let theme = (themeName == "light") ? Theme.light : Theme.dark
         let color = (colorName == "primary") ? ThemeColor.primary : ThemeColor.secondary
