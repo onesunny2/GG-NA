@@ -30,9 +30,19 @@ final class CreateCardViewController: BaseViewController {
     private let writingButton = OnlyImageButton(image: ImageLiterals.pencilCircleFill, isSelected: false)
     
     private let photoUploadView = UploadPhotoView()
+    private let writingView = WritingView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        photoUploadView.isHidden = false
+        writingView.isHidden = true
+        photoUploadView.transform = CGAffineTransform(translationX: photoUploadView.bounds.width, y: 0)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
     }
 
     override func configureBind() {
@@ -45,21 +55,45 @@ final class CreateCardViewController: BaseViewController {
         
         photoButton.rx.tap
             .bind(with: self) { owner, _ in
-                        
                 guard !owner.photoButton.isSelected else { return }
                 owner.photoButton.isSelected = true
                 owner.writingButton.isSelected = false
+
+                owner.photoUploadView.transform = CGAffineTransform(translationX: -owner.photoUploadView.bounds.width, y: 0)
                 owner.photoUploadView.isHidden = false
+                
+                UIView.animate(withDuration: 0.3,
+                    delay: 0.0,
+                    options: [.curveEaseInOut],
+                    animations: {
+                        owner.writingView.transform = CGAffineTransform(translationX: owner.writingView.bounds.width, y: 0)
+                        owner.photoUploadView.transform = .identity
+                    }) { _ in
+                        owner.writingView.isHidden = true
+                        owner.writingView.transform = .identity
+                    }
             }
             .disposed(by: disposeBag)
-                
+
         writingButton.rx.tap
             .bind(with: self) { owner, _ in
-                        
                 guard !owner.writingButton.isSelected else { return }
                 owner.photoButton.isSelected = false
                 owner.writingButton.isSelected = true
-                owner.photoUploadView.isHidden = true
+                
+                owner.writingView.transform = CGAffineTransform(translationX: owner.writingView.bounds.width, y: 0)
+                owner.writingView.isHidden = false
+                
+                UIView.animate(withDuration: 0.3,
+                    delay: 0.0,
+                    options: [.curveEaseInOut],
+                    animations: {
+                        owner.photoUploadView.transform = CGAffineTransform(translationX: -owner.photoUploadView.bounds.width, y: 0)
+                        owner.writingView.transform = .identity
+                    }) { _ in
+                        owner.photoUploadView.isHidden = true
+                        owner.photoUploadView.transform = .identity
+                    }
             }
             .disposed(by: disposeBag)
         
@@ -68,23 +102,16 @@ final class CreateCardViewController: BaseViewController {
                 owner.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
-        
-        CurrentTheme.$currentTheme
-            .bind(with: self) { owner, value in
-                
-                let theme = value.theme
-                let color = value.color
-                let colors = color.setColor(for: theme)
-
-                owner.view.backgroundColor = colors.background
-                owner.closeButton.setTitleColor(colors.text, for: .normal)
-                owner.saveButton.setTitleColor(colors.text, for: .normal)
-                owner.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: colors.text]
-            }
-            .disposed(by: disposeBag)
     }
 
     override func configureNavigation() {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        view.backgroundColor = colors.background
+        
         navigationItem.title = NavigationTitle.카드생성.title
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton)
@@ -92,8 +119,10 @@ final class CreateCardViewController: BaseViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .clear
-        self.navigationController?.navigationBar.standardAppearance = appearance
-        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        appearance.titleTextAttributes = [.foregroundColor: colors.text]
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.tintColor = colors.text
     }
     
     override func configureView() {
@@ -103,7 +132,7 @@ final class CreateCardViewController: BaseViewController {
     }
     
     override func configureHierarchy() {
-        view.addSubviews(switchStackView, photoUploadView)
+        view.addSubviews(switchStackView, photoUploadView, writingView)
         switchStackView.addArrangedSubviews(photoButton, writingButton)
     }
     
@@ -121,6 +150,11 @@ final class CreateCardViewController: BaseViewController {
             $0.top.equalTo(switchStackView.snp.bottom).offset(20)
             $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
             $0.height.equalTo(window.bounds.height / 2)
+        }
+        
+        writingView.snp.makeConstraints {
+            $0.top.equalTo(switchStackView.snp.bottom).offset(20)
+            $0.horizontalEdges.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
 }
