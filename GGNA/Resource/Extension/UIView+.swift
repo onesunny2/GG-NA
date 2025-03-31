@@ -15,8 +15,13 @@ extension UIView {
         }
     }
     
-    func cornerRadius() {
+    func cornerRadius30() {
         layer.cornerRadius = 30
+        clipsToBounds = true
+    }
+    
+    func cornerRadius15() {
+        layer.cornerRadius = 15
         clipsToBounds = true
     }
 }

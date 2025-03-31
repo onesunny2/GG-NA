@@ -15,10 +15,18 @@ extension UIViewController {
         case .navigation:
             navigationController?.pushViewController(vc, animated: true)
         case .changeRootVC:
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first else { return }
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else { return }
             
-            window.rootViewController = vc
-            window.makeKeyAndVisible()
+            Task {
+                UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                    window.rootViewController = vc
+                    window.makeKeyAndVisible()
+                }, completion: nil)
+            }
+        case .fullScreen:
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
         }
     }
 }

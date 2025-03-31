@@ -14,7 +14,22 @@
 		432D00382D964AB200A04AF5 /* Differentiator in Frameworks */ = {isa = PBXBuildFile; productRef = 432D00372D964AB200A04AF5 /* Differentiator */; };
 		432D003A2D964AB200A04AF5 /* RxDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 432D00392D964AB200A04AF5 /* RxDataSources */; };
 		432D003D2D964AF500A04AF5 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 432D003C2D964AF500A04AF5 /* RealmSwift */; };
+		4352F9632D9A88D600C10FF4 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 432D003C2D964AF500A04AF5 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4352F9642D9A88D600C10FF4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4352F9632D9A88D600C10FF4 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		43D12F322D944A4E001E2C93 /* GGNA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GGNA.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +100,7 @@
 				43D12F2E2D944A4E001E2C93 /* Sources */,
 				43D12F2F2D944A4E001E2C93 /* Frameworks */,
 				43D12F302D944A4E001E2C93 /* Resources */,
+				4352F9642D9A88D600C10FF4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

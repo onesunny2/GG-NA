@@ -58,6 +58,7 @@ final class HomeViewController: BaseViewController {
                 owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
                 owner.navigationController?.navigationBar.tintColor = colors.text
                 owner.theme1BgCardView.backgroundColor = colors.main
+                owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
     }
@@ -77,7 +78,7 @@ final class HomeViewController: BaseViewController {
         rightStackView.alignment = .center
         rightStackView.spacing = 15
         
-        theme1BgCardView.cornerRadius()
+        theme1BgCardView.cornerRadius30()
         theme1BgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 60)
     }
     

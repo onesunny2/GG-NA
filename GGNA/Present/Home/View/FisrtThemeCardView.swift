@@ -26,7 +26,7 @@ final class FisrtThemeCardView: BaseView {
         
         cardView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
         
-        cardCoverView.cornerRadius()
+        cardCoverView.cornerRadius30()
         cardCoverView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
         cardCoverView.backgroundColor = .ggImgCover
         

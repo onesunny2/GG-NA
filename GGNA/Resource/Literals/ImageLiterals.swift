@@ -10,7 +10,9 @@ import UIKit
 enum ImageLiterals {
     
     /// 앱 내 ViewController 화면에서 사용하는 Image Assets
-    
+    static let photoCircleFill: UIImage? = UIImage(systemName: "photo.circle.fill")
+    static let pencilCircleFill: UIImage? = UIImage(systemName: "square.and.pencil.circle.fill")
+    static let upload: UIImage? = UIImage(systemName: "square.and.arrow.up.fill")?.withTintColor(.ggGray, renderingMode: .alwaysOriginal)
     /// Navigation TabBar에서 사용하는 Image Assets
     static let home: UIImage? = UIImage(systemName: "house.fill")
     static let folder: UIImage? = UIImage(systemName: "folder.fill")

@@ -11,10 +11,11 @@ enum FontLiterals {
     
     // MARK: Common
     static let themeBadge: UIFont = .systemFont(ofSize: 10, weight: .medium)
-    static let basicBadge: UIFont = .systemFont(ofSize: 13 , weight: .medium)
+    static let basicBadge: UIFont = .systemFont(ofSize: 13 , weight: .bold)
     static let subContent: UIFont = .systemFont(ofSize: 12, weight: .regular)
-    static let subTitle: UIFont = .systemFont(ofSize: 16, weight: .medium)
+    static let subTitle: UIFont = .systemFont(ofSize: 16, weight: .bold)
     static let folderTitle: UIFont = .systemFont(ofSize: 16, weight: .bold)
+    static let placeholder: UIFont = .systemFont(ofSize: 13, weight: .regular)
     
     // MARK: Launch Screen
     static let smallLaunch: UIFont = .systemFont(ofSize: 18, weight: .regular)
@@ -26,4 +27,5 @@ enum FontLiterals {
     
     // MARK: CustomFont
     static let folderCount: UIFont = UIFont(name: "MungyeongGamhongApple", size: 15) ?? .systemFont(ofSize: 15, weight: .heavy)
+    static let writngTitle: UIFont = UIFont(name: "SangSangRockOTF", size: 32) ?? .systemFont(ofSize: 32, weight: .semibold)
 }
