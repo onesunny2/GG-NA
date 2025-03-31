@@ -11,7 +11,7 @@ enum FontLiterals {
     
     // MARK: Common
     static let themeBadge: UIFont = .systemFont(ofSize: 10, weight: .medium)
-    static let basicBadge: UIFont = .systemFont(ofSize: 13 , weight: .medium)
+    static let basicBadge: UIFont = .systemFont(ofSize: 13 , weight: .bold)
     static let subContent: UIFont = .systemFont(ofSize: 12, weight: .regular)
     static let subTitle: UIFont = .systemFont(ofSize: 16, weight: .medium)
     static let folderTitle: UIFont = .systemFont(ofSize: 16, weight: .bold)

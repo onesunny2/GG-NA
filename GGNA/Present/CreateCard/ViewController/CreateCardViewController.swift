@@ -28,6 +28,8 @@ final class CreateCardViewController: BaseViewController {
     private let switchStackView = UIStackView()
     private let photoButton = OnlyImageButton(image: ImageLiterals.photoCircleFill, isSelected: true)
     private let writingButton = OnlyImageButton(image: ImageLiterals.pencilCircleFill, isSelected: false)
+    
+    private let photoUploadView = UploadPhotoView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,12 +37,19 @@ final class CreateCardViewController: BaseViewController {
 
     override func configureBind() {
         
+        photoUploadView.tappedUploadButton
+            .bind(with: self) { owner, _ in
+                print("tappedUploadButton") // TODO: 앨범 연결
+            }
+            .disposed(by: disposeBag)
+        
         photoButton.rx.tap
             .bind(with: self) { owner, _ in
                         
                 guard !owner.photoButton.isSelected else { return }
                 owner.photoButton.isSelected = true
                 owner.writingButton.isSelected = false
+                owner.photoUploadView.isHidden = false
             }
             .disposed(by: disposeBag)
                 
@@ -50,6 +59,7 @@ final class CreateCardViewController: BaseViewController {
                 guard !owner.writingButton.isSelected else { return }
                 owner.photoButton.isSelected = false
                 owner.writingButton.isSelected = true
+                owner.photoUploadView.isHidden = true
             }
             .disposed(by: disposeBag)
         
@@ -93,14 +103,24 @@ final class CreateCardViewController: BaseViewController {
     }
     
     override func configureHierarchy() {
-        view.addSubviews(switchStackView)
+        view.addSubviews(switchStackView, photoUploadView)
         switchStackView.addArrangedSubviews(photoButton, writingButton)
     }
     
     override func configureLayout() {
+        
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first  else { return }
+        
         switchStackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
             $0.centerX.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        photoUploadView.snp.makeConstraints {
+            $0.top.equalTo(switchStackView.snp.bottom).offset(20)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            $0.height.equalTo(window.bounds.height / 2)
         }
     }
 }

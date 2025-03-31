@@ -78,7 +78,7 @@ final class HomeViewController: BaseViewController {
         rightStackView.alignment = .center
         rightStackView.spacing = 15
         
-        theme1BgCardView.cornerRadius()
+        theme1BgCardView.cornerRadius30()
         theme1BgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 60)
     }
     
