@@ -92,8 +92,8 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         folderMarkImage.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.equalToSuperview().inset(12)
-            $0.width.equalTo(30)
-            $0.height.equalTo(70)
+            $0.width.equalTo(10)
+            $0.height.equalTo(35)
         }
         
         imageCountLabel.snp.makeConstraints {
@@ -108,9 +108,15 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         
         chevronImage.snp.makeConstraints {
             $0.centerY.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(8)
-            $0.size.equalTo(12)
+            $0.trailing.equalToSuperview().inset(5)
+            $0.size.equalTo(20)
         }
+    }
+    
+    func configureCell(_ data: ArchiveFolderEntity) {
+        mainImageView.image = data.mainImage
+        folderTitle.text = data.folderName
+        imageCountLabel.text = data.photoCount
     }
     
     @available(*, unavailable)
