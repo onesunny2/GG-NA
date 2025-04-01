@@ -14,6 +14,8 @@ enum ImageLiterals {
     static let pencilCircleFill: UIImage? = UIImage(systemName: "square.and.pencil.circle.fill")
     static let upload: UIImage? = UIImage(systemName: "square.and.arrow.up.fill")?.withTintColor(.ggGray, renderingMode: .alwaysOriginal)
     static let check: UIImage? = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(.ggDarkWhite, renderingMode: .alwaysOriginal)
+    static let bookmark: UIImage? = UIImage(systemName: "bookmark.fill")
+    static let chevronForwardCircle: UIImage? = UIImage(systemName: "chevron.forward.circle.fill")
     
     /// Navigation TabBar에서 사용하는 Image Assets
     static let home: UIImage? = UIImage(systemName: "house.fill")
@@ -22,6 +24,7 @@ enum ImageLiterals {
     static let xmark: UIImage? = UIImage(systemName: "xmark.circle.fill")
     
     /// Navigation BarButtonItem에서 사용하는 Image Assets
-    static let shuffle: UIImage? = UIImage(systemName: "shuffle")
-    static let paintpalette: UIImage? = UIImage(systemName: "paintpalette.fill")
+    static let shuffle: UIImage? = UIImage(systemName: "shuffle")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
+    static let paintpalette: UIImage? = UIImage(systemName: "paintpalette.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
+    static let folderPlus: UIImage? = UIImage(systemName: "folder.fill.badge.plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
 }

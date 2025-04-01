@@ -5,7 +5,7 @@
 //  Created by Lee Wonsun on 3/28/25.
 //
 
-import Foundation
+import UIKit
 import RxCocoa
 import RxSwift
 
@@ -82,4 +82,13 @@ enum CurrentTheme: String {
     case 현재테마
     
     @ThemeDefaults(key: .현재테마) static var currentTheme
+    
+    static func applyCurrentTheme() {
+        let (theme, _) = currentTheme
+        
+        if let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0 is UIWindowScene }) as? UIWindowScene {
+            windowScene.windows.first?.overrideUserInterfaceStyle = theme.userInterfaceStyle
+        }
+    }
 }

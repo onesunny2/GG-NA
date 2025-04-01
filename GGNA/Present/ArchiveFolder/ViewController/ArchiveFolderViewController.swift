@@ -1,0 +1,125 @@
+//
+//  ArchiveViewController.swift
+//  GGNA
+//
+//  Created by Lee Wonsun on 4/1/25.
+//
+
+import UIKit
+import SnapKit
+import RxCocoa
+import RxSwift
+
+final class ArchiveFolderViewController: BaseViewController {
+    
+    private let viewModel: ArchiveFolderViewModel
+    private let disposeBag = DisposeBag()
+    
+    private let addFolderButton = CustomBarButton(ImageLiterals.folderPlus)
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+
+    init(viewModel: ArchiveFolderViewModel) {
+        self.viewModel = viewModel
+        super.init()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func configureBind() {
+        
+        let input = ArchiveFolderViewModel.Input(
+            viewDidLoad: Observable.just(())
+        )
+        let output = viewModel.transform(from: input)
+        
+        output.folderData
+            .drive(
+                collectionView.rx.items(
+                    cellIdentifier: ArchiveFolderCollectionViewCell.identifier,
+                    cellType: ArchiveFolderCollectionViewCell.self
+                )
+            ) { item, element, cell in
+                cell.configureCell(element)
+            }
+            .disposed(by: disposeBag)
+        
+        addFolderButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.textFieldAlert()
+            }
+            .disposed(by: disposeBag)
+        
+        CurrentTheme.$currentTheme
+            .bind(with: self) { owner, value in
+                
+                let theme = value.theme
+                let color = value.color
+                let colors = color.setColor(for: theme)
+                
+                let attribute: [NSAttributedString.Key: Any] = [.foregroundColor: colors.text]
+                
+                owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
+                owner.navigationController?.navigationBar.tintColor = colors.text
+                owner.view.backgroundColor = colors.background
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func createCompositionalLayout() -> UICollectionViewLayout {
+       
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(0.5),
+            heightDimension: .absolute(180)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(180)
+        )
+ 
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitem: item,
+            count: 2
+        )
+        group.interItemSpacing = .fixed(22)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 22 
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: .zero,
+            leading: 20,
+            bottom: .zero,
+            trailing: 20
+        )
+        
+        return UICollectionViewCompositionalLayout(section: section)
+    }
+    
+    override func configureNavigation() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = NavigationTitle.보관함.title
+        
+        let rightBarButtonItem = UIBarButtonItem(customView: addFolderButton)
+        navigationItem.rightBarButtonItem = rightBarButtonItem
+    }
+    
+    override func configureView() {
+        collectionView.backgroundColor = .clear
+        collectionView.register(ArchiveFolderCollectionViewCell.self, forCellWithReuseIdentifier: ArchiveFolderCollectionViewCell.identifier)
+    }
+    
+    override func configureHierarchy() {
+        view.addSubview(collectionView)
+    }
+    
+    override func configureLayout() {
+        collectionView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+}

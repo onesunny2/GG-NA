@@ -69,6 +69,7 @@ final class ThemeColorModalView: BaseViewController {
                 }
                 
                 CurrentTheme.currentTheme = (theme, color)
+                CurrentTheme.applyCurrentTheme()
             }
             .disposed(by: disposeBag)
         
