@@ -12,18 +12,38 @@ import RxSwift
 
 final class ArchiveFolderViewController: BaseViewController {
     
+    private let viewModel: ArchiveFolderViewModel
     private let disposeBag = DisposeBag()
     
     private let addFolderButton = CustomBarButton(ImageLiterals.folderPlus)
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
 
+    init(viewModel: ArchiveFolderViewModel) {
+        self.viewModel = viewModel
+        super.init()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        
     }
     
     override func configureBind() {
+        
+        let input = ArchiveFolderViewModel.Input(
+            viewDidLoad: Observable.just(())
+        )
+        let output = viewModel.transform(from: input)
+        
+        output.folderData
+            .drive(
+                collectionView.rx.items(
+                    cellIdentifier: ArchiveFolderCollectionViewCell.identifier,
+                    cellType: ArchiveFolderCollectionViewCell.self
+                )
+            ) { item, element, cell in
+                cell.configureCell(element)
+            }
+            .disposed(by: disposeBag)
         
         addFolderButton.rx.tap
             .bind(with: self) { owner, _ in
@@ -51,14 +71,14 @@ final class ArchiveFolderViewController: BaseViewController {
        
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.5),
-            heightDimension: .absolute(22)
+            heightDimension: .absolute(180)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
         
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(22)
+            heightDimension: .absolute(180)
         )
  
         let group = NSCollectionLayoutGroup.horizontal(
@@ -71,9 +91,9 @@ final class ArchiveFolderViewController: BaseViewController {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 22 
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 20,
+            top: .zero,
             leading: 20,
-            bottom: 20,
+            bottom: .zero,
             trailing: 20
         )
         
