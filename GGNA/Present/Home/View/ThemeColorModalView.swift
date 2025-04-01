@@ -48,6 +48,30 @@ final class ThemeColorModalView: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        collectionView.rx.modelSelected(ThemeColorList.self)
+            .bind(with: self) { owner, item in
+                
+                var theme: Theme = .dark
+                var color: ThemeColor = .primary
+                
+                switch item.theme {
+                case "Dark": theme = .dark
+                case "Light": theme = .light
+                default: break
+                }
+
+                switch item.color {
+                case .ggDarkPink: color = .primary
+                case .ggLightPink: color = .primary
+                case .ggDarkPurple: color = .secondary
+                case .ggLightMint: color = .secondary
+                default: break
+                }
+                
+                CurrentTheme.currentTheme = (theme, color)
+            }
+            .disposed(by: disposeBag)
+        
         closeButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.dismiss(animated: true)

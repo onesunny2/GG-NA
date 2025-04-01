@@ -24,7 +24,7 @@ struct ThemeDefaults {
     
     var wrappedValue: ThemeSet {
         get {
-            return getThemeInfo(for: key.rawValue) ?? defaultTheme
+            return getThemeInfo(for: key.rawValue)
         }
         set {
             setTheme(for: key.rawValue, value: newValue)
