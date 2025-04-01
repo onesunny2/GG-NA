@@ -7,8 +7,7 @@
 
 import UIKit
 
-struct HomePhotoCardEntity: Hashable {
-    let id = UUID()
+struct HomePhotoCardEntity {
     let imageData: UIImage?
     let videoData: Data?
     let filter: String
