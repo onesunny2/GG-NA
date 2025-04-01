@@ -19,11 +19,10 @@ extension UIViewController {
                   let window = windowScene.windows.first else { return }
             
             Task {
-                UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
-                    window.rootViewController = vc
-                    window.makeKeyAndVisible()
-                }, completion: nil)
+                window.rootViewController = vc
+                window.makeKeyAndVisible()
             }
+            
         case .fullScreen:
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true)

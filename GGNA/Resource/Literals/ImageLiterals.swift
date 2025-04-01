@@ -13,10 +13,13 @@ enum ImageLiterals {
     static let photoCircleFill: UIImage? = UIImage(systemName: "photo.circle.fill")
     static let pencilCircleFill: UIImage? = UIImage(systemName: "square.and.pencil.circle.fill")
     static let upload: UIImage? = UIImage(systemName: "square.and.arrow.up.fill")?.withTintColor(.ggGray, renderingMode: .alwaysOriginal)
+    static let check: UIImage? = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(.ggDarkWhite, renderingMode: .alwaysOriginal)
+    
     /// Navigation TabBar에서 사용하는 Image Assets
     static let home: UIImage? = UIImage(systemName: "house.fill")
     static let folder: UIImage? = UIImage(systemName: "folder.fill")
     static let plus: UIImage? = UIImage(systemName: "plus")
+    static let xmark: UIImage? = UIImage(systemName: "xmark.circle.fill")
     
     /// Navigation BarButtonItem에서 사용하는 Image Assets
     static let shuffle: UIImage? = UIImage(systemName: "shuffle")
