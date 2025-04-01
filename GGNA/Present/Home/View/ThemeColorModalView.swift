@@ -5,4 +5,124 @@
 //  Created by Lee Wonsun on 3/31/25.
 //
 
-import Foundation
+import UIKit
+import SnapKit
+import RxCocoa
+import RxSwift
+
+final class ThemeColorModalView: BaseViewController {
+    
+    private let disposeBag = DisposeBag()
+    
+    private let modalTitle: BaseUILabel
+    private let closeButton = UIButton()
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+    private let colorItems = BehaviorRelay<[ThemeColorList]>(value: [.darkPink, .lightPink])
+    
+    override init() {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        modalTitle = BaseUILabel(
+            text: NavigationTitle.테마색상.title,
+            color: colors.text,
+            font: FontLiterals.modalVCTitle
+        )
+        
+        super.init()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+    }
+    
+    override func configureBind() {
+        
+        colorItems
+            .bind(to: collectionView.rx.items(cellIdentifier: ThemeColorCollectionViewCell.identifier, cellType: ThemeColorCollectionViewCell.self)) { _, colorItem, cell in
+               
+                cell.configureCell(list: colorItem)
+            }
+            .disposed(by: disposeBag)
+        
+        closeButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        CurrentTheme.$currentTheme
+            .bind(with: self) { owner, value in
+                
+                let theme = value.theme
+                let color = value.color
+                let colors = color.setColor(for: theme)
+                
+                owner.view.backgroundColor = colors.background
+                owner.modalTitle.textColor = colors.text
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { _, _ in
+        
+            let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(140), heightDimension: .absolute(150))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(140), heightDimension: .absolute(150))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            
+            let section = NSCollectionLayoutSection(group: group)
+            section.orthogonalScrollingBehavior = .continuous
+            section.interGroupSpacing = 16
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+            
+            return section
+        }
+        
+        return layout
+    }
+    
+    override func configureView() {
+        
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+        
+        var config = UIButton.Configuration.filled()
+        config.image = ImageLiterals.xmark?.withConfiguration(imageConfig)
+        config.baseForegroundColor = .ggGray
+        config.baseBackgroundColor = .clear
+        config.contentInsets = NSDirectionalEdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
+        
+        closeButton.configuration = config
+        
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        
+        collectionView.register(ThemeColorCollectionViewCell.self, forCellWithReuseIdentifier: ThemeColorCollectionViewCell.identifier)
+    }
+    
+    override func configureHierarchy() {
+        view.addSubviews(modalTitle, closeButton, collectionView)
+    }
+    
+    override func configureLayout() {
+        modalTitle.snp.makeConstraints {
+            $0.top.leading.equalTo(view.safeAreaLayoutGuide).inset(20)
+        }
+        
+        closeButton.snp.makeConstraints {
+            $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.centerY.equalTo(modalTitle)
+        }
+        
+        collectionView.snp.makeConstraints {
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(modalTitle.snp.bottom).offset(32)
+            $0.height.equalTo(150) 
+        }
+    }
+}
