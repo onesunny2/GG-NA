@@ -32,7 +32,7 @@ final class LaunchScreenViewModel: InputOutputModel {
         input.viewDidLoad
             .bind(with: self) { owner, _ in
                 Observable<Int>
-                    .timer(.seconds(3), scheduler: MainScheduler.instance)
+                    .timer(.seconds(2), scheduler: MainScheduler.instance)
                     .bind(with: self) { owner, _ in
                         endTimer.accept(())
                     }

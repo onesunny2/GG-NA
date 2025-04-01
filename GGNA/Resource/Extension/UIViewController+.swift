@@ -18,10 +18,18 @@ extension UIViewController {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first else { return }
             
-            Task {
-                window.rootViewController = vc
-                window.makeKeyAndVisible()
-            }
+            guard let snapshot = window.snapshotView(afterScreenUpdates: false) else { return }
+            
+            vc.view.addSubview(snapshot)
+            window.rootViewController = vc
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                snapshot.alpha = 0
+            }, completion: { _ in
+                snapshot.removeFromSuperview()
+            })
+            
+            window.makeKeyAndVisible()
             
         case .fullScreen:
             vc.modalPresentationStyle = .fullScreen
