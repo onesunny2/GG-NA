@@ -17,6 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
+        CurrentTheme.applyCurrentTheme()
+        
         let viewModel = LaunchScreenViewModel()
         let vc = LaunchViewController(viewModel: viewModel)
         window?.rootViewController = vc

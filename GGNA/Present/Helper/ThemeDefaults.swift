@@ -85,6 +85,7 @@ enum CurrentTheme: String {
     
     static func applyCurrentTheme() {
         let (theme, _) = currentTheme
+        
         if let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0 is UIWindowScene }) as? UIWindowScene {
             windowScene.windows.first?.overrideUserInterfaceStyle = theme.userInterfaceStyle
