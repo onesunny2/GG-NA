@@ -46,6 +46,12 @@ final class HomeViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        palleteButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.presentColorThemeSheet()
+            }
+            .disposed(by: disposeBag)
+        
         CurrentTheme.$currentTheme
             .bind(with: self) { owner, value in
                 
@@ -61,6 +67,29 @@ final class HomeViewController: BaseViewController {
                 owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func presentColorThemeSheet() {
+        
+        let modalVC = ThemeColorModalView()
+        
+        if let sheet = modalVC.sheetPresentationController {
+            
+            if #available(iOS 16.0, *) {
+                let customDetent = UISheetPresentationController.Detent.custom { context in
+                    // 화면 높이의 1/3 반환
+                    return context.maximumDetentValue / 3
+                }
+                sheet.detents = [customDetent]
+            } else {
+                sheet.detents = [.medium()]
+            }
+            
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 20
+        }
+        
+        present(modalVC, animated: true)
     }
     
     override func configureNavigation() {

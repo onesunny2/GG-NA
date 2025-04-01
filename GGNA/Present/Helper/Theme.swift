@@ -7,9 +7,9 @@
 
 import UIKit
 
-enum Theme {
-    case light
-    case dark
+enum Theme: String {
+    case light = "Light"
+    case dark = "Dark"
     
     var userInterfaceStyle: UIUserInterfaceStyle {
         switch self {

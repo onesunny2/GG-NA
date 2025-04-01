@@ -24,6 +24,7 @@ enum FontLiterals {
     // MARK: Home View
     static let normalCardTitle: UIFont = UIFont(name: "MungyeongGamhongApple", size: 30) ?? .systemFont(ofSize: 15, weight: .heavy)
     static let underlineCardTitle: UIFont = .systemFont(ofSize: 40, weight: .heavy)
+    static let modalVCTitle: UIFont = .systemFont(ofSize: 20, weight: .bold)
     
     // MARK: CustomFont
     static let folderCount: UIFont = UIFont(name: "MungyeongGamhongApple", size: 15) ?? .systemFont(ofSize: 15, weight: .heavy)
