@@ -22,6 +22,7 @@ enum ImageLiterals {
     static let xmark: UIImage? = UIImage(systemName: "xmark.circle.fill")
     
     /// Navigation BarButtonItem에서 사용하는 Image Assets
-    static let shuffle: UIImage? = UIImage(systemName: "shuffle")
-    static let paintpalette: UIImage? = UIImage(systemName: "paintpalette.fill")
+    static let shuffle: UIImage? = UIImage(systemName: "shuffle")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
+    static let paintpalette: UIImage? = UIImage(systemName: "paintpalette.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
+    static let folderPlus: UIImage? = UIImage(systemName: "folder.fill.badge.plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
 }

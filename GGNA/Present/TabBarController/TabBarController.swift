@@ -203,7 +203,7 @@ extension CustomTabBarController {
         let homeVC = HomeViewController(viewModel: homeVM)
         let homeNav = UINavigationController(rootViewController: homeVC)
         
-        let folderVC = TestViewController()
+        let folderVC = ArchiveViewController()
         let folderNav = UINavigationController(rootViewController: folderVC)
         
         tabBarController.viewControllers = [homeNav, folderNav]
