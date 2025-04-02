@@ -20,6 +20,9 @@ final class WritingView: BaseView {
     private let titleUnderline = UIView()
     private let detailTextView = UITextView()
     private let recordDate: BaseUILabel
+    private let setMainCardButton: UIButton
+    private let selectFolderTitle: BaseUILabel
+    private let selectFolderButton: SelectedAnswerButton
     private let selectDateTitle: BaseUILabel
     private let selectDateButton: SelectedAnswerButton
     
@@ -28,6 +31,9 @@ final class WritingView: BaseView {
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
+        
+        let buttonContainer = AttributeContainer().font(FontLiterals.subContent)
+        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 8)
         
         appTitle = BaseUILabel(
             text: writingViewLiterals.카드타이틀.text,
@@ -41,6 +47,29 @@ final class WritingView: BaseView {
             alignment: .left,
             font: FontLiterals.subContent
         )
+        setMainCardButton  = {
+            let button = UIButton()
+            var config = UIButton.Configuration.filled()
+            config.attributedTitle = AttributedString(writingViewLiterals.메인카드설정.text, attributes: buttonContainer)
+            config.image = ImageLiterals.square?.withConfiguration(buttonConfig)
+            config.baseBackgroundColor = .clear
+            config.baseForegroundColor = colors.text
+            config.imagePlacement = .leading
+            config.imagePadding = 2
+            config.contentInsets = NSDirectionalEdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
+            
+            button.configuration = config
+            return button
+        }()
+        selectFolderTitle = BaseUILabel(
+            text: writingViewLiterals.폴더_선택.text,
+            color: colors.text,
+            font: FontLiterals.subTitle
+        )
+        selectFolderButton = SelectedAnswerButton(
+            title: "선택",
+            bgColor: colors.gray
+        )
         selectDateTitle = BaseUILabel(
             text: writingViewLiterals.날짜_선택.text,
             color: colors.text,
@@ -48,8 +77,7 @@ final class WritingView: BaseView {
         )
         selectDateButton = SelectedAnswerButton(
             title: "2025년 03월 26일 수요일(test)",
-            bgColor: colors.main,
-            isSelected: true
+            bgColor: colors.main
         )
         
         super.init(frame: frame)
@@ -79,6 +107,12 @@ final class WritingView: BaseView {
                 }
             }
             .disposed(by: disposeBag)
+        
+        setMainCardButton.rx.tap
+            .bind(with: self) { owner, _ in
+                print("tappedMainCardButton")
+            }
+            .disposed(by: disposeBag)
     }
     
     override func configureView() {
@@ -102,7 +136,7 @@ final class WritingView: BaseView {
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, appTitle, titleTextField, titleUnderline, detailTextView, recordDate, selectDateTitle, selectDateButton)
+        addSubviews(cardView, appTitle, titleTextField, titleUnderline, detailTextView, recordDate, setMainCardButton, selectFolderTitle, selectFolderButton, selectDateTitle, selectDateButton)
     }
     
     override func configureLayout() {
@@ -143,25 +177,44 @@ final class WritingView: BaseView {
             $0.bottom.equalTo(recordDate.snp.top).offset(-20)
         }
         
-        selectDateTitle.snp.makeConstraints {
+        setMainCardButton.snp.makeConstraints {
+            $0.top.equalTo(cardView.snp.bottom).offset(6)
+            $0.trailing.equalTo(cardView.snp.trailing)
+        }
+        
+        selectFolderTitle.snp.makeConstraints {
             $0.top.equalTo(cardView.snp.bottom).offset(30)
             $0.leading.equalTo(cardView.snp.leading)
         }
         
+        selectFolderButton.snp.makeConstraints {
+            $0.top.equalTo(selectFolderTitle.snp.bottom).offset(8)
+            $0.leading.equalTo(selectFolderTitle.snp.leading)
+            $0.trailing.equalTo(selectFolderTitle.snp.trailing)
+            $0.height.equalTo(35)
+        }
+        
+        selectDateTitle.snp.makeConstraints {
+            $0.top.equalTo(selectFolderButton.snp.bottom).offset(20)
+            $0.leading.equalTo(cardView.snp.leading)
+        }
+        
         selectDateButton.snp.makeConstraints {
-            $0.top.equalTo(selectDateTitle.snp.bottom).offset(12)
+            $0.top.equalTo(selectDateTitle.snp.bottom).offset(8)
             $0.leading.equalTo(selectDateTitle.snp.leading)
+            $0.height.equalTo(35)
         }
     }
 }
 
 extension WritingView {
-    
     enum writingViewLiterals {
         case 카드타이틀
         case 타이틀_플레이스_홀더
         case 내용_플레이스_홀더
         case 페이스_ID
+        case 메인카드설정
+        case 폴더_선택
         case 날짜_선택
         
         var text: String {
@@ -170,6 +223,8 @@ extension WritingView {
             case .타이틀_플레이스_홀더: return "(최대 6자) 사진의 타이틀을 정해주세요 :>"
             case .내용_플레이스_홀더: return "(선택) 선택한 사진에 남기고 싶은 추억을 적어보아요"
             case .페이스_ID: return "Face ID로 잠금 설정"
+            case .메인카드설정: return "폴더의 메인카드로 설정"
+            case .폴더_선택: return "저장 폴더 선택"
             case .날짜_선택: return "날짜 선택하기"
             }
         }
