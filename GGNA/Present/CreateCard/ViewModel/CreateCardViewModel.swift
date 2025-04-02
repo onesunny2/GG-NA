@@ -34,7 +34,7 @@ final class CreateCardViewModel: InputOutputModel {
     }
     
     struct Output {
-        
+        let downSampledImage: Driver<UIImage>
     }
     
     private let cardData = BehaviorRelay<CardData?>(value: nil)
@@ -46,17 +46,35 @@ final class CreateCardViewModel: InputOutputModel {
     
     func transform(from input: Input) -> Output {
         
+        let downSampledImage = PublishRelay<UIImage>()
         
+        // MARK: 옵셔널 처리를 위한 default 더미 데이터
+        let defaultCardData = CardData(
+            folderName: "",
+            imageData: UIImage(),
+            videoData: nil,
+            filter: "original",
+            isSelectedMain: false,
+            cardContent: CardData.CardContentData()
+        )
         
+        // 이미지
         input.pickedImageData
-            .bind(with: self) { owner, data in
+            .withLatestFrom(cardData) { imgData, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
                 
-                guard let image = UIImage(data: data) else { return }
-                let downImage = image.downSample(scale: 0.6)
+                guard let image = UIImage(data: imgData) else { return newData }
+                let downImage = image.downSample(scale: 0.8)
+                newData.imageData = downImage
+                downSampledImage.accept(downImage)
                 
+                return newData
             }
+            .bind(to: cardData)
             .disposed(by: disposeBag)
         
-        return Output()
+        return Output(
+            downSampledImage: downSampledImage.asDriver(onErrorDriveWith: .empty())
+        )
     }
 }

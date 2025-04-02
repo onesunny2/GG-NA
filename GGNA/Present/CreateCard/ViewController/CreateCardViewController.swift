@@ -61,6 +61,12 @@ final class CreateCardViewController: BaseViewController {
         )
         let output = viewModel.transform(from: input)
         
+        output.downSampledImage
+            .drive(with: self) { owner, image in
+                owner.photoUploadView.setImage(image)
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.tappedUploadButton
             .bind(with: self) { owner, _ in
                 owner.openphotoPicker()
