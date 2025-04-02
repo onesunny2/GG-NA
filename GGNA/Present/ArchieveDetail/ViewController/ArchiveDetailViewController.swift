@@ -84,7 +84,7 @@ final class ArchiveDetailViewController: BaseViewController {
                 return UICollectionViewCell()
             }
             
-            // TODO: Cell configure
+            cell.configureCell(item)
             
             return cell
         }

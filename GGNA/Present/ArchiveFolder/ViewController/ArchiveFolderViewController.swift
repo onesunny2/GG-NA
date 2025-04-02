@@ -134,6 +134,7 @@ final class ArchiveFolderViewController: BaseViewController {
     
     override func configureNavigation() {
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         navigationItem.title = NavigationTitle.보관함.title
         navigationItem.backButtonTitle = ""
         
