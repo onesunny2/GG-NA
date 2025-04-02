@@ -88,7 +88,7 @@ final class CreateCardViewController: BaseViewController {
         
         output.yesChangedData
             .drive(with: self) { owner, _ in
-                print("변경사항이 있음")
+                owner.closeButtonAlert()
             }
             .disposed(by: disposeBag)
         

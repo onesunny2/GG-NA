@@ -75,4 +75,29 @@ extension UIViewController {
         
         self.present(alert, animated: true)
     }
+    
+    func closeButtonAlert() {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        let alert = UIAlertController(
+            title: "경고",
+            message: "현재 수정 중인 데이터가 사라집니다.",
+            preferredStyle: .alert
+        )
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .default)
+        let okayAction = UIAlertAction(title: "확인", style: .cancel) { _ in
+            self.dismiss(animated: true)
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(okayAction)
+        
+        alert.view.tintColor = colors.main
+        
+        self.present(alert, animated: true)
+    }
 }
