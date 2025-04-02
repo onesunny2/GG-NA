@@ -6,7 +6,19 @@
 //
 
 import UIKit
+import SnapKit
 
-class ArchiveDetailCollectionViewCell: UICollectionViewCell {
+final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
     
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        backgroundColor = .systemIndigo
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

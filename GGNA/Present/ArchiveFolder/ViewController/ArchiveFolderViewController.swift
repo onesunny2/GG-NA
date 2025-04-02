@@ -45,6 +45,16 @@ final class ArchiveFolderViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        collectionView.rx.modelSelected(ArchiveFolderEntity.self)
+            .bind(with: self) { owner, entity in
+                
+                let rp = DummyArchiveFolderRepository()
+                let vm = ArchiveDetailViewModel(repository: rp, folder: entity.folderName)
+                let vc = ArchiveDetailViewController(viewModel: vm)
+                owner.viewTransition(type: .navigation, vc: vc)
+            }
+            .disposed(by: disposeBag)
+        
         addFolderButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.textFieldAlert()
@@ -89,7 +99,7 @@ final class ArchiveFolderViewController: BaseViewController {
         group.interItemSpacing = .fixed(22)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 22 
+        section.interGroupSpacing = 5
         section.contentInsets = NSDirectionalEdgeInsets(
             top: .zero,
             leading: 20,
@@ -103,6 +113,7 @@ final class ArchiveFolderViewController: BaseViewController {
     override func configureNavigation() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = NavigationTitle.보관함.title
+        navigationItem.backButtonTitle = ""
         
         let rightBarButtonItem = UIBarButtonItem(customView: addFolderButton)
         navigationItem.rightBarButtonItem = rightBarButtonItem
