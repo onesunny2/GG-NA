@@ -33,12 +33,12 @@ final class DummyArchiveFolderRepository: ArchiveFolderRepository {
     
     func getPhotosFromFolder() -> [FolderPhotosEntity] {
         return [
-            FolderPhotosEntity(image: UIImage(named: "gg1")!, isSelectedMain: false, title: "잠이 온다", date: "2025.04.01 화요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg2")!, isSelectedMain: false, title: "잠이 온다", date: "2025.04.02 수요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg3")!, isSelectedMain: false, title: "잠이 온다", date: "2025.04.03 목요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg4")!, isSelectedMain: false, title: "잠이 온다", date: "2025.04.04 금요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg5")!, isSelectedMain: false, title: "잠이 온다", date: "2025.04.05 토요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg6")!, isSelectedMain: false, title: "잠이 온다", date: "2025.04.06 일요일", secretMode: false)
+            FolderPhotosEntity(image: UIImage(named: "gg1")!, isSelectedMain: false, title: "잠이 온다1", date: "2025.04.01 화요일", secretMode: false),
+            FolderPhotosEntity(image: UIImage(named: "gg2")!, isSelectedMain: false, title: "잠이 온다2", date: "2025.04.02 수요일", secretMode: true),
+            FolderPhotosEntity(image: UIImage(named: "gg3")!, isSelectedMain: false, title: "잠이 온다3", date: "2025.04.03 목요일", secretMode: true),
+            FolderPhotosEntity(image: UIImage(named: "gg4")!, isSelectedMain: false, title: "잠이 온다4", date: "2025.04.04 금요일", secretMode: false),
+            FolderPhotosEntity(image: UIImage(named: "gg5")!, isSelectedMain: false, title: "잠이 온다5", date: "2025.04.05 토요일", secretMode: false),
+            FolderPhotosEntity(image: UIImage(named: "gg6")!, isSelectedMain: false, title: "잠이 온다6", date: "2025.04.06 일요일", secretMode: true)
         ]
     }
 }
