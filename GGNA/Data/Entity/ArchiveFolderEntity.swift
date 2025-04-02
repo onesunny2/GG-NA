@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct ArchiveFolderEntity {
+struct ArchiveFolderEntity: Hashable {
     let folderName: String
     let photoCount: String
     let mainImage: UIImage
