@@ -16,6 +16,9 @@ final class PhotoCardRecord: Object, Identifiable {
     @Persisted var isSelectedMain: Bool
     @Persisted var cardContent: CardContent?
     
+    // 부모폴더 역참조
+    @Persisted(originProperty: "photoCards") var parentFolder: LinkingObjects<Folder>
+    
     convenience init(
         imageData: Data,
         videoData: Data,
