@@ -67,6 +67,12 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        photoUploadView.zoomStatus
+            .bind(with: self) { owner, status in
+                owner.photoUploadView.setZoomIcon(status)
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.tappedUploadButton
             .bind(with: self) { owner, _ in
                 owner.openphotoPicker()
@@ -197,6 +203,7 @@ extension CreateCardViewController: PHPickerViewControllerDelegate {
         
         guard let result = results.first else {
             print("선택한 이미지가 없습니다.")
+            dismiss(animated: true)
             return
         }
         
@@ -210,9 +217,9 @@ extension CreateCardViewController: PHPickerViewControllerDelegate {
             } catch {
                 print("이미지 데이터 로드 실패: \(error.localizedDescription)")
             }
+            
+            dismiss(animated: true)
         }
-        
-        dismiss(animated: true)
     }
     
     private func loadImageData(from itemProvider: NSItemProvider) async throws -> Data {
