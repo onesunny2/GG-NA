@@ -24,6 +24,8 @@ enum ImageLiterals {
     static let folder: UIImage? = UIImage(systemName: "folder.fill")
     static let plus: UIImage? = UIImage(systemName: "plus")
     static let xmark: UIImage? = UIImage(systemName: "xmark.circle.fill")
+    static let zoomIn: UIImage? = UIImage(systemName: "arrow.up.backward.and.arrow.down.forward.circle.fill")
+    static let zoomOut: UIImage? = UIImage(systemName: "arrow.down.right.and.arrow.up.left.circle.fill")
     
     /// Navigation BarButtonItem에서 사용하는 Image Assets
     static let shuffle: UIImage? = UIImage(systemName: "shuffle")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))

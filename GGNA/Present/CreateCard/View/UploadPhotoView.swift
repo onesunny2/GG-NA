@@ -18,12 +18,28 @@ final class UploadPhotoView: BaseView {
     private let cardImageView = BaseUIImageView(image: nil, cornerRadius: 15)
     private let uploadIcon = BaseUIImageView(isCornered: false, image: ImageLiterals.upload)
     private let uploadButton = TextFilledButton(title: uploadViewLiterals.사진올리기.text)
+    private let zoomInIcon: CircularSymbolView // true 활성화
+    private let zoomOutIcon: CircularSymbolView // false 활성화
     
     var tappedUploadButton = PublishRelay<Void>()
+    var zoomStatus = PublishRelay<Bool>()
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
         
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        zoomInIcon = CircularSymbolView(
+            symbol: ImageLiterals.zoomIn,
+            symbolColor: colors.main
+        )
+        zoomOutIcon = CircularSymbolView(
+            symbol: ImageLiterals.zoomOut,
+            symbolColor: colors.main
+        )
+        
+        super.init(frame: frame)
         bind()
     }
     
@@ -31,9 +47,49 @@ final class UploadPhotoView: BaseView {
         cardImageView.image = image
         uploadIcon.isHidden = true
         uploadButton.isHidden = true
+        zoomOutIcon.isHidden = false
+    }
+    
+    func setZoomIcon(_ status: Bool) {
+       
+        UIView.transition(with: self.cardImageView,
+                          duration: 0.15,
+                          options: .transitionCrossDissolve,
+                          animations: {
+           
+            self.cardImageView.contentMode = status ? .scaleAspectFit : .scaleAspectFill
+        }, completion: nil)
+        
+       
+        UIView.transition(with: self.zoomInIcon,
+                          duration: 0.2,
+                          options: .transitionCrossDissolve,
+                          animations: {
+            self.zoomInIcon.isHidden = status ? false : true
+        }, completion: nil)
+        
+        UIView.transition(with: self.zoomOutIcon,
+                          duration: 0.2,
+                          options: .transitionCrossDissolve,
+                          animations: {
+            self.zoomOutIcon.isHidden = status ? true : false
+        }, completion: nil)
     }
     
     private func bind() {
+        
+        zoomOutIcon.rx.tapgesture
+            .bind(with: self) { owner, _ in
+                owner.zoomStatus.accept(true)
+            }
+            .disposed(by: disposeBag)
+        
+        zoomInIcon.rx.tapgesture
+            .bind(with: self) { owner, _ in
+                owner.zoomStatus.accept(false)
+            }
+            .disposed(by: disposeBag)
+        
         uploadButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.tappedUploadButton.accept(())
@@ -61,10 +117,13 @@ final class UploadPhotoView: BaseView {
         cardView.backgroundColor = colors.text
         cardView.cornerRadius15()
         cardImageView.backgroundColor = .clear
+        
+        zoomInIcon.isHidden = true
+        zoomOutIcon.isHidden = true
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, cardImageView, uploadIcon, uploadButton)
+        addSubviews(cardView, cardImageView, uploadIcon, uploadButton, zoomInIcon, zoomOutIcon)
     }
     
     override func configureLayout() {
@@ -91,6 +150,16 @@ final class UploadPhotoView: BaseView {
         uploadButton.snp.makeConstraints {
             $0.centerX.equalTo(safeAreaLayoutGuide)
             $0.centerY.equalTo(safeAreaLayoutGuide).offset(18)
+        }
+        
+        zoomInIcon.snp.makeConstraints {
+            $0.trailing.bottom.equalTo(cardView).inset(10)
+            $0.size.equalTo(40)
+        }
+        
+        zoomOutIcon.snp.makeConstraints {
+            $0.trailing.bottom.equalTo(cardView).inset(10)
+            $0.size.equalTo(40)
         }
     }
 }
