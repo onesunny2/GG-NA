@@ -57,7 +57,8 @@ final class CreateCardViewController: BaseViewController {
     override func configureBind() {
         
         let input = CreateCardViewModel.Input(
-            pickedImageData: pickedImageData.asObservable()
+            pickedImageData: pickedImageData.asObservable(),
+            tappedCloseButton: closeButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -79,6 +80,19 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        output.noChangedData
+            .drive(with: self) { owner, _ in
+                owner.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        output.yesChangedData
+            .drive(with: self) { owner, _ in
+                print("변경사항이 있음")
+            }
+            .disposed(by: disposeBag)
+        
+        // MARK: UI
         photoButton.rx.tap
             .bind(with: self) { owner, _ in
                 guard !owner.photoButton.isSelected else { return }
@@ -120,12 +134,6 @@ final class CreateCardViewController: BaseViewController {
                         owner.photoUploadView.isHidden = true
                         owner.photoUploadView.transform = .identity
                     }
-            }
-            .disposed(by: disposeBag)
-        
-        closeButton.rx.tap
-            .bind(with: self) { owner, _ in
-                owner.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
     }
