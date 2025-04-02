@@ -10,6 +10,10 @@ import SnapKit
 import RxCocoa
 import RxSwift
 
+private enum ArchiveFolderSection {
+    case main
+}
+
 final class ArchiveFolderViewController: BaseViewController {
     
     private let viewModel: ArchiveFolderViewModel
@@ -17,10 +21,12 @@ final class ArchiveFolderViewController: BaseViewController {
     
     private let addFolderButton = CustomBarButton(ImageLiterals.folderPlus)
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+    private var dataSource: UICollectionViewDiffableDataSource<ArchiveFolderSection, ArchiveFolderEntity>!
 
     init(viewModel: ArchiveFolderViewModel) {
         self.viewModel = viewModel
         super.init()
+        configureDataSource()
     }
     
     override func viewDidLoad() {
@@ -35,18 +41,15 @@ final class ArchiveFolderViewController: BaseViewController {
         let output = viewModel.transform(from: input)
         
         output.folderData
-            .drive(
-                collectionView.rx.items(
-                    cellIdentifier: ArchiveFolderCollectionViewCell.identifier,
-                    cellType: ArchiveFolderCollectionViewCell.self
-                )
-            ) { item, element, cell in
-                cell.configureCell(element)
+            .drive(with: self) { owner, entity in
+                owner.applySnapshot(with: entity)
             }
             .disposed(by: disposeBag)
         
-        collectionView.rx.modelSelected(ArchiveFolderEntity.self)
-            .bind(with: self) { owner, entity in
+        collectionView.rx.itemSelected
+            .bind(with: self) { owner, indexPath in
+                
+                guard let entity = owner.dataSource.itemIdentifier(for: indexPath) else { return }
                 
                 let rp = DummyArchiveFolderRepository()
                 let vm = ArchiveDetailViewModel(repository: rp, folder: entity.folderName)
@@ -75,6 +78,25 @@ final class ArchiveFolderViewController: BaseViewController {
                 owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func configureDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<ArchiveFolderSection, ArchiveFolderEntity>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+            
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArchiveFolderCollectionViewCell.identifier, for: indexPath) as? ArchiveFolderCollectionViewCell else { return UICollectionViewCell() }
+            
+            cell.configureCell(itemIdentifier)
+            
+            return cell
+        })
+    }
+    
+    private func applySnapshot(with items: [ArchiveFolderEntity]) {
+        var snapshot = NSDiffableDataSourceSnapshot<ArchiveFolderSection, ArchiveFolderEntity>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(items, toSection: .main)
+        
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func createCompositionalLayout() -> UICollectionViewLayout {

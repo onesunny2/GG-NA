@@ -75,7 +75,8 @@ final class ArchiveDetailViewController: BaseViewController {
     private func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<ArchiveDetailSection, FolderPhotosEntity>(
             collectionView: collectionView
-        ) { (collectionView, indexPath, item) -> UICollectionViewCell? in
+        ) { collectionView, indexPath, item  in
+            
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ArchiveDetailCollectionViewCell.identifier,
                 for: indexPath
@@ -136,6 +137,7 @@ final class ArchiveDetailViewController: BaseViewController {
     
     override func configureView() {
         collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.register(ArchiveDetailCollectionViewCell.self, forCellWithReuseIdentifier: ArchiveDetailCollectionViewCell.identifier)
     }
     
