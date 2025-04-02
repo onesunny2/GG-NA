@@ -181,7 +181,8 @@ final class CustomTabBarController: UITabBarController {
     // MARK: 플러스 버튼 액션
     private func presentAddScreen() {
         
-        let vc = CreateCardViewController()
+        let vm = CreateCardViewModel()
+        let vc = CreateCardViewController(viewModel: vm)
         let nv = UINavigationController(rootViewController: vc)
         viewTransition(type: .fullScreen, vc: nv)
     }
