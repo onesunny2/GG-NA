@@ -82,6 +82,13 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         
         photoBgView.backgroundColor = .ggDarkWhite
         photoBgView.cornerRadius5()
+        photoBgView.layer.shadowColor = UIColor.ggImgCover.cgColor
+        photoBgView.layer.shadowOpacity = 0.6
+        photoBgView.layer.shadowOffset = CGSize(width: 3, height: 3)
+        photoBgView.layer.shadowRadius = 5
+        photoBgView.layer.shouldRasterize = true
+        photoBgView.layer.rasterizationScale = UIScreen.main.scale
+        photoBgView.clipsToBounds = false
         
         secretBgView.backgroundColor = .ggSelected
         secretBgView.cornerRadius5()
