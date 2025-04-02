@@ -15,6 +15,7 @@ final class UploadPhotoView: BaseView {
     private let disposeBag = DisposeBag()
     
     private let cardView = UIView()
+    private let cardImageView = BaseUIImageView(image: nil, cornerRadius: 15)
     private let uploadIcon = BaseUIImageView(isCornered: false, image: ImageLiterals.upload)
     private let uploadButton = TextFilledButton(title: uploadViewLiterals.사진올리기.text)
     
@@ -26,9 +27,26 @@ final class UploadPhotoView: BaseView {
         bind()
     }
     
+    func setImage(_ image: UIImage) {
+        cardImageView.image = image
+        uploadIcon.isHidden = true
+        uploadButton.isHidden = true
+    }
+    
     private func bind() {
         uploadButton.rx.tap
             .bind(with: self) { owner, _ in
+                owner.tappedUploadButton.accept(())
+            }
+            .disposed(by: disposeBag)
+        
+        cardImageView.rx.tapgesture
+            .withUnretained(self)
+            .map { owner, _ in
+                return owner.cardImageView.image != nil
+            }
+            .bind(with: self) { owner, value in
+                guard value else { return }
                 owner.tappedUploadButton.accept(())
             }
             .disposed(by: disposeBag)
@@ -42,10 +60,11 @@ final class UploadPhotoView: BaseView {
         
         cardView.backgroundColor = colors.text
         cardView.cornerRadius15()
+        cardImageView.backgroundColor = .clear
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, uploadIcon, uploadButton)
+        addSubviews(cardView, cardImageView, uploadIcon, uploadButton)
     }
     
     override func configureLayout() {
@@ -57,6 +76,10 @@ final class UploadPhotoView: BaseView {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(30)
             $0.height.equalTo(window.bounds.height / 2)
+        }
+        
+        cardImageView.snp.makeConstraints {
+            $0.edges.equalTo(cardView)
         }
         
         uploadIcon.snp.makeConstraints {
