@@ -9,30 +9,36 @@ import UIKit
 
 final class SelectedAnswerButton: UIButton {
     
-    private var bgColor: UIColor?
-    private var title: String?
+//    private var bgColor: UIColor?
+//    private var title: String?
     
-    override var isSelected: Bool {
-        didSet {
-            let theme = CurrentTheme.currentTheme.theme
-            let color = CurrentTheme.currentTheme.color
-            let colors = color.setColor(for: theme)
-            
-            guard title == "날짜 선택하기" else {
-                configuration = isSelected ? configure(title: title ?? "", bgColor: colors.main) : configure(title: title ?? "", bgColor: colors.gray)
-                return
-            }
-            
-            configuration = configure(title: title ?? "", bgColor: colors.main)
-        }
-    }
+//    override var isSelected: Bool {
+//        didSet {
+//            let theme = CurrentTheme.currentTheme.theme
+//            let color = CurrentTheme.currentTheme.color
+//            let colors = color.setColor(for: theme)
+//            
+//            switch title {
+//            case .날짜_선택:
+//            case .폴더_선택:
+//            default: configuration = configure(title: title?.text ?? "", bgColor: colors.main)
+//            }
+//            guard title == "날짜 선택하기" else {
+//                configuration = isSelected ? configure(title: title?.text ?? "", bgColor: colors.main) : configure(title: title?.text ?? "", bgColor: colors.gray)
+//                return
+//            }
+//            
+//            
+//        }
+//    }
     
-    init(title: String, bgColor: UIColor, isSelected: Bool) {
+    init(title: String, bgColor: UIColor/*, isSelected: Bool*/) {
         super.init(frame: .zero)
         
-        self.bgColor = bgColor
-        self.title = title
-        self.isSelected = isSelected
+//        self.bgColor = bgColor
+//        self.title = title
+        configuration = configure(title: title, bgColor: bgColor)
+//        self.isSelected = isSelected
     }
     
     private func configure(title: String, bgColor: UIColor) -> Configuration {
