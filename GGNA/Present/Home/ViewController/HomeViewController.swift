@@ -29,14 +29,6 @@ final class HomeViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        for family in UIFont.familyNames {
-            print(family)
-            
-            for name in UIFont.fontNames(forFamilyName: family) {
-                print(">>> \(name)")
-            }
-        }
     }
     
     override func configureBind() {

@@ -6,13 +6,17 @@
 //
 
 import UIKit
+import PhotosUI
 import SnapKit
 import RxCocoa
 import RxSwift
+import UniformTypeIdentifiers
 
 final class CreateCardViewController: BaseViewController {
     
+    private let viewModel: CreateCardViewModel
     private let disposeBag = DisposeBag()
+    private let pickedImageData = PublishRelay<Data>()
     
     private let closeButton: UIButton = {
         let button = UIButton()
@@ -32,6 +36,11 @@ final class CreateCardViewController: BaseViewController {
     private let photoUploadView = UploadPhotoView()
     private let writingView = WritingView()
 
+    init(viewModel: CreateCardViewModel) {
+        self.viewModel = viewModel
+        super.init()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,9 +56,26 @@ final class CreateCardViewController: BaseViewController {
 
     override func configureBind() {
         
+        let input = CreateCardViewModel.Input(
+            pickedImageData: pickedImageData.asObservable()
+        )
+        let output = viewModel.transform(from: input)
+        
+        output.downSampledImage
+            .drive(with: self) { owner, image in
+                owner.photoUploadView.setImage(image)
+            }
+            .disposed(by: disposeBag)
+        
+        photoUploadView.zoomStatus
+            .bind(with: self) { owner, status in
+                owner.photoUploadView.setZoomIcon(status)
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.tappedUploadButton
             .bind(with: self) { owner, _ in
-                print("tappedUploadButton") // TODO: 앨범 연결
+                owner.openphotoPicker()
             }
             .disposed(by: disposeBag)
         
@@ -102,6 +128,17 @@ final class CreateCardViewController: BaseViewController {
                 owner.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func openphotoPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        // MARK: mode 사용하려면 17+ 가능
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        present(picker, animated: true)
     }
 
     override func configureNavigation() {
@@ -159,6 +196,54 @@ final class CreateCardViewController: BaseViewController {
         }
     }
 }
+
+extension CreateCardViewController: PHPickerViewControllerDelegate {
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        
+        guard let result = results.first else {
+            print("선택한 이미지가 없습니다.")
+            dismiss(animated: true)
+            return
+        }
+        
+        Task {
+            do {
+                let imageData = try await loadImageData(from: result.itemProvider)
+                print("imageData: \(imageData)")
+                // TODO: Data 결과값 반환 필요
+                pickedImageData.accept(imageData)
+                
+            } catch {
+                print("이미지 데이터 로드 실패: \(error.localizedDescription)")
+            }
+            
+            dismiss(animated: true)
+        }
+    }
+    
+    private func loadImageData(from itemProvider: NSItemProvider) async throws -> Data {
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            let typeIdentifier = UTType.image.identifier
+            
+            itemProvider.loadDataRepresentation(forTypeIdentifier: typeIdentifier) { (data, error) in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                guard let imageData = data else {
+                    continuation.resume(throwing: NSError(domain: "ImageLoadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "이미지 데이터를 로드할 수 없습니다."]))
+                    return
+                }
+                
+                continuation.resume(returning: imageData)
+            }
+        }
+    }
+}
+
 
 extension CreateCardViewController {
     

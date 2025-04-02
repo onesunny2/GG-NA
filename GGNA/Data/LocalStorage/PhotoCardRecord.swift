@@ -10,7 +10,7 @@ import RealmSwift
 
 final class PhotoCardRecord: Object, Identifiable {
     @Persisted(primaryKey: true) var id: ObjectId
-    @Persisted var imageData: Data?
+    @Persisted var imageName: String?
     @Persisted var videoData: Data?
     @Persisted var filter: String
     @Persisted var isSelectedMain: Bool
@@ -20,14 +20,14 @@ final class PhotoCardRecord: Object, Identifiable {
     @Persisted(originProperty: "photoCards") var parentFolder: LinkingObjects<Folder>
     
     convenience init(
-        imageData: Data,
+        imageName: String,
         videoData: Data,
         filter: String,
         isSelectedMain: Bool,
         cardContent: CardContent
     ) {
         self.init()
-        self.imageData = imageData
+        self.imageName = imageName
         self.videoData = videoData
         self.filter = filter
         self.isSelectedMain = isSelectedMain
