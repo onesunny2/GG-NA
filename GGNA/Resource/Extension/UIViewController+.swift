@@ -141,10 +141,14 @@ extension UIViewController {
         UIView.animate(withDuration: 0.3, animations: {
             containerView.alpha = 1
          }, completion: { _ in
-             UIView.animate(withDuration: 0.3, delay: 2, options: .curveEaseOut, animations: {
+             UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveEaseOut, animations: {
                  containerView.alpha = 0
              }, completion: { _ in
                  containerView.removeFromSuperview()
+                 
+                 // 저장완료면 애니메이션 끝나고 닫히도록
+                 guard type == .카드저장_성공 else { return }
+                 self.dismiss(animated: true)
              })
          })
     }
