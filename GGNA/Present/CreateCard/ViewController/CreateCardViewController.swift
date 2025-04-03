@@ -60,13 +60,23 @@ final class CreateCardViewController: BaseViewController {
             tappedCloseButton: closeButton.rx.tap.asObservable(),
             inputText: writingView.inputText.asObservable(),
             tappedSaveButton: saveButton.rx.tap.asObservable(),
-            isSelectedMainImage: writingView.isMainImage.asObservable()
+            isSelectedMainImage: writingView.isMainImage.asObservable(),
+            selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable()
         )
         let output = viewModel.transform(from: input)
         
         output.downSampledImage
             .drive(with: self) { owner, image in
                 owner.photoUploadView.setImage(image)
+            }
+            .disposed(by: disposeBag)
+        
+        writingView.selectFolderButton.tappedAddFolder  // 폴더 생성 눌렀을 때
+            .bind(with: self) { owner, _ in
+                print("tapped 폴더생성")
+                owner.textFieldAlert { newName in
+                    owner.writingView.selectFolderButton.addNewFolder(name: newName)
+                }
             }
             .disposed(by: disposeBag)
         

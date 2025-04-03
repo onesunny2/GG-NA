@@ -35,6 +35,7 @@ final class CreateCardViewModel: InputOutputModel {
         let inputText: Observable<String>
         let tappedSaveButton: Observable<Void>
         let isSelectedMainImage: Observable<Bool>
+        let selectedFolder: Observable<String>
     }
     
     struct Output {
@@ -110,6 +111,16 @@ final class CreateCardViewModel: InputOutputModel {
             .withLatestFrom(cardData) { status, currentData -> CardData in
                 var newData = currentData ?? defaultCardData
                 newData.isSelectedMain = status
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 폴더
+        input.selectedFolder
+            .withLatestFrom(cardData) { folder, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.folderName = folder
                 return newData
             }
             .bind(to: cardData)

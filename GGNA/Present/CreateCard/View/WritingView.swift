@@ -26,7 +26,7 @@ final class WritingView: BaseView {
     private let recordDate: BaseUILabel
     private let setMainCardButton = SelectedMainImageButton()
     private let selectFolderTitle: BaseUILabel
-    private let selectFolderButton: SelectedAnswerButton
+    let selectFolderButton: SelectedFolderButton
     private let selectDateTitle: BaseUILabel
     
     override init(frame: CGRect) {
@@ -52,7 +52,7 @@ final class WritingView: BaseView {
             color: colors.text,
             font: FontLiterals.subTitle
         )
-        selectFolderButton = SelectedAnswerButton(bgColor: colors.gray)
+        selectFolderButton = SelectedFolderButton(bgColor: colors.gray)
         selectDateTitle = BaseUILabel(
             text: writingViewLiterals.날짜_선택.text,
             color: colors.text,
