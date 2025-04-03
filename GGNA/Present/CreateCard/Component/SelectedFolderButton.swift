@@ -41,12 +41,12 @@ final class SelectedFolderButton: UIButton {
     
     private func configure(title: String, bgColor: UIColor) -> Configuration {
         
-        let container = AttributeContainer().font(FontLiterals.basicBadge)
+        let container = AttributeContainer().font(FontLiterals.basicBadge15)
         
         var config = UIButton.Configuration.filled()
         config.attributedTitle = AttributedString(title, attributes: container)
         config.baseBackgroundColor = bgColor
-        config.baseForegroundColor = .ggDarkWhite
+        config.baseForegroundColor = colors.text
         config.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 20)
         config.cornerStyle = .small
         
@@ -70,7 +70,7 @@ final class SelectedFolderButton: UIButton {
                 
                 // 버튼 타이틀 추가
                 var updatedConfig = self.configuration
-                let container = AttributeContainer().font(FontLiterals.basicBadge)
+                let container = AttributeContainer().font(FontLiterals.basicBadge15)
                 updatedConfig?.attributedTitle = AttributedString(folder.folderName, attributes: container)
                 updatedConfig?.baseBackgroundColor = colors.main80
                 self.configuration = updatedConfig
@@ -100,7 +100,7 @@ final class SelectedFolderButton: UIButton {
         
         // 버튼 타이틀 업데이트
         var updatedConfig = configuration
-        let container = AttributeContainer().font(FontLiterals.basicBadge)
+        let container = AttributeContainer().font(FontLiterals.basicBadge15)
         updatedConfig?.attributedTitle = AttributedString(name, attributes: container)
         updatedConfig?.baseBackgroundColor = colors.main80
         configuration = updatedConfig

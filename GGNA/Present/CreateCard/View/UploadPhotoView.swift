@@ -13,6 +13,10 @@ import RxSwift
 final class UploadPhotoView: BaseView {
     
     private let disposeBag = DisposeBag()
+
+    private let theme = CurrentTheme.currentTheme.theme
+    private let color = CurrentTheme.currentTheme.color
+    private lazy var colors = color.setColor(for: theme)
     
     private let cardView = UIView()
     private let cardImageView = BaseUIImageView(image: nil, cornerRadius: 15)
@@ -109,10 +113,6 @@ final class UploadPhotoView: BaseView {
     }
     
     override func configureView() {
-        
-        let theme = CurrentTheme.currentTheme.theme
-        let color = CurrentTheme.currentTheme.color
-        let colors = color.setColor(for: theme)
         
         cardView.backgroundColor = colors.text
         cardView.cornerRadius15()
