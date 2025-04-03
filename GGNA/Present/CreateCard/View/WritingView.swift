@@ -14,6 +14,8 @@ final class WritingView: BaseView {
     
     private let disposeBag = DisposeBag()
     
+    let inputText = PublishRelay<String>()
+    
     private let cardView = UIView()
     private let appTitle: BaseUILabel
     private let titleTextField = UITextField()
@@ -86,6 +88,25 @@ final class WritingView: BaseView {
     }
     
     private func configureBind() {
+ 
+        titleTextField.rx.controlEvent(.editingDidEndOnExit)
+            .withUnretained(self)
+            .withLatestFrom(titleTextField.rx.text.orEmpty)
+            .bind(with: self) { owner, text in
+                
+                guard text.count > 7 else {
+                    owner.titleTextField.text = text
+                    owner.inputText.accept(text)
+                    return
+                }
+                
+                let prefixed = String(text.prefix(7))
+                owner.titleTextField.text = prefixed
+                owner.inputText.accept(prefixed)
+                
+                owner.endEditing(true)
+            }
+            .disposed(by: disposeBag)
         
         detailTextView.rx.didBeginEditing
             .bind(with: self) { owner, _ in
@@ -220,7 +241,7 @@ extension WritingView {
         var text: String {
             switch self {
             case .카드타이틀: return "GG.NA"
-            case .타이틀_플레이스_홀더: return "(최대 6자) 사진의 타이틀을 정해주세요 :>"
+            case .타이틀_플레이스_홀더: return "(최대 7자) 사진의 타이틀을 정해주세요 :>"
             case .내용_플레이스_홀더: return "(선택) 선택한 사진에 남기고 싶은 추억을 적어보아요"
             case .페이스_ID: return "Face ID로 잠금 설정"
             case .메인카드설정: return "폴더의 메인카드로 설정"
