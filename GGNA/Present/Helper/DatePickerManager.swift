@@ -55,39 +55,56 @@ final class DatePickerManager {
     }
     
     private func configureButtons() {
-        let theme = CurrentTheme.currentTheme.theme
-        let color = CurrentTheme.currentTheme.color
-        let colors = color.setColor(for: theme)
         
         // 년도 버튼 설정
-        configureButton(yearButton, colors: colors)
+        configureButton(yearButton)
         yearButton.menu = createYearMenu()
         yearButton.showsMenuAsPrimaryAction = true
         
         // 월 버튼 설정
-        configureButton(monthButton, colors: colors)
+        configureButton(monthButton)
         monthButton.menu = createMonthMenu()
         monthButton.showsMenuAsPrimaryAction = true
         
         // 일 버튼 설정
-        configureButton(dayButton, colors: colors)
+        configureButton(dayButton)
         dayButton.menu = createDayMenu()
         dayButton.showsMenuAsPrimaryAction = true
     }
     
-    private func configureButton(_ button: UIButton, colors: ColorSet) {
-        var config = UIButton.Configuration.bordered()
-        config.baseForegroundColor = colors.text
-        config.baseBackgroundColor = colors.main80
-        config.background.cornerRadius = 5
-        config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
-        button.configuration = config
+    private func configureButton(_ button: UIButton) {
+        
+        CurrentTheme.$currentTheme
+            .bind(with: self) { owner, value in
+                
+                let theme = value.theme
+                let color = value.color
+                let colors = color.setColor(for: theme)
+                
+                // 현재 attributedTitle 저장
+                let currentTitle = button.configuration?.attributedTitle
+                
+                var config = UIButton.Configuration.bordered()
+                config.baseForegroundColor = colors.text
+                config.baseBackgroundColor = colors.main80
+                config.background.cornerRadius = 5
+                config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
+                config.attributedTitle = currentTitle
+                
+                button.configuration = config
+                
+                // 테마 변경 후 버튼 제목 업데이트
+                owner.updateButtonTitles()
+            }
+            .disposed(by: disposeBag)
     }
     
     private func updateButtonTitles() {
-        yearButton.configuration?.title = "\(selectedYear)년"
-        monthButton.configuration?.title = "\(selectedMonth)월"
-        dayButton.configuration?.title = "\(selectedDay)일"
+        let container = AttributeContainer().font(FontLiterals.basicBadge15)
+        
+        yearButton.configuration?.attributedTitle = AttributedString("\(selectedYear)년", attributes: container)
+        monthButton.configuration?.attributedTitle = AttributedString("\(selectedMonth)월", attributes: container)
+        dayButton.configuration?.attributedTitle = AttributedString("\(selectedDay)일", attributes: container)
     }
     
     private func updateFormattedDate() {
