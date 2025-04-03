@@ -37,7 +37,7 @@ extension UIViewController {
         }
     }
     
-    func textFieldAlert() {
+    func textFieldAlert(completion: @escaping ((String) -> ())) {
         
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
@@ -61,9 +61,10 @@ extension UIViewController {
             title: "생성",
             style: .default) { _ in
                 // 텍스트필드 입력된 값 가져오기
-                guard let text = alert.textFields?.first?.text else { return }
+                guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
                 
-                print("입력한 텍스트: \(text)")
+                let folderName = String(text.prefix(7))
+                completion(folderName)
             }
         
         let cancelAction = UIAlertAction(title: "취소", style: .default)
