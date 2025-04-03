@@ -94,7 +94,8 @@ final class CreateCardViewModel: InputOutputModel {
                 var newData = currentData ?? defaultCardData
                 
                 guard let image = UIImage(data: imgData) else { return newData }
-                let downImage = image.downSample(scale: 0.8)
+                let orientationFixed = image.fixImageOrientation()
+                let downImage = orientationFixed.downSample(scale: 0.8)
                 newData.imageData = downImage
                 downSampledImage.accept(downImage)  // UI로 다운샘플링 이미지 내보내기
                 
