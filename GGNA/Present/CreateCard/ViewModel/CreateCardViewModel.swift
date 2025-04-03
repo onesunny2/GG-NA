@@ -32,6 +32,8 @@ final class CreateCardViewModel: InputOutputModel {
     struct Input {
         let pickedImageData: Observable<Data>
         let tappedCloseButton: Observable<Void>
+        let inputText: Observable<String>
+        let tappedSaveButton: Observable<Void>
     }
     
     struct Output {
@@ -83,13 +85,31 @@ final class CreateCardViewModel: InputOutputModel {
                 guard let image = UIImage(data: imgData) else { return newData }
                 let downImage = image.downSample(scale: 0.8)
                 newData.imageData = downImage
-                downSampledImage.accept(downImage)
+                downSampledImage.accept(downImage)  // UI로 다운샘플링 이미지 내보내기
                 
                 return newData
             }
             .bind(to: cardData)
             .disposed(by: disposeBag)
         
+        // title
+        input.inputText
+            .withLatestFrom(cardData) { title, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.title = title
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // saveButton
+        input.tappedSaveButton
+            .bind(with: self) { owner, _ in
+                dump(owner.cardData.value)
+            }
+            .disposed(by: disposeBag)
+        
+        // closeButton
         input.tappedCloseButton
             .bind(with: self) { owner, _ in
                 

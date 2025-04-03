@@ -58,7 +58,9 @@ final class CreateCardViewController: BaseViewController {
         
         let input = CreateCardViewModel.Input(
             pickedImageData: pickedImageData.asObservable(),
-            tappedCloseButton: closeButton.rx.tap.asObservable()
+            tappedCloseButton: closeButton.rx.tap.asObservable(),
+            inputText: writingView.inputText.asObservable(),
+            tappedSaveButton: saveButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(from: input)
         
