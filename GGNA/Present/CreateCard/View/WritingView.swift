@@ -15,7 +15,8 @@ final class WritingView: BaseView {
     private let disposeBag = DisposeBag()
     private let datePickerManager = DatePickerManager.shared
     
-    let inputText = PublishRelay<String>()
+    let inputTitleText = PublishRelay<String>()
+    let inputDetailText = PublishRelay<String>()
     let isMainImage = BehaviorRelay(value: false)
     
     private let cardView = UIView()
@@ -79,36 +80,47 @@ final class WritingView: BaseView {
                 
                 guard text.count > 7 else {
                     owner.titleTextField.text = text
-                    owner.inputText.accept(text)
+                    owner.inputTitleText.accept(text)
                     return
                 }
                 
                 let prefixed = String(text.prefix(7))
                 owner.titleTextField.text = prefixed
-                owner.inputText.accept(prefixed)
+                owner.inputTitleText.accept(prefixed)
                 
                 owner.endEditing(true)
             }
             .disposed(by: disposeBag)
         
         detailTextView.rx.didBeginEditing
-            .bind(with: self) { owner, _ in
+            .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .bind(with: self) { owner, text in
                 
-                guard owner.detailTextView.text != writingViewLiterals.내용_플레이스_홀더.text else {
+                guard text != writingViewLiterals.내용_플레이스_홀더.text else {
                     owner.detailTextView.text = ""
                     return
                 }
+            }
+            .disposed(by: disposeBag)
+        
+        detailTextView.rx.didChange
+            .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .bind(with: self) { owner, text in
                 
+                guard text != "" else { return }
+                owner.inputDetailText.accept(text)
             }
             .disposed(by: disposeBag)
         
         detailTextView.rx.didEndEditing
-            .bind(with: self) { owner, _ in
+            .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .bind(with: self) { owner, text in
                 
-                guard owner.detailTextView.text != "" else {
+                guard text != "" else {
                     owner.detailTextView.text = writingViewLiterals.내용_플레이스_홀더.text
                     return
                 }
+                owner.inputDetailText.accept(text)
             }
             .disposed(by: disposeBag)
         

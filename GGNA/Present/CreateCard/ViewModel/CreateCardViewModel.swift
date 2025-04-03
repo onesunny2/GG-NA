@@ -13,6 +13,7 @@ import RxSwift
 struct CardData {
     var folderName: String
     var imageData: UIImage
+    var imageScale: Bool
     var videoData: Data?
     var filter: String = "none"
     var isSelectedMain: Bool
@@ -20,7 +21,7 @@ struct CardData {
     
     struct CardContentData {
         var title: String?
-        var date: String?
+        var date: String? = DatePickerManager.shared.todayDate()
         var detail: String?
         var location: String?
         var isSecretMode: Bool = false
@@ -32,10 +33,12 @@ final class CreateCardViewModel: InputOutputModel {
     struct Input {
         let pickedImageData: Observable<Data>
         let tappedCloseButton: Observable<Void>
-        let inputText: Observable<String>
+        let inputTitleText: Observable<String>
         let tappedSaveButton: Observable<Void>
         let isSelectedMainImage: Observable<Bool>
         let selectedFolder: Observable<String>
+        let inputDetailText: Observable<String>
+        let zoomStatus: Observable<Bool>
     }
     
     struct Output {
@@ -53,8 +56,9 @@ final class CreateCardViewModel: InputOutputModel {
     init() {
         // 초기 데이터 설정
          let defaultCardData = CardData(
-             folderName: "",
+             folderName: "기본",
              imageData: UIImage(),
+             imageScale: true,
              videoData: nil,
              filter: "original",
              isSelectedMain: false,
@@ -73,8 +77,9 @@ final class CreateCardViewModel: InputOutputModel {
         
         // MARK: 옵셔널 처리를 위한 default 더미 데이터
         let defaultCardData = CardData(
-            folderName: "",
+            folderName: "기본",
             imageData: UIImage(),
+            imageScale: true,
             videoData: nil,
             filter: "original",
             isSelectedMain: false,
@@ -96,11 +101,32 @@ final class CreateCardViewModel: InputOutputModel {
             .bind(to: cardData)
             .disposed(by: disposeBag)
         
+        // zoomScale Info
+        input.zoomStatus
+            .withLatestFrom(cardData) { status, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.imageScale = status
+                
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
         // title
-        input.inputText
+        input.inputTitleText
             .withLatestFrom(cardData) { title, currentData -> CardData in
                 var newData = currentData ?? defaultCardData
                 newData.cardContent.title = title
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // detail
+        input.inputDetailText
+            .withLatestFrom(cardData) { detail, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.detail = detail
                 return newData
             }
             .bind(to: cardData)
@@ -140,6 +166,7 @@ final class CreateCardViewModel: InputOutputModel {
         input.tappedSaveButton
             .bind(with: self) { owner, _ in
                 dump(owner.cardData.value)
+                dump(owner.initialCardData.value)
             }
             .disposed(by: disposeBag)
         
@@ -169,21 +196,30 @@ final class CreateCardViewModel: InputOutputModel {
 
 extension CreateCardViewModel {
     
+    private func hasChanges(currentData: CardData, initialData: CardData) -> Bool {
+        let isImageChanged = currentData.imageData != initialData.imageData
+        let isFolderNameChanged = (currentData.folderName != initialData.folderName)
+        let isTitleChanged = (currentData.cardContent.title != initialData.cardContent.title)
+        let isDateChanged = (currentData.cardContent.date != initialData.cardContent.date)
+        let isDetailChanged = (currentData.cardContent.detail != initialData.cardContent.detail)
+        let isMainSelectionChanged = (currentData.isSelectedMain != initialData.isSelectedMain)
+        let isScaleChanged = (currentData.imageScale != initialData.imageScale)
+        
+        return isImageChanged || isFolderNameChanged || isTitleChanged ||
+               isDateChanged || isDetailChanged || isMainSelectionChanged || isScaleChanged
+    }
     
     // 창 닫기 전에 변경사항 유무 체크
     private func checkChangedData(currentData: CardData, initialData: CardData, noChangedData: PublishRelay<Void>, yesChangedData: PublishRelay<Void>) {
         
-        let isImageChanged = currentData.imageData.isEqual(initialData.imageData)
-        let isFolderNameChanged = (currentData.folderName != initialData.folderName)
-        let isTitleChanged = (currentData.cardContent.title != initialData.cardContent.title)
-        let isDateChanged = (currentData.cardContent.date != initialData.cardContent.date)
-        
-        if isImageChanged || isFolderNameChanged || isTitleChanged || isDateChanged {
+        if hasChanges(currentData: currentData, initialData: initialData) {
             // 데이터가 변경된 경우 알럿 띄우기
-            noChangedData.accept(())
+            yesChangedData.accept(())
+            print("변경됨")
         } else {
             // 데이터가 변경되지 않은 경우 그냥 닫기
-            yesChangedData.accept(())
+            noChangedData.accept(())
+            print("변경안됨")
         }
     }
 }

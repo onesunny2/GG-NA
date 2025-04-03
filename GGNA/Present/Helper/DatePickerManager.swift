@@ -54,6 +54,16 @@ final class DatePickerManager {
         bindDateChanges()
     }
     
+    // CreateCardViewModel에서 사용될 날짜 초기 값
+    func todayDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd EEEE"
+        formatter.locale = Locale(identifier: "ko_KR")
+        let dateString = formatter.string(from: Date())
+       
+        return dateString
+    }
+    
     private func configureButtons() {
         
         // 년도 버튼 설정

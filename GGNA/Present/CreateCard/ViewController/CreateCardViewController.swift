@@ -16,6 +16,7 @@ final class CreateCardViewController: BaseViewController {
     private let viewModel: CreateCardViewModel
     private let disposeBag = DisposeBag()
     private let pickedImageData = PublishRelay<Data>()
+    private let zoomStatus = PublishRelay<Bool>()
     
     private let closeButton: UIButton = {
         let button = UIButton()
@@ -61,10 +62,12 @@ final class CreateCardViewController: BaseViewController {
         let input = CreateCardViewModel.Input(
             pickedImageData: pickedImageData.asObservable(),
             tappedCloseButton: closeButton.rx.tap.asObservable(),
-            inputText: writingView.inputText.asObservable(),
+            inputTitleText: writingView.inputTitleText.asObservable(),
             tappedSaveButton: saveButton.rx.tap.asObservable(),
             isSelectedMainImage: writingView.isMainImage.asObservable(),
-            selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable()
+            selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable(),
+            inputDetailText: writingView.inputDetailText.asObservable(),
+            zoomStatus: zoomStatus.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -76,7 +79,6 @@ final class CreateCardViewController: BaseViewController {
         
         writingView.selectFolderButton.tappedAddFolder  // 폴더 생성 눌렀을 때
             .bind(with: self) { owner, _ in
-                print("tapped 폴더생성")
                 owner.textFieldAlert { newName in
                     owner.writingView.selectFolderButton.addNewFolder(name: newName)
                 }
@@ -86,6 +88,7 @@ final class CreateCardViewController: BaseViewController {
         photoUploadView.zoomStatus
             .bind(with: self) { owner, status in
                 owner.photoUploadView.setZoomIcon(status)
+                owner.zoomStatus.accept(status)
             }
             .disposed(by: disposeBag)
         
