@@ -10,7 +10,6 @@ import PhotosUI
 import SnapKit
 import RxCocoa
 import RxSwift
-import UniformTypeIdentifiers
 
 final class CreateCardViewController: BaseViewController {
     

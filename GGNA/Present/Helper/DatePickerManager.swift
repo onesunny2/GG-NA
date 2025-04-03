@@ -35,7 +35,7 @@ final class DatePickerManager {
     lazy var datePickerStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [yearButton, monthButton, dayButton])
         stackView.axis = .horizontal
-        stackView.spacing = 20
+        stackView.spacing = 10
         stackView.distribution = .fillEqually
         return stackView
     }()

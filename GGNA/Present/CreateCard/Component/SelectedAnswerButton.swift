@@ -9,7 +9,7 @@ import UIKit
 
 final class SelectedAnswerButton: UIButton {
     
-    init(title: String, bgColor: UIColor) {
+    init(title: String = "선택", bgColor: UIColor) {
         super.init(frame: .zero)
  
         configuration = configure(title: title, bgColor: bgColor)

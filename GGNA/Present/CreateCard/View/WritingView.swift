@@ -42,7 +42,7 @@ final class WritingView: BaseView {
             font: FontLiterals.writngTitle
         )
         recordDate = BaseUILabel(
-            text: "2025.03.26 수요일(test)",
+            text: "",
             color: colors.background,
             alignment: .left,
             font: FontLiterals.subContent
@@ -52,10 +52,7 @@ final class WritingView: BaseView {
             color: colors.text,
             font: FontLiterals.subTitle
         )
-        selectFolderButton = SelectedAnswerButton(
-            title: "선택",
-            bgColor: colors.gray
-        )
+        selectFolderButton = SelectedAnswerButton(bgColor: colors.gray)
         selectDateTitle = BaseUILabel(
             text: writingViewLiterals.날짜_선택.text,
             color: colors.text,
