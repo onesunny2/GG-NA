@@ -28,6 +28,9 @@ final class CreateCardViewController: BaseViewController {
         return button
     }()
     
+    private let photoBtnBgView = UIView()
+    private let writingBtnView = UIView()
+    
     private let switchStackView = UIStackView()
     private let photoButton = OnlyImageButton(image: ImageLiterals.photoCircleFill, isSelected: true)
     private let writingButton = OnlyImageButton(image: ImageLiterals.pencilCircleFill, isSelected: false)
@@ -184,13 +187,19 @@ final class CreateCardViewController: BaseViewController {
     }
     
     override func configureView() {
+        
+        photoBtnBgView.backgroundColor = .ggDarkWhite
+        writingBtnView.backgroundColor = .ggDarkWhite
+        photoBtnBgView.cornerRadius15()
+        writingBtnView.cornerRadius15()
+        
         switchStackView.axis = .horizontal
         switchStackView.spacing = 12
         switchStackView.alignment = .fill
     }
     
     override func configureHierarchy() {
-        view.addSubviews(switchStackView, photoUploadView, writingView)
+        view.addSubviews(photoBtnBgView, writingBtnView, switchStackView, photoUploadView, writingView)
         switchStackView.addArrangedSubviews(photoButton, writingButton)
     }
     
@@ -213,6 +222,16 @@ final class CreateCardViewController: BaseViewController {
         writingView.snp.makeConstraints {
             $0.top.equalTo(switchStackView.snp.bottom).offset(20)
             $0.horizontalEdges.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        photoBtnBgView.snp.makeConstraints {
+            $0.center.equalTo(photoButton)
+            $0.size.equalTo(30)
+        }
+        
+        writingBtnView.snp.makeConstraints {
+            $0.center.equalTo(writingButton)
+            $0.size.equalTo(30)
         }
     }
 }
