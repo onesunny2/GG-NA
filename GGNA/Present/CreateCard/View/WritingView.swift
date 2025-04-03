@@ -73,26 +73,27 @@ final class WritingView: BaseView {
             }
             .disposed(by: disposeBag)
  
-        titleTextField.rx.controlEvent(.editingDidEndOnExit)
-            .withUnretained(self)
-            .withLatestFrom(titleTextField.rx.text.orEmpty)
-            .map { return $0.trimmingCharacters(in: .whitespaces) }
-            .bind(with: self) { owner, text in
-                
-                guard text.count > 7 else {
-                    print(text)
-                    owner.titleTextField.text = text
-                    owner.inputTitleText.accept(text)
-                    return
-                }
-                
-                let prefixed = String(text.prefix(7))
-                owner.titleTextField.text = prefixed
-                owner.inputTitleText.accept(prefixed)
-                
-                owner.endEditing(true)
+        Observable.merge(
+            titleTextField.rx.controlEvent(.editingDidEndOnExit).withLatestFrom(titleTextField.rx.text.orEmpty),
+            titleTextField.rx.controlEvent(.editingChanged).withLatestFrom(titleTextField.rx.text.orEmpty)
+        )
+        .map { return $0.trimmingCharacters(in: .whitespaces) }
+        .bind(with: self) { owner, text in
+            
+            guard text.count > 7 else {
+                print(text)
+                owner.titleTextField.text = text
+                owner.inputTitleText.accept(text)
+                return
             }
-            .disposed(by: disposeBag)
+            
+            let prefixed = String(text.prefix(7))
+            owner.titleTextField.text = prefixed
+            owner.inputTitleText.accept(prefixed)
+            
+            owner.endEditing(true)
+        }
+        .disposed(by: disposeBag)
         
         detailTextView.rx.didBeginEditing
             .withLatestFrom(detailTextView.rx.text.orEmpty)
