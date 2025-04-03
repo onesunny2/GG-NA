@@ -13,4 +13,15 @@ final class Folder: Object, Identifiable {
     @Persisted var folderName: String
     @Persisted var bgm: String?
     @Persisted var photoCards: List<PhotoCardRecord>
+    
+    convenience init(
+        folderName: String,
+        bgm: String? = nil,
+        photoCards: List<PhotoCardRecord>
+    ) {
+        self.init()
+        self.folderName = folderName
+        self.bgm = bgm
+        self.photoCards = photoCards
+    }
 }
