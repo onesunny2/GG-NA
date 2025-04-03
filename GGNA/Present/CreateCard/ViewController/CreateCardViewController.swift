@@ -110,6 +110,20 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        output.canSave
+            .drive(with: self) { owner, value in
+                
+                switch value {
+                case true:
+                    print("저장완료")
+                    owner.customToast(type: .카드저장_성공)
+                case false:
+                    print("저장실패")
+                    owner.customToast(type: .카드저장_실패)
+                }
+            }
+            .disposed(by: disposeBag)
+        
         // MARK: UI
         photoButton.rx.tap
             .bind(with: self) { owner, _ in

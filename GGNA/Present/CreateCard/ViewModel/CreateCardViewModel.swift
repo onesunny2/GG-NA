@@ -15,12 +15,12 @@ struct CardData {
     var imageData: UIImage
     var imageScale: Bool
     var videoData: Data?
-    var filter: String = "none"
+    var filter: String
     var isSelectedMain: Bool
     var cardContent: CardContentData
     
     struct CardContentData {
-        var title: String?
+        var title: String? = ""
         var date: String? = DatePickerManager.shared.todayDate()
         var detail: String?
         var location: String?
@@ -45,6 +45,7 @@ final class CreateCardViewModel: InputOutputModel {
         let downSampledImage: Driver<UIImage>
         let yesChangedData: Driver<Void>
         let noChangedData: Driver<Void>
+        let canSave: Driver<Bool>
     }
     
     private let cardData = BehaviorRelay<CardData?>(value: nil)
@@ -74,6 +75,7 @@ final class CreateCardViewModel: InputOutputModel {
         let downSampledImage = PublishRelay<UIImage>()
         let yesChangedData = PublishRelay<Void>()
         let noChangedData = PublishRelay<Void>()
+        let canSave = PublishRelay<Bool>()
         
         // MARK: 옵셔널 처리를 위한 default 더미 데이터
         let defaultCardData = CardData(
@@ -165,8 +167,24 @@ final class CreateCardViewModel: InputOutputModel {
         // saveButton
         input.tappedSaveButton
             .bind(with: self) { owner, _ in
-                dump(owner.cardData.value)
-                dump(owner.initialCardData.value)
+                
+                guard let currentData = owner.cardData.value,
+                      let initialData = owner.initialCardData.value else {
+                    // 데이터가 없는 경우 그냥 닫기
+                    canSave.accept(false)
+                    return
+                }
+                
+                print("현재 이미지: \(currentData.imageData)")
+                print("초기 이미지: \(initialData.imageData)")
+                print("현재 타이틀: \(String(describing: currentData.cardContent.title))")
+                print("초기 타이틀: \(String(describing: initialData.cardContent.title))")
+                
+                switch owner.allChanged(currentData: currentData, initialData: initialData) {
+                case true: canSave.accept(true)
+                case false: canSave.accept(false)
+                }
+                
             }
             .disposed(by: disposeBag)
         
@@ -189,7 +207,8 @@ final class CreateCardViewModel: InputOutputModel {
         return Output(
             downSampledImage: downSampledImage.asDriver(onErrorDriveWith: .empty()),
             yesChangedData: yesChangedData.asDriver(onErrorDriveWith: .empty()),
-            noChangedData: noChangedData.asDriver(onErrorDriveWith: .empty())
+            noChangedData: noChangedData.asDriver(onErrorDriveWith: .empty()),
+            canSave: canSave.asDriver(onErrorDriveWith: .empty())
         )
     }
 }
@@ -207,6 +226,13 @@ extension CreateCardViewModel {
         
         return isImageChanged || isFolderNameChanged || isTitleChanged ||
                isDateChanged || isDetailChanged || isMainSelectionChanged || isScaleChanged
+    }
+    
+    private func allChanged(currentData: CardData, initialData: CardData) -> Bool {
+        let isImageChanged = currentData.imageData != initialData.imageData
+        let isTitleChanged = (currentData.cardContent.title != initialData.cardContent.title)
+        
+        return isImageChanged && isTitleChanged
     }
     
     // 창 닫기 전에 변경사항 유무 체크
