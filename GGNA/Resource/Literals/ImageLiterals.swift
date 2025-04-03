@@ -18,6 +18,7 @@ enum ImageLiterals {
     static let chevronForwardCircle: UIImage? = UIImage(systemName: "chevron.forward.circle.fill")
     static let lockFill: UIImage? = UIImage(systemName: "lock.fill")
     static let square: UIImage? = UIImage(systemName: "square")
+    static let checkMark: UIImage? = UIImage(systemName: "checkmark.square.fill")
     
     /// Navigation TabBar에서 사용하는 Image Assets
     static let home: UIImage? = UIImage(systemName: "house.fill")

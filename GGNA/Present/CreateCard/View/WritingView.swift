@@ -22,7 +22,7 @@ final class WritingView: BaseView {
     private let titleUnderline = UIView()
     private let detailTextView = UITextView()
     private let recordDate: BaseUILabel
-    private let setMainCardButton: UIButton
+    private let setMainCardButton = SelectedMainImageButton()
     private let selectFolderTitle: BaseUILabel
     private let selectFolderButton: SelectedAnswerButton
     private let selectDateTitle: BaseUILabel
@@ -33,9 +33,6 @@ final class WritingView: BaseView {
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
-        
-        let buttonContainer = AttributeContainer().font(FontLiterals.subContent)
-        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 8)
         
         appTitle = BaseUILabel(
             text: writingViewLiterals.카드타이틀.text,
@@ -49,20 +46,20 @@ final class WritingView: BaseView {
             alignment: .left,
             font: FontLiterals.subContent
         )
-        setMainCardButton  = {
-            let button = UIButton()
-            var config = UIButton.Configuration.filled()
-            config.attributedTitle = AttributedString(writingViewLiterals.메인카드설정.text, attributes: buttonContainer)
-            config.image = ImageLiterals.square?.withConfiguration(buttonConfig)
-            config.baseBackgroundColor = .clear
-            config.baseForegroundColor = colors.text
-            config.imagePlacement = .leading
-            config.imagePadding = 2
-            config.contentInsets = NSDirectionalEdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
-            
-            button.configuration = config
-            return button
-        }()
+//        setMainCardButton  = {
+//            let button = UIButton()
+//            var config = UIButton.Configuration.filled()
+//            config.attributedTitle = AttributedString(writingViewLiterals.메인카드설정.text, attributes: buttonContainer)
+//            config.image = ImageLiterals.square?.withConfiguration(buttonConfig)
+//            config.baseBackgroundColor = .clear
+//            config.baseForegroundColor = colors.text
+//            config.imagePlacement = .leading
+//            config.imagePadding = 2
+//            config.contentInsets = NSDirectionalEdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
+//            
+//            button.configuration = config
+//            return button
+//        }()
         selectFolderTitle = BaseUILabel(
             text: writingViewLiterals.폴더_선택.text,
             color: colors.text,
@@ -234,7 +231,6 @@ extension WritingView {
         case 타이틀_플레이스_홀더
         case 내용_플레이스_홀더
         case 페이스_ID
-        case 메인카드설정
         case 폴더_선택
         case 날짜_선택
         
@@ -244,7 +240,6 @@ extension WritingView {
             case .타이틀_플레이스_홀더: return "(최대 7자) 사진의 타이틀을 정해주세요 :>"
             case .내용_플레이스_홀더: return "(선택) 선택한 사진에 남기고 싶은 추억을 적어보아요"
             case .페이스_ID: return "Face ID로 잠금 설정"
-            case .메인카드설정: return "폴더의 메인카드로 설정"
             case .폴더_선택: return "저장 폴더 선택"
             case .날짜_선택: return "날짜 선택하기"
             }
