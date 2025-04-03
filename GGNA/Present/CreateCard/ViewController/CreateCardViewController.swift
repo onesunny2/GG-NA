@@ -230,11 +230,13 @@ final class CreateCardViewController: BaseViewController {
         photoBtnBgView.snp.makeConstraints {
             $0.center.equalTo(photoButton)
             $0.size.equalTo(30)
+            $0.bottom.lessThanOrEqualTo(view.keyboardLayoutGuide.snp.top).offset(-20)
         }
         
         writingBtnView.snp.makeConstraints {
             $0.center.equalTo(writingButton)
             $0.size.equalTo(30)
+            $0.bottom.lessThanOrEqualTo(view.keyboardLayoutGuide.snp.top).offset(-20)
         }
     }
 }

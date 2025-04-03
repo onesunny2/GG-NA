@@ -173,6 +173,7 @@ final class WritingView: BaseView {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(30)
             $0.height.equalTo(window.bounds.height / 2)
+            $0.bottom.lessThanOrEqualTo(keyboardLayoutGuide.snp.top).offset(50)
         }
         
         appTitle.snp.makeConstraints {
