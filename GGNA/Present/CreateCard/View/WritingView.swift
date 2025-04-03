@@ -76,9 +76,11 @@ final class WritingView: BaseView {
         titleTextField.rx.controlEvent(.editingDidEndOnExit)
             .withUnretained(self)
             .withLatestFrom(titleTextField.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
                 guard text.count > 7 else {
+                    print(text)
                     owner.titleTextField.text = text
                     owner.inputTitleText.accept(text)
                     return
@@ -94,6 +96,7 @@ final class WritingView: BaseView {
         
         detailTextView.rx.didBeginEditing
             .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
                 guard text != writingViewLiterals.내용_플레이스_홀더.text else {
@@ -105,6 +108,7 @@ final class WritingView: BaseView {
         
         detailTextView.rx.didChange
             .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
                 guard text != "" else { return }
@@ -114,6 +118,7 @@ final class WritingView: BaseView {
         
         detailTextView.rx.didEndEditing
             .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
                 guard text != "" else {
@@ -198,8 +203,8 @@ final class WritingView: BaseView {
         }
         
         setMainCardButton.snp.makeConstraints {
-            $0.top.equalTo(cardView.snp.bottom).offset(6)
-            $0.trailing.equalTo(cardView.snp.trailing)
+            $0.top.equalTo(cardView.snp.bottom).offset(10)
+            $0.trailing.equalTo(cardView.snp.trailing).offset(-10)
         }
         
         selectFolderTitle.snp.makeConstraints {
