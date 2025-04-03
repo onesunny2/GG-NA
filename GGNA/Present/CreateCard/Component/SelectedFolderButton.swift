@@ -107,6 +107,7 @@ final class SelectedFolderButton: UIButton {
         
         // 메뉴 업데이트
         menu = setupMenu(selectedFolderName: newFolder.folderName)
+        selectedFolder.accept(newFolder.folderName)
     }
     
     @available(*, unavailable)
