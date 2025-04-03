@@ -34,6 +34,7 @@ final class CreateCardViewModel: InputOutputModel {
         let tappedCloseButton: Observable<Void>
         let inputText: Observable<String>
         let tappedSaveButton: Observable<Void>
+        let isSelectedMainImage: Observable<Bool>
     }
     
     struct Output {
@@ -97,6 +98,16 @@ final class CreateCardViewModel: InputOutputModel {
             .withLatestFrom(cardData) { title, currentData -> CardData in
                 var newData = currentData ?? defaultCardData
                 newData.cardContent.title = title
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 메인이미지 설정 유무
+        input.isSelectedMainImage
+            .withLatestFrom(cardData) { status, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.isSelectedMain = status
                 return newData
             }
             .bind(to: cardData)
