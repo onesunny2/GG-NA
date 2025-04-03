@@ -109,8 +109,8 @@ final class DatePickerManager {
     
     private func bindDateChanges() {
         selectedDate
-            .subscribe(onNext: { [weak self] _ in
-                self?.updateButtonMenus()
+            .bind(with: self, onNext: { owner, _ in
+                owner.updateButtonMenus()
             })
             .disposed(by: disposeBag)
     }
