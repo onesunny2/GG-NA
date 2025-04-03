@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		432D002D2D964A4B00A04AF5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 432D002C2D964A4B00A04AF5 /* SnapKit */; };
-		432D00302D964A5D00A04AF5 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 432D002F2D964A5D00A04AF5 /* Toast */; };
 		432D00332D964A9700A04AF5 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 432D00322D964A9700A04AF5 /* RxCocoa */; };
 		432D00352D964A9700A04AF5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 432D00342D964A9700A04AF5 /* RxSwift */; };
 		432D00382D964AB200A04AF5 /* Differentiator in Frameworks */ = {isa = PBXBuildFile; productRef = 432D00372D964AB200A04AF5 /* Differentiator */; };
@@ -64,7 +63,6 @@
 				432D00332D964A9700A04AF5 /* RxCocoa in Frameworks */,
 				432D00382D964AB200A04AF5 /* Differentiator in Frameworks */,
 				432D003D2D964AF500A04AF5 /* RealmSwift in Frameworks */,
-				432D00302D964A5D00A04AF5 /* Toast in Frameworks */,
 				432D003A2D964AB200A04AF5 /* RxDataSources in Frameworks */,
 				432D00352D964A9700A04AF5 /* RxSwift in Frameworks */,
 				432D002D2D964A4B00A04AF5 /* SnapKit in Frameworks */,
@@ -112,7 +110,6 @@
 			name = GGNA;
 			packageProductDependencies = (
 				432D002C2D964A4B00A04AF5 /* SnapKit */,
-				432D002F2D964A5D00A04AF5 /* Toast */,
 				432D00322D964A9700A04AF5 /* RxCocoa */,
 				432D00342D964A9700A04AF5 /* RxSwift */,
 				432D00372D964AB200A04AF5 /* Differentiator */,
@@ -149,7 +146,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				432D002B2D964A4B00A04AF5 /* XCRemoteSwiftPackageReference "SnapKit" */,
-				432D002E2D964A5D00A04AF5 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				432D00312D964A9700A04AF5 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				432D00362D964AB200A04AF5 /* XCRemoteSwiftPackageReference "RxDataSources" */,
 				432D003B2D964AF500A04AF5 /* XCRemoteSwiftPackageReference "realm-swift" */,
@@ -404,14 +400,6 @@
 				minimumVersion = 5.7.1;
 			};
 		};
-		432D002E2D964A5D00A04AF5 /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/scalessec/Toast-Swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
 		432D00312D964A9700A04AF5 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveX/RxSwift";
@@ -443,11 +431,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 432D002B2D964A4B00A04AF5 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
-		};
-		432D002F2D964A5D00A04AF5 /* Toast */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 432D002E2D964A5D00A04AF5 /* XCRemoteSwiftPackageReference "Toast-Swift" */;
-			productName = Toast;
 		};
 		432D00322D964A9700A04AF5 /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -16,7 +16,7 @@ final class TextFilledButton: UIButton {
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
         
-        let container = AttributeContainer().font(FontLiterals.basicBadge)
+        let container = AttributeContainer().font(FontLiterals.basicBadge13)
         
         var config = UIButton.Configuration.filled()
         config.attributedTitle = AttributedString(title, attributes: container)

@@ -10,13 +10,13 @@ import PhotosUI
 import SnapKit
 import RxCocoa
 import RxSwift
-import UniformTypeIdentifiers
 
 final class CreateCardViewController: BaseViewController {
     
     private let viewModel: CreateCardViewModel
     private let disposeBag = DisposeBag()
     private let pickedImageData = PublishRelay<Data>()
+    private let zoomStatus = PublishRelay<Bool>()
     
     private let closeButton: UIButton = {
         let button = UIButton()
@@ -28,6 +28,9 @@ final class CreateCardViewController: BaseViewController {
         button.setTitle(CreateCardBarButton.save.title, for: .normal)
         return button
     }()
+    
+    private let photoBtnBgView = UIView()
+    private let writingBtnView = UIView()
     
     private let switchStackView = UIStackView()
     private let photoButton = OnlyImageButton(image: ImageLiterals.photoCircleFill, isSelected: true)
@@ -58,7 +61,13 @@ final class CreateCardViewController: BaseViewController {
         
         let input = CreateCardViewModel.Input(
             pickedImageData: pickedImageData.asObservable(),
-            tappedCloseButton: closeButton.rx.tap.asObservable()
+            tappedCloseButton: closeButton.rx.tap.asObservable(),
+            inputTitleText: writingView.inputTitleText.asObservable(),
+            tappedSaveButton: saveButton.rx.tap.asObservable(),
+            isSelectedMainImage: writingView.isMainImage.asObservable(),
+            selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable(),
+            inputDetailText: writingView.inputDetailText.asObservable(),
+            zoomStatus: zoomStatus.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -68,9 +77,18 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        writingView.selectFolderButton.tappedAddFolder  // 폴더 생성 눌렀을 때
+            .bind(with: self) { owner, _ in
+                owner.textFieldAlert { newName in
+                    owner.writingView.selectFolderButton.addNewFolder(name: newName)
+                }
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.zoomStatus
             .bind(with: self) { owner, status in
                 owner.photoUploadView.setZoomIcon(status)
+                owner.zoomStatus.accept(status)
             }
             .disposed(by: disposeBag)
         
@@ -89,6 +107,20 @@ final class CreateCardViewController: BaseViewController {
         output.yesChangedData
             .drive(with: self) { owner, _ in
                 owner.closeButtonAlert()
+            }
+            .disposed(by: disposeBag)
+        
+        output.canSave
+            .drive(with: self) { owner, value in
+                
+                switch value {
+                case true:
+                    print("저장완료")
+                    owner.customToast(type: .카드저장_성공)
+                case false:
+                    print("저장실패")
+                    owner.customToast(type: .카드저장_실패)
+                }
             }
             .disposed(by: disposeBag)
         
@@ -172,13 +204,19 @@ final class CreateCardViewController: BaseViewController {
     }
     
     override func configureView() {
+        
+        photoBtnBgView.backgroundColor = .ggDarkWhite
+        writingBtnView.backgroundColor = .ggDarkWhite
+        photoBtnBgView.cornerRadius15()
+        writingBtnView.cornerRadius15()
+        
         switchStackView.axis = .horizontal
         switchStackView.spacing = 12
         switchStackView.alignment = .fill
     }
     
     override func configureHierarchy() {
-        view.addSubviews(switchStackView, photoUploadView, writingView)
+        view.addSubviews(photoBtnBgView, writingBtnView, switchStackView, photoUploadView, writingView)
         switchStackView.addArrangedSubviews(photoButton, writingButton)
     }
     
@@ -201,6 +239,18 @@ final class CreateCardViewController: BaseViewController {
         writingView.snp.makeConstraints {
             $0.top.equalTo(switchStackView.snp.bottom).offset(20)
             $0.horizontalEdges.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        photoBtnBgView.snp.makeConstraints {
+            $0.center.equalTo(photoButton)
+            $0.size.equalTo(30)
+            $0.bottom.lessThanOrEqualTo(view.keyboardLayoutGuide.snp.top).offset(-20)
+        }
+        
+        writingBtnView.snp.makeConstraints {
+            $0.center.equalTo(writingButton)
+            $0.size.equalTo(30)
+            $0.bottom.lessThanOrEqualTo(view.keyboardLayoutGuide.snp.top).offset(-20)
         }
     }
 }

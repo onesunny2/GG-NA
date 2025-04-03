@@ -13,6 +13,11 @@ import RxSwift
 final class WritingView: BaseView {
     
     private let disposeBag = DisposeBag()
+    private let datePickerManager = DatePickerManager.shared
+    
+    let inputTitleText = PublishRelay<String>()
+    let inputDetailText = PublishRelay<String>()
+    let isMainImage = BehaviorRelay(value: false)
     
     private let cardView = UIView()
     private let appTitle: BaseUILabel
@@ -20,20 +25,16 @@ final class WritingView: BaseView {
     private let titleUnderline = UIView()
     private let detailTextView = UITextView()
     private let recordDate: BaseUILabel
-    private let setMainCardButton: UIButton
+    private let setMainCardButton = SelectedMainImageButton()
     private let selectFolderTitle: BaseUILabel
-    private let selectFolderButton: SelectedAnswerButton
+    let selectFolderButton: SelectedFolderButton
     private let selectDateTitle: BaseUILabel
-    private let selectDateButton: SelectedAnswerButton
     
     override init(frame: CGRect) {
         
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
-        
-        let buttonContainer = AttributeContainer().font(FontLiterals.subContent)
-        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 8)
         
         appTitle = BaseUILabel(
             text: writingViewLiterals.카드타이틀.text,
@@ -42,42 +43,21 @@ final class WritingView: BaseView {
             font: FontLiterals.writngTitle
         )
         recordDate = BaseUILabel(
-            text: "2025.03.26 수요일(test)",
+            text: "",
             color: colors.background,
             alignment: .left,
             font: FontLiterals.subContent
         )
-        setMainCardButton  = {
-            let button = UIButton()
-            var config = UIButton.Configuration.filled()
-            config.attributedTitle = AttributedString(writingViewLiterals.메인카드설정.text, attributes: buttonContainer)
-            config.image = ImageLiterals.square?.withConfiguration(buttonConfig)
-            config.baseBackgroundColor = .clear
-            config.baseForegroundColor = colors.text
-            config.imagePlacement = .leading
-            config.imagePadding = 2
-            config.contentInsets = NSDirectionalEdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
-            
-            button.configuration = config
-            return button
-        }()
         selectFolderTitle = BaseUILabel(
             text: writingViewLiterals.폴더_선택.text,
             color: colors.text,
             font: FontLiterals.subTitle
         )
-        selectFolderButton = SelectedAnswerButton(
-            title: "선택",
-            bgColor: colors.gray
-        )
+        selectFolderButton = SelectedFolderButton(bgColor: colors.gray)
         selectDateTitle = BaseUILabel(
             text: writingViewLiterals.날짜_선택.text,
             color: colors.text,
             font: FontLiterals.subTitle
-        )
-        selectDateButton = SelectedAnswerButton(
-            title: "2025년 03월 26일 수요일(test)",
-            bgColor: colors.main
         )
         
         super.init(frame: frame)
@@ -87,24 +67,66 @@ final class WritingView: BaseView {
     
     private func configureBind() {
         
-        detailTextView.rx.didBeginEditing
+        setMainCardButton.rx.tap
             .bind(with: self) { owner, _ in
+                owner.isMainImage.accept(owner.setMainCardButton.isSelected)
+            }
+            .disposed(by: disposeBag)
+ 
+        Observable.merge(
+            titleTextField.rx.controlEvent(.editingDidEndOnExit).withLatestFrom(titleTextField.rx.text.orEmpty),
+            titleTextField.rx.controlEvent(.editingChanged).withLatestFrom(titleTextField.rx.text.orEmpty)
+        )
+        .map { return $0.trimmingCharacters(in: .whitespaces) }
+        .bind(with: self) { owner, text in
+            
+            guard text.count > 7 else {
+                print(text)
+                owner.titleTextField.text = text
+                owner.inputTitleText.accept(text)
+                return
+            }
+            
+            let prefixed = String(text.prefix(7))
+            owner.titleTextField.text = prefixed
+            owner.inputTitleText.accept(prefixed)
+            
+            owner.endEditing(true)
+        }
+        .disposed(by: disposeBag)
+        
+        detailTextView.rx.didBeginEditing
+            .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
+            .bind(with: self) { owner, text in
                 
-                guard owner.detailTextView.text != writingViewLiterals.내용_플레이스_홀더.text else {
+                guard text != writingViewLiterals.내용_플레이스_홀더.text else {
                     owner.detailTextView.text = ""
                     return
                 }
+            }
+            .disposed(by: disposeBag)
+        
+        detailTextView.rx.didChange
+            .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
+            .bind(with: self) { owner, text in
                 
+                guard text != "" else { return }
+                owner.inputDetailText.accept(text)
             }
             .disposed(by: disposeBag)
         
         detailTextView.rx.didEndEditing
-            .bind(with: self) { owner, _ in
+            .withLatestFrom(detailTextView.rx.text.orEmpty)
+            .map { return $0.trimmingCharacters(in: .whitespaces) }
+            .bind(with: self) { owner, text in
                 
-                guard owner.detailTextView.text != "" else {
+                guard text != "" else {
                     owner.detailTextView.text = writingViewLiterals.내용_플레이스_홀더.text
                     return
                 }
+                owner.inputDetailText.accept(text)
             }
             .disposed(by: disposeBag)
         
@@ -112,6 +134,10 @@ final class WritingView: BaseView {
             .bind(with: self) { owner, _ in
                 print("tappedMainCardButton")
             }
+            .disposed(by: disposeBag)
+        
+        datePickerManager.formattedDateString
+            .bind(to: recordDate.rx.text)
             .disposed(by: disposeBag)
     }
     
@@ -136,7 +162,7 @@ final class WritingView: BaseView {
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, appTitle, titleTextField, titleUnderline, detailTextView, recordDate, setMainCardButton, selectFolderTitle, selectFolderButton, selectDateTitle, selectDateButton)
+        addSubviews(cardView, appTitle, titleTextField, titleUnderline, detailTextView, recordDate, setMainCardButton, selectFolderTitle, selectFolderButton, selectDateTitle, datePickerManager.datePickerStackView)
     }
     
     override func configureLayout() {
@@ -148,6 +174,7 @@ final class WritingView: BaseView {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(30)
             $0.height.equalTo(window.bounds.height / 2)
+            $0.bottom.lessThanOrEqualTo(keyboardLayoutGuide.snp.top).offset(50)
         }
         
         appTitle.snp.makeConstraints {
@@ -178,8 +205,8 @@ final class WritingView: BaseView {
         }
         
         setMainCardButton.snp.makeConstraints {
-            $0.top.equalTo(cardView.snp.bottom).offset(6)
-            $0.trailing.equalTo(cardView.snp.trailing)
+            $0.top.equalTo(cardView.snp.bottom).offset(10)
+            $0.trailing.equalTo(cardView.snp.trailing).offset(-10)
         }
         
         selectFolderTitle.snp.makeConstraints {
@@ -199,11 +226,12 @@ final class WritingView: BaseView {
             $0.leading.equalTo(cardView.snp.leading)
         }
         
-        selectDateButton.snp.makeConstraints {
-            $0.top.equalTo(selectDateTitle.snp.bottom).offset(8)
-            $0.leading.equalTo(selectDateTitle.snp.leading)
-            $0.height.equalTo(35)
-        }
+        datePickerManager.datePickerStackView.snp.makeConstraints {
+             $0.top.equalTo(selectDateTitle.snp.bottom).offset(8)
+             $0.leading.equalTo(selectDateTitle.snp.leading)
+             $0.trailing.lessThanOrEqualTo(cardView.snp.trailing)
+             $0.height.equalTo(35)
+         }
     }
 }
 
@@ -213,17 +241,15 @@ extension WritingView {
         case 타이틀_플레이스_홀더
         case 내용_플레이스_홀더
         case 페이스_ID
-        case 메인카드설정
         case 폴더_선택
         case 날짜_선택
         
         var text: String {
             switch self {
             case .카드타이틀: return "GG.NA"
-            case .타이틀_플레이스_홀더: return "(최대 6자) 사진의 타이틀을 정해주세요 :>"
+            case .타이틀_플레이스_홀더: return "(최대 7자) 사진의 타이틀을 정해주세요 :>"
             case .내용_플레이스_홀더: return "(선택) 선택한 사진에 남기고 싶은 추억을 적어보아요"
             case .페이스_ID: return "Face ID로 잠금 설정"
-            case .메인카드설정: return "폴더의 메인카드로 설정"
             case .폴더_선택: return "저장 폴더 선택"
             case .날짜_선택: return "날짜 선택하기"
             }

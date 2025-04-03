@@ -13,14 +13,15 @@ import RxSwift
 struct CardData {
     var folderName: String
     var imageData: UIImage
+    var imageScale: Bool
     var videoData: Data?
-    var filter: String = "none"
+    var filter: String
     var isSelectedMain: Bool
     var cardContent: CardContentData
     
     struct CardContentData {
-        var title: String?
-        var date: String?
+        var title: String? = ""
+        var date: String? = DatePickerManager.shared.todayDate()
         var detail: String?
         var location: String?
         var isSecretMode: Bool = false
@@ -32,23 +33,33 @@ final class CreateCardViewModel: InputOutputModel {
     struct Input {
         let pickedImageData: Observable<Data>
         let tappedCloseButton: Observable<Void>
+        let inputTitleText: Observable<String>
+        let tappedSaveButton: Observable<Void>
+        let isSelectedMainImage: Observable<Bool>
+        let selectedFolder: Observable<String>
+        let inputDetailText: Observable<String>
+        let zoomStatus: Observable<Bool>
     }
     
     struct Output {
         let downSampledImage: Driver<UIImage>
         let yesChangedData: Driver<Void>
         let noChangedData: Driver<Void>
+        let canSave: Driver<Bool>
     }
     
     private let cardData = BehaviorRelay<CardData?>(value: nil)
     private let initialCardData = BehaviorRelay<CardData?>(value: nil)
     private let disposeBag = DisposeBag()
     
+    private let pickedDate = DatePickerManager.shared.formattedDateString
+    
     init() {
         // 초기 데이터 설정
          let defaultCardData = CardData(
-             folderName: "",
+             folderName: "기본",
              imageData: UIImage(),
+             imageScale: true,
              videoData: nil,
              filter: "original",
              isSelectedMain: false,
@@ -64,11 +75,13 @@ final class CreateCardViewModel: InputOutputModel {
         let downSampledImage = PublishRelay<UIImage>()
         let yesChangedData = PublishRelay<Void>()
         let noChangedData = PublishRelay<Void>()
+        let canSave = PublishRelay<Bool>()
         
         // MARK: 옵셔널 처리를 위한 default 더미 데이터
         let defaultCardData = CardData(
-            folderName: "",
+            folderName: "기본",
             imageData: UIImage(),
+            imageScale: true,
             videoData: nil,
             filter: "original",
             isSelectedMain: false,
@@ -81,15 +94,102 @@ final class CreateCardViewModel: InputOutputModel {
                 var newData = currentData ?? defaultCardData
                 
                 guard let image = UIImage(data: imgData) else { return newData }
-                let downImage = image.downSample(scale: 0.8)
+                let orientationFixed = image.fixImageOrientation()
+                let downImage = orientationFixed.downSample(scale: 0.8)
                 newData.imageData = downImage
-                downSampledImage.accept(downImage)
+                downSampledImage.accept(downImage)  // UI로 다운샘플링 이미지 내보내기
                 
                 return newData
             }
             .bind(to: cardData)
             .disposed(by: disposeBag)
         
+        // zoomScale Info
+        input.zoomStatus
+            .withLatestFrom(cardData) { status, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.imageScale = status
+                
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // title
+        input.inputTitleText
+            .withLatestFrom(cardData) { title, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.title = title
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // detail
+        input.inputDetailText
+            .withLatestFrom(cardData) { detail, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.detail = detail
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 메인이미지 설정 유무
+        input.isSelectedMainImage
+            .withLatestFrom(cardData) { status, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.isSelectedMain = status
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 폴더 (** 폴더는 따로 Realm에 저장하기 XX - 이미 폴더 생성 시 저장시킴)
+        input.selectedFolder
+            .withLatestFrom(cardData) { folder, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.folderName = folder
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 날짜
+        pickedDate
+            .withLatestFrom(cardData) { date, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.date = date
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // saveButton
+        input.tappedSaveButton
+            .bind(with: self) { owner, _ in
+                
+                guard let currentData = owner.cardData.value,
+                      let initialData = owner.initialCardData.value else {
+                    // 데이터가 없는 경우 그냥 닫기
+                    canSave.accept(false)
+                    return
+                }
+                
+                print("현재 이미지: \(currentData.imageData)")
+                print("초기 이미지: \(initialData.imageData)")
+                print("현재 타이틀: \(String(describing: currentData.cardContent.title))")
+                print("초기 타이틀: \(String(describing: initialData.cardContent.title))")
+                
+                switch owner.allChanged(currentData: currentData, initialData: initialData) {
+                case true: canSave.accept(true)
+                case false: canSave.accept(false)
+                }
+                
+            }
+            .disposed(by: disposeBag)
+        
+        // closeButton
         input.tappedCloseButton
             .bind(with: self) { owner, _ in
                 
@@ -108,28 +208,45 @@ final class CreateCardViewModel: InputOutputModel {
         return Output(
             downSampledImage: downSampledImage.asDriver(onErrorDriveWith: .empty()),
             yesChangedData: yesChangedData.asDriver(onErrorDriveWith: .empty()),
-            noChangedData: noChangedData.asDriver(onErrorDriveWith: .empty())
+            noChangedData: noChangedData.asDriver(onErrorDriveWith: .empty()),
+            canSave: canSave.asDriver(onErrorDriveWith: .empty())
         )
     }
 }
 
 extension CreateCardViewModel {
     
+    private func hasChanges(currentData: CardData, initialData: CardData) -> Bool {
+        let isImageChanged = currentData.imageData != initialData.imageData
+        let isFolderNameChanged = (currentData.folderName != initialData.folderName)
+        let isTitleChanged = (currentData.cardContent.title != initialData.cardContent.title)
+        let isDateChanged = (currentData.cardContent.date != initialData.cardContent.date)
+        let isDetailChanged = (currentData.cardContent.detail != initialData.cardContent.detail)
+        let isMainSelectionChanged = (currentData.isSelectedMain != initialData.isSelectedMain)
+        let isScaleChanged = (currentData.imageScale != initialData.imageScale)
+        
+        return isImageChanged || isFolderNameChanged || isTitleChanged ||
+               isDateChanged || isDetailChanged || isMainSelectionChanged || isScaleChanged
+    }
+    
+    private func allChanged(currentData: CardData, initialData: CardData) -> Bool {
+        let isImageChanged = currentData.imageData != initialData.imageData
+        let isTitleChanged = (currentData.cardContent.title != initialData.cardContent.title)
+        
+        return isImageChanged && isTitleChanged
+    }
     
     // 창 닫기 전에 변경사항 유무 체크
     private func checkChangedData(currentData: CardData, initialData: CardData, noChangedData: PublishRelay<Void>, yesChangedData: PublishRelay<Void>) {
         
-        let isImageChanged = currentData.imageData.isEqual(initialData.imageData)
-        let isFolderNameChanged = (currentData.folderName != initialData.folderName)
-        let isTitleChanged = (currentData.cardContent.title != initialData.cardContent.title)
-        let isDateChanged = (currentData.cardContent.date != initialData.cardContent.date)
-        
-        if isImageChanged || isFolderNameChanged || isTitleChanged || isDateChanged {
+        if hasChanges(currentData: currentData, initialData: initialData) {
             // 데이터가 변경된 경우 알럿 띄우기
-            noChangedData.accept(())
+            yesChangedData.accept(())
+            print("변경됨")
         } else {
             // 데이터가 변경되지 않은 경우 그냥 닫기
-            yesChangedData.accept(())
+            noChangedData.accept(())
+            print("변경안됨")
         }
     }
 }

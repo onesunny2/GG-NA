@@ -24,6 +24,21 @@ extension UIImage {
         return UIImage(cgImage: scaledImage)
     }
     
+    func fixImageOrientation() -> UIImage {
+        // 이미지가 이미 올바른 방향이면 그대로 반환
+        if self.imageOrientation == .up {
+            return self
+        }
+        
+        // 이미지 방향 수정을 위한 그래픽 컨텍스트 생성
+        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        self.draw(in: CGRect(origin: .zero, size: self.size))
+        let normalizedImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        
+        return normalizedImage
+    }
+    
     func saveImageToDocument(filename: String) {
         
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }

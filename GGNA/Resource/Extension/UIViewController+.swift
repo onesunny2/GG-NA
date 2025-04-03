@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 extension UIViewController {
     
@@ -23,7 +24,7 @@ extension UIViewController {
             vc.view.addSubview(snapshot)
             window.rootViewController = vc
             
-            UIView.animate(withDuration: 0.5, animations: {
+            UIView.animate(withDuration: 0.3, animations: {
                 snapshot.alpha = 0
             }, completion: { _ in
                 snapshot.removeFromSuperview()
@@ -37,7 +38,7 @@ extension UIViewController {
         }
     }
     
-    func textFieldAlert() {
+    func textFieldAlert(completion: @escaping ((String) -> ())) {
         
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
@@ -61,9 +62,10 @@ extension UIViewController {
             title: "생성",
             style: .default) { _ in
                 // 텍스트필드 입력된 값 가져오기
-                guard let text = alert.textFields?.first?.text else { return }
+                guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
                 
-                print("입력한 텍스트: \(text)")
+                let folderName = String(text.prefix(7))
+                completion(folderName)
             }
         
         let cancelAction = UIAlertAction(title: "취소", style: .default)
@@ -99,5 +101,55 @@ extension UIViewController {
         alert.view.tintColor = colors.main
         
         self.present(alert, animated: true)
+    }
+    
+    func customToast(type: ToastMessage) {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        view.subviews.filter { $0.tag == 777 }.forEach { $0.removeFromSuperview() }
+        
+        let containerView = UIView()
+        containerView.tag = 777
+        containerView.backgroundColor = colors.background.withAlphaComponent(0.8)
+        containerView.layer.cornerRadius = 16
+        containerView.clipsToBounds = true
+        
+        let message = BaseUILabel(
+            text: type.message,
+            color: colors.main,
+            alignment: .center,
+            font: FontLiterals.basicBadge15,
+            line: 0
+        )
+        
+        containerView.addSubview(message)
+        view.addSubview(containerView)
+        
+        // layout
+        message.snp.makeConstraints {
+            $0.verticalEdges.equalToSuperview().inset(12)
+            $0.horizontalEdges.equalToSuperview().inset(16)
+        }
+        
+        containerView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            containerView.alpha = 1
+         }, completion: { _ in
+             UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveEaseOut, animations: {
+                 containerView.alpha = 0
+             }, completion: { _ in
+                 containerView.removeFromSuperview()
+                 
+                 // 저장완료면 애니메이션 끝나고 닫히도록
+                 guard type == .카드저장_성공 else { return }
+                 self.dismiss(animated: true)
+             })
+         })
     }
 }

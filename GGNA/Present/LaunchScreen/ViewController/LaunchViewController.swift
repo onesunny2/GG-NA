@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import RealmSwift
 import RxCocoa
 import RxSwift
 
@@ -25,6 +26,31 @@ final class LaunchViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        getFolderFromRealm()
+    }
+    
+    private func getFolderFromRealm() {
+        let realm = try! Realm()
+        
+        let data = realm.objects(Folder.self)
+        guard data.isEmpty else { return }
+        
+        do {
+            try realm.write {
+               
+                let folder = Folder(
+                    folderName: "기본",
+                    createFolderDate: Date(),
+                    photoCards: List<PhotoCardRecord>()
+                )
+                
+                realm.add(folder)
+                print("기본폴더 추가 완료")
+            }
+            
+        } catch {
+            print("기본 폴더 추가 실패")
+        }
     }
     
     override func configureBind() {
