@@ -47,6 +47,8 @@ final class CreateCardViewModel: InputOutputModel {
     private let initialCardData = BehaviorRelay<CardData?>(value: nil)
     private let disposeBag = DisposeBag()
     
+    private let pickedDate = DatePickerManager.shared.formattedDateString
+    
     init() {
         // 초기 데이터 설정
          let defaultCardData = CardData(
@@ -108,6 +110,16 @@ final class CreateCardViewModel: InputOutputModel {
             .withLatestFrom(cardData) { status, currentData -> CardData in
                 var newData = currentData ?? defaultCardData
                 newData.isSelectedMain = status
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 날짜
+        pickedDate
+            .withLatestFrom(cardData) { date, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.date = date
                 return newData
             }
             .bind(to: cardData)
