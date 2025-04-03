@@ -60,7 +60,9 @@ final class ArchiveFolderViewController: BaseViewController {
         
         addFolderButton.rx.tap
             .bind(with: self) { owner, _ in
-                owner.textFieldAlert()
+                owner.textFieldAlert { name in
+                    print("name: \(name)")
+                }
             }
             .disposed(by: disposeBag)
         
