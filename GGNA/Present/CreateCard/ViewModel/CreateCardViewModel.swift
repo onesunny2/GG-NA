@@ -145,7 +145,7 @@ final class CreateCardViewModel: InputOutputModel {
             .bind(to: cardData)
             .disposed(by: disposeBag)
         
-        // 폴더
+        // 폴더 (** 폴더는 따로 Realm에 저장하기 XX - 이미 폴더 생성 시 저장시킴)
         input.selectedFolder
             .withLatestFrom(cardData) { folder, currentData -> CardData in
                 var newData = currentData ?? defaultCardData

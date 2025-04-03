@@ -93,7 +93,7 @@ final class SelectedFolderButton: UIButton {
     
     func addNewFolder(name: String) {
         // Realm에 새 폴더 추가
-        let newFolder = Folder(folderName: name, photoCards: List<PhotoCardRecord>())
+        let newFolder = Folder(folderName: name, createFolderDate: Date(), photoCards: List<PhotoCardRecord>())
         try? realm.write {
             realm.add(newFolder)
         }

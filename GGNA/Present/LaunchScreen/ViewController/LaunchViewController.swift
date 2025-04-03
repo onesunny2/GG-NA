@@ -40,6 +40,7 @@ final class LaunchViewController: BaseViewController {
                
                 let folder = Folder(
                     folderName: "기본",
+                    createFolderDate: Date(),
                     photoCards: List<PhotoCardRecord>()
                 )
                 
