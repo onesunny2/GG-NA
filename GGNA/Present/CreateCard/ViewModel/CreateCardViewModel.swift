@@ -281,8 +281,8 @@ extension CreateCardViewModel {
                 
                 
                 // 이미지 Document 저장
-                userData.imageData.saveImageToDocument(filename: cardRecord.imageName!)
-                print("imageName: \(cardRecord.imageName!)")
+                userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName!)
+                
                 folder.photoCards.append(cardRecord)
                 print("Save Realm complete")
             }

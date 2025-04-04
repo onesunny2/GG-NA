@@ -47,7 +47,29 @@ final class LaunchViewController: BaseViewController {
                 )
                 
                 realm.add(folder)
-                print("기본폴더 추가 완료")
+                
+                guard let defaultFolder = realm.objects(Folder.self).filter({ $0.folderName == "기본" }).first else { return }
+                
+                // default 사진 추가
+                let cardContent = CardContent()
+                cardContent.title = "행복한 토끼"
+                cardContent.createDate = Date()
+                cardContent.date = "2024.05.07 화요일"
+                cardContent.secretMode = false
+                cardContent.detail = "우리들의 소중한 추억"
+                
+                let defaultPhoto = PhotoCardRecord(
+                    imageScale: true,
+                    videoData: Data(),
+                    filter: Filter.original.name,
+                    isSelectedMain: true,
+                    cardContent: cardContent
+                )
+                
+                defaultFolder.photoCards.append(defaultPhoto)
+                
+                // 이미지 Document 저장
+                UIImage(resource: .ggnaDefault).saveImageToDocument(foldername: "기본", filename: defaultPhoto.imageName!)
             }
             
         } catch {

@@ -39,11 +39,26 @@ extension UIImage {
         return normalizedImage
     }
     
-    func saveImageToDocument(filename: String) {
+    func saveImageToDocument(foldername: String, filename: String) {
         
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         
-        let fileURL = documentDirectory.appendingPathComponent("\(filename).jpg")
+        // 폴더경로
+        let folderURL = documentDirectory.appendingPathComponent(foldername)
+        
+        if !FileManager.default.fileExists(atPath: folderURL.path) {
+            
+            do {
+                // 없으면 폴더 생성
+                try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
+                
+            } catch {
+                print("폴더 생성 실패")
+                return
+            }
+        }
+        
+        let fileURL = folderURL.appendingPathComponent("\(filename).jpg")
         
         guard let data = self.jpegData(compressionQuality: 1) else { return }
         
