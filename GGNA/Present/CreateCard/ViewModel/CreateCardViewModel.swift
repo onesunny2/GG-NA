@@ -279,6 +279,19 @@ extension CreateCardViewModel {
                     cardContent: cardContent
                 )
                 
+                // 이미 폴더에 메인 이미지가 존재한다면 -> 기존 메인은 false로 바꾸도록
+                if userData.isSelectedMain {
+                    let existData = realm.objects(PhotoCardRecord.self).filter("Any parentFolder.folderName == %@", folderName)
+                    
+                    guard existData.count != 0 else { return }
+                    
+                    let existPhoto = existData.filter { $0.isSelectedMain == true }
+
+                    existPhoto.forEach {
+                        $0.isSelectedMain = false
+                    }
+                }
+                
                 // 이미지 Document 저장
                 userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName)
                 
