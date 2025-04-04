@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import RxCocoa
+import RxSwift
 
 extension UIViewController {
     
@@ -98,6 +100,33 @@ extension UIViewController {
         alert.addAction(cancelAction)
         alert.addAction(okayAction)
         
+        alert.view.tintColor = colors.main
+        
+        self.present(alert, animated: true)
+    }
+    
+    func deleteFoldersAlert(completion: @escaping (() -> ())) {
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        let alert = UIAlertController(
+            title: "경고",
+            message: "해당 폴더에 있는 사진도 함께 삭제됩니다.",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction = UIAlertAction(
+            title: "삭제",
+            style: .default) { _ in
+                completion()
+            }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .default)
+        
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+    
         alert.view.tintColor = colors.main
         
         self.present(alert, animated: true)
