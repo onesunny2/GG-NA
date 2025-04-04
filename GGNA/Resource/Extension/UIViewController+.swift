@@ -170,7 +170,7 @@ extension UIViewController {
         UIView.animate(withDuration: 0.3, animations: {
             containerView.alpha = 1
          }, completion: { _ in
-             UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveEaseOut, animations: {
+             UIView.animate(withDuration: 0.3, delay: 0.8, options: .curveEaseOut, animations: {
                  containerView.alpha = 0
              }, completion: { _ in
                  containerView.removeFromSuperview()
