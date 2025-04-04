@@ -70,13 +70,21 @@ extension UIImage {
         }
     }
     
-    func loadImageFromDocument(fileName: String) -> UIImage? {
+    func loadImageFromDocument(foldername: String, fileName: String) -> UIImage? {
         
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return nil
         }
         
-        let fileURL = documentDirectory.appendingPathComponent("\(fileName).jpg")
+        // 폴더 경로
+        let folderURL = documentDirectory.appendingPathComponent(foldername)
+        
+        if !FileManager.default.fileExists(atPath: folderURL.path) {
+            print("\(foldername)폴더가 존재하지 않습니다.")
+            return nil
+        }
+        
+        let fileURL = folderURL.appendingPathComponent("\(fileName).jpg")
         
         if FileManager.default.fileExists(atPath: fileURL.path) {
             return UIImage(contentsOfFile: fileURL.path)

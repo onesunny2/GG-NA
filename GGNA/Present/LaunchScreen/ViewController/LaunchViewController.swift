@@ -69,7 +69,7 @@ final class LaunchViewController: BaseViewController {
                 defaultFolder.photoCards.append(defaultPhoto)
                 
                 // 이미지 Document 저장
-                UIImage(resource: .ggnaDefault).saveImageToDocument(foldername: "기본", filename: defaultPhoto.imageName!)
+                UIImage(resource: .ggnaDefault).saveImageToDocument(foldername: "기본", filename: defaultPhoto.imageName)
             }
             
         } catch {

@@ -61,7 +61,7 @@ final class CreateCardViewModel: InputOutputModel {
              imageData: UIImage(),
              imageScale: true,
              videoData: nil,
-             filter: "original",
+             filter: Filter.original.name,
              isSelectedMain: false,
              cardContent: CardData.CardContentData()
          )
@@ -83,7 +83,7 @@ final class CreateCardViewModel: InputOutputModel {
             imageData: UIImage(),
             imageScale: true,
             videoData: nil,
-            filter: "original",
+            filter: Filter.original.name,
             isSelectedMain: false,
             cardContent: CardData.CardContentData()
         )
@@ -280,7 +280,7 @@ extension CreateCardViewModel {
                 )
                 
                 // 이미지 Document 저장
-                userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName!)
+                userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName)
                 
                 folder.photoCards.append(cardRecord)
                 print("Save Realm complete")

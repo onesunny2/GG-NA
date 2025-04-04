@@ -10,7 +10,7 @@ import RealmSwift
 
 final class PhotoCardRecord: Object, Identifiable {
     @Persisted(primaryKey: true) var id: ObjectId
-    @Persisted var imageName: String?
+    @Persisted var imageName: String
     @Persisted var imageScale: Bool
     @Persisted var videoData: Data?
     @Persisted var filter: String

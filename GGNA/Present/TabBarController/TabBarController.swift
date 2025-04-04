@@ -199,7 +199,7 @@ extension CustomTabBarController {
         
         let tabBarController = CustomTabBarController()
         
-        let homeRP = DummyHomePhotoRepository()
+        let homeRP = DefaultHomePhotoRepository()
         let homeVM = HomeViewModel(repository: homeRP)
         let homeVC = HomeViewController(viewModel: homeVM)
         let homeNav = UINavigationController(rootViewController: homeVC)
