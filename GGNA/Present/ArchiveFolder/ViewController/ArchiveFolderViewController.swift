@@ -19,6 +19,9 @@ final class ArchiveFolderViewController: BaseViewController {
     private let viewModel: ArchiveFolderViewModel
     private let disposeBag = DisposeBag()
     
+    private let folderName = PublishRelay<String>()
+    private let viewWillAppear = PublishRelay<Void>()
+    
     private let addFolderButton = CustomBarButton(ImageLiterals.folderPlus)
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
     private var dataSource: UICollectionViewDiffableDataSource<ArchiveFolderSection, ArchiveFolderEntity>!
@@ -33,14 +36,26 @@ final class ArchiveFolderViewController: BaseViewController {
         super.viewDidLoad()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewWillAppear.accept(())
+    }
+    
     override func configureBind() {
         
         let input = ArchiveFolderViewModel.Input(
-            viewDidLoad: Observable.just(())
+            viewWillAppear: viewWillAppear.asObservable(),
+            newFolderName: folderName.asObservable()
         )
         let output = viewModel.transform(from: input)
         
         output.folderData
+            .drive(with: self) { owner, entity in
+                owner.applySnapshot(with: entity)
+            }
+            .disposed(by: disposeBag)
+        
+        output.completeSaveNewFolder
             .drive(with: self) { owner, entity in
                 owner.applySnapshot(with: entity)
             }
@@ -61,7 +76,7 @@ final class ArchiveFolderViewController: BaseViewController {
         addFolderButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.textFieldAlert { name in
-                    print("name: \(name)")
+                    owner.folderName.accept(name)
                 }
             }
             .disposed(by: disposeBag)

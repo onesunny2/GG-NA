@@ -26,7 +26,19 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
             
             let mainCard = Array($0.photoCards.filter { $0.isSelectedMain == true }).first
             
-            guard let mainCard else { return }
+            guard let mainCard else {
+                
+                let value = ArchiveFolderEntity(
+                    folderName: $0.folderName,
+                    createDate: $0.createFolderDate,
+                    photoCount: "+" + $0.photoCards.count.formatted(),
+                    mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard?.imageName ?? "") ?? UIImage()
+                )
+                
+                entities.append(value)
+                
+                return
+            }
             
             let value = ArchiveFolderEntity(
                 folderName: $0.folderName,
