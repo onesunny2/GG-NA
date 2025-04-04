@@ -130,12 +130,6 @@ final class WritingView: BaseView {
             }
             .disposed(by: disposeBag)
         
-        setMainCardButton.rx.tap
-            .bind(with: self) { owner, _ in
-                print("tappedMainCardButton")
-            }
-            .disposed(by: disposeBag)
-        
         datePickerManager.formattedDateString
             .bind(to: recordDate.rx.text)
             .disposed(by: disposeBag)

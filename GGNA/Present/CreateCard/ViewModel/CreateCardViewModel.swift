@@ -20,8 +20,8 @@ struct CardData {
     var cardContent: CardContentData
     
     struct CardContentData {
-        var title: String? = ""
-        var date: String? = DatePickerManager.shared.todayDate()
+        var title: String = ""
+        var date: String = DatePickerManager.shared.todayDate()
         var detail: String?
         var location: String?
         var isSecretMode: Bool = false
@@ -61,7 +61,7 @@ final class CreateCardViewModel: InputOutputModel {
              imageData: UIImage(),
              imageScale: true,
              videoData: nil,
-             filter: "original",
+             filter: Filter.original.name,
              isSelectedMain: false,
              cardContent: CardData.CardContentData()
          )
@@ -83,7 +83,7 @@ final class CreateCardViewModel: InputOutputModel {
             imageData: UIImage(),
             imageScale: true,
             videoData: nil,
-            filter: "original",
+            filter: Filter.original.name,
             isSelectedMain: false,
             cardContent: CardData.CardContentData()
         )
@@ -176,14 +176,12 @@ final class CreateCardViewModel: InputOutputModel {
                     return
                 }
                 
-                print("현재 이미지: \(currentData.imageData)")
-                print("초기 이미지: \(initialData.imageData)")
-                print("현재 타이틀: \(String(describing: currentData.cardContent.title))")
-                print("초기 타이틀: \(String(describing: initialData.cardContent.title))")
-                
                 switch owner.allChanged(currentData: currentData, initialData: initialData) {
-                case true: canSave.accept(true)
-                case false: canSave.accept(false)
+                case true:  // Realm 데이터 저장
+                    canSave.accept(true)
+                    owner.savePhotoCard()
+                case false: // 저장 못하도록 block
+                    canSave.accept(false)
                 }
                 
             }
@@ -247,6 +245,63 @@ extension CreateCardViewModel {
             // 데이터가 변경되지 않은 경우 그냥 닫기
             noChangedData.accept(())
             print("변경안됨")
+        }
+    }
+    
+    // 저장버튼 클릭 시 데이터 저장 로직
+    private func savePhotoCard() {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let userData = cardData.value else { return }
+                let content = userData.cardContent
+                
+                // 선택한 폴더에 저장
+                let folderName = userData.folderName
+                guard let folder = realm.objects(Folder.self).filter({ $0.folderName == folderName }).first else { return }
+                
+                let cardContent = CardContent()
+                cardContent.title = content.title
+                cardContent.date = content.date
+                cardContent.createDate = Date()
+                cardContent.detail = content.detail ?? ""
+                cardContent.location = content.location ?? ""
+                cardContent.secretMode = content.isSecretMode
+                
+                let cardRecord = PhotoCardRecord(
+                    imageScale: userData.imageScale,
+                    videoData: userData.videoData ?? Data(),
+                    filter: userData.filter,
+                    isSelectedMain: userData.isSelectedMain,
+                    cardContent: cardContent
+                )
+                
+                // 이미 폴더에 메인 이미지가 존재한다면 -> 기존 메인은 false로 바꾸도록
+                if userData.isSelectedMain {
+                    let existData = realm.objects(PhotoCardRecord.self).filter("Any parentFolder.folderName == %@", folderName)
+                    
+                    guard existData.count != 0 else { return }
+                    
+                    let existPhoto = existData.filter { $0.isSelectedMain == true }
+
+                    existPhoto.forEach {
+                        $0.isSelectedMain = false
+                    }
+                }
+                
+                // 이미지 Document 저장
+                userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName)
+                
+                folder.photoCards.append(cardRecord)
+                print("Save Realm complete")
+            }
+            
+        } catch {
+            // 저장 실패 토스트 메시지
+            print("Failed To Save")
         }
     }
 }

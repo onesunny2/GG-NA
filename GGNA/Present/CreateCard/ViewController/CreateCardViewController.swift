@@ -85,6 +85,14 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        writingView.isMainImage
+            .bind(with: self) { owner, value in
+                
+                guard value else { return }
+                owner.customToast(type: .메인사진_설정)
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.zoomStatus
             .bind(with: self) { owner, status in
                 owner.photoUploadView.setZoomIcon(status)
@@ -269,7 +277,9 @@ extension CreateCardViewController: PHPickerViewControllerDelegate {
             do {
                 let imageData = try await loadImageData(from: result.itemProvider)
                 print("imageData: \(imageData)")
-                // TODO: Data 결과값 반환 필요
+                
+                zoomStatus.accept(true)
+                // TODO: Data 결과값 반환 필요 ( 필터기능 업데이트 시 Data로 지지고볶아야 함 )
                 pickedImageData.accept(imageData)
                 
             } catch {

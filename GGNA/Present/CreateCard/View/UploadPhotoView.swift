@@ -48,6 +48,7 @@ final class UploadPhotoView: BaseView {
     }
     
     func setImage(_ image: UIImage) {
+        cardImageView.contentMode = .scaleAspectFill
         cardImageView.image = image
         uploadIcon.isHidden = true
         uploadButton.isHidden = true
@@ -61,7 +62,7 @@ final class UploadPhotoView: BaseView {
                           options: .transitionCrossDissolve,
                           animations: {
            
-            self.cardImageView.contentMode = status ? .scaleAspectFit : .scaleAspectFill
+            self.cardImageView.contentMode = status ? .scaleAspectFill : .scaleAspectFit
         }, completion: nil)
         
        
@@ -69,14 +70,14 @@ final class UploadPhotoView: BaseView {
                           duration: 0.2,
                           options: .transitionCrossDissolve,
                           animations: {
-            self.zoomInIcon.isHidden = status ? false : true
+            self.zoomInIcon.isHidden = status ? true : false
         }, completion: nil)
         
         UIView.transition(with: self.zoomOutIcon,
                           duration: 0.2,
                           options: .transitionCrossDissolve,
                           animations: {
-            self.zoomOutIcon.isHidden = status ? true : false
+            self.zoomOutIcon.isHidden = status ? false : true
         }, completion: nil)
     }
     
@@ -84,13 +85,13 @@ final class UploadPhotoView: BaseView {
         
         zoomOutIcon.rx.tapgesture
             .bind(with: self) { owner, _ in
-                owner.zoomStatus.accept(true)
+                owner.zoomStatus.accept(false)
             }
             .disposed(by: disposeBag)
         
         zoomInIcon.rx.tapgesture
             .bind(with: self) { owner, _ in
-                owner.zoomStatus.accept(false)
+                owner.zoomStatus.accept(true)
             }
             .disposed(by: disposeBag)
         

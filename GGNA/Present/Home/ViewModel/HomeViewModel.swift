@@ -32,11 +32,12 @@ final class HomeViewModel: InputOutputModel {
     
     func transform(from input: Input) -> Output {
         
-        let currentPhotos = BehaviorRelay<[HomePhotoCardEntity]>(value: repository.getPhotosFromFolder())
+        // TODO: 나중에 폴더 선택 가능하게 하려면 UserDefault로 현재 선택한 폴더정보 저장 필요
+        let currentPhotos = BehaviorRelay<[HomePhotoCardEntity]>(value: repository.getPhotosFromFolder(folderName: "기본"))
         
         input.viewDidLoad
             .bind(with: self) { owner, _ in
-                currentPhotos.accept(owner.repository.getPhotosFromFolder())
+                currentPhotos.accept(owner.repository.getPhotosFromFolder(folderName: "기본"))
             }
             .disposed(by: disposeBag)
         
