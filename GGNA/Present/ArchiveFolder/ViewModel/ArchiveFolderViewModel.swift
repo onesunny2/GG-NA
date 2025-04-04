@@ -86,6 +86,9 @@ extension ArchiveFolderViewModel {
                     
                     guard let folder = folders.filter("folderName == %@", $0.folderName).first else { return }
                     
+                    let photoRecords = folder.photoCards
+                    
+                    realm.delete(photoRecords)
                     realm.delete(folder)
                     deleteFolderContents(folderName: $0.folderName)
                 }
