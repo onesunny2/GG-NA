@@ -17,6 +17,10 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
     
     func getFolderInfo() -> [ArchiveFolderEntity] {
         
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let image = color.replaceMainImage(for: theme)
+        
         let realm = try! Realm()
         let folders = Array(realm.objects(Folder.self))
         
@@ -28,15 +32,31 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
             
             guard let mainCard else {
                 
-                let value = ArchiveFolderEntity(
-                    folderName: $0.folderName,
-                    createDate: $0.createFolderDate,
-                    photoCount: "+" + $0.photoCards.count.formatted(),
-                    mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard?.imageName ?? "") ?? UIImage()
-                )
-                
-                entities.append(value)
-                
+                switch $0.photoCards.count {
+                case 0:
+                    let value = ArchiveFolderEntity(
+                        folderName: $0.folderName,
+                        createDate: $0.createFolderDate,
+                        photoCount: "+" + $0.photoCards.count.formatted(),
+                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard?.imageName ?? "") ?? (image ?? UIImage(resource: .defaultDarkPink))
+                    )
+                    
+                    entities.append(value)
+                    
+                default:  // MARK: 사진은 있는데 메인으로 지정한 사진이 없을 때 (가장 처음 사진으로)
+                    
+                    let recent = $0.photoCards.sorted { $0.cardContent?.createDate ?? Date() < $1.cardContent?.createDate ?? Date() }.first!
+                    
+                    let value = ArchiveFolderEntity(
+                        folderName: $0.folderName,
+                        createDate: $0.createFolderDate,
+                        photoCount: "+" + $0.photoCards.count.formatted(),
+                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: recent.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink))
+                    )
+                    
+                    entities.append(value)
+                }
+
                 return
             }
             
