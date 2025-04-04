@@ -32,6 +32,8 @@ final class LaunchViewController: BaseViewController {
     private func getFolderFromRealm() {
         let realm = try! Realm()
         
+        print(realm.configuration.fileURL!)
+        
         let data = realm.objects(Folder.self)
         guard data.isEmpty else { return }
         

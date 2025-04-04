@@ -21,14 +21,15 @@ final class PhotoCardRecord: Object, Identifiable {
     @Persisted(originProperty: "photoCards") var parentFolder: LinkingObjects<Folder>
     
     convenience init(
-        imageName: String,
+        imageScale: Bool,
         videoData: Data,
         filter: String,
         isSelectedMain: Bool,
         cardContent: CardContent
     ) {
         self.init()
-        self.imageName = imageName
+        self.imageName = self.id.stringValue
+        self.imageScale = imageScale
         self.videoData = videoData
         self.filter = filter
         self.isSelectedMain = isSelectedMain
