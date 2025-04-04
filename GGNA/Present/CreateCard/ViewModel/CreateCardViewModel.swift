@@ -279,7 +279,6 @@ extension CreateCardViewModel {
                     cardContent: cardContent
                 )
                 
-                
                 // 이미지 Document 저장
                 userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName!)
                 

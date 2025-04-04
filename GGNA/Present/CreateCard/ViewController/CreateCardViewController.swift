@@ -85,6 +85,14 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        writingView.isMainImage
+            .bind(with: self) { owner, value in
+                
+                guard value else { return }
+                owner.customToast(type: .메인사진_설정)
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.zoomStatus
             .bind(with: self) { owner, status in
                 owner.photoUploadView.setZoomIcon(status)
