@@ -70,7 +70,7 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
             entities.append(value)
         }
         
-        entities.sort { $0.createDate > $1.createDate }
+        entities.sort { $0.createDate < $1.createDate }
         
         return entities
     }

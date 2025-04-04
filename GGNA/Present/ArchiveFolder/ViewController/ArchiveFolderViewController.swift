@@ -21,8 +21,15 @@ final class ArchiveFolderViewController: BaseViewController {
     
     private let folderName = PublishRelay<String>()
     private let viewWillAppear = PublishRelay<Void>()
+    private let deleteFolders = PublishRelay<[ArchiveFolderEntity]>()
+    
+    private var isSelectionModeActive = false
+    private var selectedFolders = Set<ArchiveFolderEntity>()
     
     private let addFolderButton = CustomBarButton(ImageLiterals.folderPlus)
+    private let deleteFolderButton = CustomBarButton(ImageLiterals.trashFill)
+    private let rightStackView = UIStackView()
+    
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
     private var dataSource: UICollectionViewDiffableDataSource<ArchiveFolderSection, ArchiveFolderEntity>!
 
@@ -45,7 +52,8 @@ final class ArchiveFolderViewController: BaseViewController {
         
         let input = ArchiveFolderViewModel.Input(
             viewWillAppear: viewWillAppear.asObservable(),
-            newFolderName: folderName.asObservable()
+            newFolderName: folderName.asObservable(),
+            deleteFolders: deleteFolders.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -66,10 +74,29 @@ final class ArchiveFolderViewController: BaseViewController {
                 
                 guard let entity = owner.dataSource.itemIdentifier(for: indexPath) else { return }
                 
-                let rp = DummyArchiveFolderRepository()
-                let vm = ArchiveDetailViewModel(repository: rp, folder: entity.folderName)
-                let vc = ArchiveDetailViewController(viewModel: vm)
-                owner.viewTransition(type: .navigation, vc: vc)
+                switch owner.isSelectionModeActive {
+                case true:
+                    
+                    guard entity.folderName != "기본" else {
+                        owner.customToast(type: .기본폴더_삭제)
+                        return
+                    }
+                    
+                    if owner.selectedFolders.contains(entity) {
+                        owner.selectedFolders.remove(entity)
+                    } else {
+                        owner.selectedFolders.insert(entity)
+                    }
+                    
+                    guard let cell = owner.collectionView.cellForItem(at: indexPath) as? ArchiveFolderCollectionViewCell else { return }
+                    cell.selectedToDelete(isSelected: owner.selectedFolders.contains(entity))
+                   
+                case false:
+                    let rp = DummyArchiveFolderRepository()
+                    let vm = ArchiveDetailViewModel(repository: rp, folder: entity.folderName)
+                    let vc = ArchiveDetailViewController(viewModel: vm)
+                    owner.viewTransition(type: .navigation, vc: vc)
+                }
             }
             .disposed(by: disposeBag)
         
@@ -77,6 +104,27 @@ final class ArchiveFolderViewController: BaseViewController {
             .bind(with: self) { owner, _ in
                 owner.textFieldAlert { name in
                     owner.folderName.accept(name)
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        deleteFolderButton.rx.tap
+            .bind(with: self) { owner, _ in
+                
+                switch owner.isSelectionModeActive {
+                case true:
+                    if !owner.selectedFolders.isEmpty {
+                        // 한번 더 경고 문구로 삭제 할 것인지 물어보기
+                        owner.deleteFoldersAlert {
+                            owner.deleteFolders.accept(Array(owner.selectedFolders))
+                            owner.toggleSelectionMode()
+                        }
+                    } else {
+                        owner.toggleSelectionMode()
+                    }
+                    
+                case false:
+                    owner.toggleSelectionMode()
                 }
             }
             .disposed(by: disposeBag)
@@ -95,6 +143,29 @@ final class ArchiveFolderViewController: BaseViewController {
                 owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func toggleSelectionMode() {
+        isSelectionModeActive = !isSelectionModeActive
+        
+        // 네비게이션 바 아이템 상태 변경
+        if isSelectionModeActive {
+            deleteFolderButton.setImage(ImageLiterals.minusFill, for: .normal)
+            addFolderButton.isHidden = true
+            navigationItem.title = NavigationTitle.폴더삭제.title
+        } else {
+            deleteFolderButton.setImage(ImageLiterals.trashFill, for: .normal)
+            addFolderButton.isHidden = false
+            navigationItem.title = NavigationTitle.보관함.title
+            
+            selectedFolders.removeAll()
+            
+            for indexPath in collectionView.indexPathsForVisibleItems {
+                if let cell = collectionView.cellForItem(at: indexPath) as? ArchiveFolderCollectionViewCell {
+                    cell.selectedToDelete(isSelected: false)
+                }
+            }
+        }
     }
     
     private func configureDataSource() {
@@ -155,16 +226,23 @@ final class ArchiveFolderViewController: BaseViewController {
         navigationItem.title = NavigationTitle.보관함.title
         navigationItem.backButtonTitle = ""
         
-        let rightBarButtonItem = UIBarButtonItem(customView: addFolderButton)
+        let rightBarButtonItem = UIBarButtonItem(customView: rightStackView)
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
     override func configureView() {
+        
+        rightStackView.distribution = .equalSpacing
+        rightStackView.axis = .horizontal
+        rightStackView.alignment = .center
+        rightStackView.spacing = 10
+        
         collectionView.backgroundColor = .clear
         collectionView.register(ArchiveFolderCollectionViewCell.self, forCellWithReuseIdentifier: ArchiveFolderCollectionViewCell.identifier)
     }
     
     override func configureHierarchy() {
+        rightStackView.addArrangedSubviews(addFolderButton, deleteFolderButton)
         view.addSubview(collectionView)
     }
     
