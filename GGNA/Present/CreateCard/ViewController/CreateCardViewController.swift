@@ -269,7 +269,9 @@ extension CreateCardViewController: PHPickerViewControllerDelegate {
             do {
                 let imageData = try await loadImageData(from: result.itemProvider)
                 print("imageData: \(imageData)")
-                // TODO: Data 결과값 반환 필요
+                
+                zoomStatus.accept(true)
+                // TODO: Data 결과값 반환 필요 ( 필터기능 업데이트 시 Data로 지지고볶아야 함 )
                 pickedImageData.accept(imageData)
                 
             } catch {
