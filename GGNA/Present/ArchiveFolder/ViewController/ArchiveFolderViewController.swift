@@ -48,6 +48,13 @@ final class ArchiveFolderViewController: BaseViewController {
         viewWillAppear.accept(())
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        guard isSelectionModeActive else { return }
+        toggleSelectionMode()
+    }
+    
     override func configureBind() {
         
         let input = ArchiveFolderViewModel.Input(
