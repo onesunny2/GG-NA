@@ -204,7 +204,7 @@ extension CustomTabBarController {
         let homeVC = HomeViewController(viewModel: homeVM)
         let homeNav = UINavigationController(rootViewController: homeVC)
         
-        let folderRP = DummyArchiveFolderRepository()
+        let folderRP = DefaultArchiveFolderRepository()
         let folderVM = ArchiveFolderViewModel(repository: folderRP)
         let folderVC = ArchiveFolderViewController(viewModel: folderVM)
         let folderNav = UINavigationController(rootViewController: folderVC)

@@ -33,4 +33,5 @@ enum ImageLiterals {
     static let paintpalette: UIImage? = UIImage(systemName: "paintpalette.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
     static let folderPlus: UIImage? = UIImage(systemName: "folder.fill.badge.plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
     static let trashFill: UIImage? = UIImage(systemName: "trash.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
+    static let minusFill: UIImage? = UIImage(systemName: "minus.circle.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
 }

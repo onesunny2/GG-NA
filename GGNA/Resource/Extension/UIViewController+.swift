@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import RxCocoa
+import RxSwift
 
 extension UIViewController {
     
@@ -103,6 +105,33 @@ extension UIViewController {
         self.present(alert, animated: true)
     }
     
+    func deleteFoldersAlert(completion: @escaping (() -> ())) {
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        let alert = UIAlertController(
+            title: "경고",
+            message: "해당 폴더에 있는 사진도 함께 삭제됩니다.",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction = UIAlertAction(
+            title: "삭제",
+            style: .default) { _ in
+                completion()
+            }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .default)
+        
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+    
+        alert.view.tintColor = colors.main
+        
+        self.present(alert, animated: true)
+    }
+    
     func customToast(type: ToastMessage) {
         
         let theme = CurrentTheme.currentTheme.theme
@@ -141,7 +170,7 @@ extension UIViewController {
         UIView.animate(withDuration: 0.3, animations: {
             containerView.alpha = 1
          }, completion: { _ in
-             UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveEaseOut, animations: {
+             UIView.animate(withDuration: 0.3, delay: 0.8, options: .curveEaseOut, animations: {
                  containerView.alpha = 0
              }, completion: { _ in
                  containerView.removeFromSuperview()

@@ -261,6 +261,7 @@ extension CreateCardViewModel {
                 
                 // 선택한 폴더에 저장
                 let folderName = userData.folderName
+                print("선택한 폴더: \(folderName)")
                 guard let folder = realm.objects(Folder.self).filter({ $0.folderName == folderName }).first else { return }
                 
                 let cardContent = CardContent()
@@ -283,17 +284,19 @@ extension CreateCardViewModel {
                 if userData.isSelectedMain {
                     let existData = realm.objects(PhotoCardRecord.self).filter("Any parentFolder.folderName == %@", folderName)
                     
-                    guard existData.count != 0 else { return }
-                    
-                    let existPhoto = existData.filter { $0.isSelectedMain == true }
-
-                    existPhoto.forEach {
-                        $0.isSelectedMain = false
+                    if existData.count != 0 {
+                        
+                        let existPhoto = existData.filter { $0.isSelectedMain == true }
+                        
+                        existPhoto.forEach {
+                            $0.isSelectedMain = false
+                        }
                     }
                 }
                 
                 // 이미지 Document 저장
                 userData.imageData.saveImageToDocument(foldername: folderName, filename: cardRecord.imageName)
+                print(folderName, cardRecord.imageName)
                 
                 folder.photoCards.append(cardRecord)
                 print("Save Realm complete")

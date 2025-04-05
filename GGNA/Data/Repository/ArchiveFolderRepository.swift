@@ -13,8 +13,95 @@ protocol ArchiveFolderRepository: AnyObject {
     func getPhotosFromFolder() -> [FolderPhotosEntity]
 }
 
-final class DefaultArchiveFolderRepository {
+final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
     
+    func getFolderInfo() -> [ArchiveFolderEntity] {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let image = color.replaceMainImage(for: theme)
+        
+        let realm = try! Realm()
+        let folders = Array(realm.objects(Folder.self))
+        
+        var entities: [ArchiveFolderEntity] = []
+        
+        folders.forEach {
+            
+            let mainCard = Array($0.photoCards.filter { $0.isSelectedMain == true }).first
+            
+            guard let mainCard else {
+                
+                switch $0.photoCards.count {
+                case 0:
+                    let value = ArchiveFolderEntity(
+                        folderName: $0.folderName,
+                        createDate: $0.createFolderDate,
+                        photoCount: "+" + $0.photoCards.count.formatted(),
+                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard?.imageName ?? "") ?? (image ?? UIImage(resource: .defaultDarkPink))
+                    )
+                    
+                    entities.append(value)
+                    
+                default:  // MARK: 사진은 있는데 메인으로 지정한 사진이 없을 때 (가장 처음 사진으로)
+                    
+                    let recent = $0.photoCards.sorted { $0.cardContent?.createDate ?? Date() < $1.cardContent?.createDate ?? Date() }.first!
+                    
+                    let value = ArchiveFolderEntity(
+                        folderName: $0.folderName,
+                        createDate: $0.createFolderDate,
+                        photoCount: "+" + $0.photoCards.count.formatted(),
+                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: recent.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink))
+                    )
+                    
+                    entities.append(value)
+                }
+
+                return
+            }
+            
+            let value = ArchiveFolderEntity(
+                folderName: $0.folderName,
+                createDate: $0.createFolderDate,
+                photoCount: "+" + $0.photoCards.count.formatted(),
+                mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard.imageName) ?? UIImage()
+            )
+            
+            entities.append(value)
+        }
+        
+        entities.sort { $0.createDate < $1.createDate }
+        
+        return entities
+    }
+    
+    func getPhotosFromFolder() -> [FolderPhotosEntity] {
+        
+        return []
+    }
+    
+    func loadImageFromDocument(foldername: String, fileName: String) -> UIImage? {
+        
+        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        // 폴더 경로
+        let folderURL = documentDirectory.appendingPathComponent(foldername)
+        
+        if !FileManager.default.fileExists(atPath: folderURL.path) {
+            print("\(foldername)폴더가 존재하지 않습니다.")
+            return nil
+        }
+        
+        let fileURL = folderURL.appendingPathComponent("\(fileName).jpg")
+        
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            return UIImage(contentsOfFile: fileURL.path)
+        } else {
+            return nil // TODO: nil 일 때 어떻게 처리할건지도 고민 필요
+        }
+    }
 }
 
 final class DummyArchiveFolderRepository: ArchiveFolderRepository {
@@ -22,12 +109,12 @@ final class DummyArchiveFolderRepository: ArchiveFolderRepository {
     func getFolderInfo() -> [ArchiveFolderEntity] {
         
         return [
-            ArchiveFolderEntity(folderName: "타이틀1입니다", photoCount: "+10,000", mainImage: UIImage(named: "gg2")!),
-            ArchiveFolderEntity(folderName: "타이틀2졸려요", photoCount: "+11,111", mainImage: UIImage(named: "gg3")!),
-            ArchiveFolderEntity(folderName: "타이틀3히히", photoCount: "+12,222", mainImage: UIImage(named: "gg4")!),
-            ArchiveFolderEntity(folderName: "타이틀4얍", photoCount: "+13", mainImage: UIImage(named: "gg5")!),
-            ArchiveFolderEntity(folderName: "타이틀5", photoCount: "+14", mainImage: UIImage(named: "gg6")!),
-            ArchiveFolderEntity(folderName: "타이틀6", photoCount: "+15", mainImage: UIImage(named: "gg1")!)
+//            ArchiveFolderEntity(folderName: "타이틀1입니다", photoCount: "+10,000", mainImage: UIImage(named: "gg2")!),
+//            ArchiveFolderEntity(folderName: "타이틀2졸려요", photoCount: "+11,111", mainImage: UIImage(named: "gg3")!),
+//            ArchiveFolderEntity(folderName: "타이틀3히히", photoCount: "+12,222", mainImage: UIImage(named: "gg4")!),
+//            ArchiveFolderEntity(folderName: "타이틀4얍", photoCount: "+13", mainImage: UIImage(named: "gg5")!),
+//            ArchiveFolderEntity(folderName: "타이틀5", photoCount: "+14", mainImage: UIImage(named: "gg6")!),
+//            ArchiveFolderEntity(folderName: "타이틀6", photoCount: "+15", mainImage: UIImage(named: "gg1")!)
         ]
     }
     

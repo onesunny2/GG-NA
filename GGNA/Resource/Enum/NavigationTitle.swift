@@ -13,6 +13,7 @@ enum NavigationTitle {
     case 카드테마
     case 테마색상
     case 카드생성
+    case 폴더삭제
     
     var title: String {
         switch self {
@@ -21,6 +22,7 @@ enum NavigationTitle {
         case .카드테마: return "카드 테마"
         case .테마색상: return "테마 색상"
         case .카드생성: return "추억남기기"
+        case .폴더삭제: return "삭제할 폴더 선택"
         }
     }
 }

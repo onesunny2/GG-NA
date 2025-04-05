@@ -31,6 +31,9 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
     )
     private let chevronImage = BaseUIImageView(isCornered: false, image: nil)
     
+    private let checkBgView = UIView()
+    private let checkImage = BaseUIImageView(isCornered: false, image: nil)
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -45,6 +48,8 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         mainImageView.image = UIImage()
         imageCountLabel.text = ""
         folderTitle.text = ""
+        checkImage.isHidden = true
+        checkBgView.isHidden = true
     }
     
     private func configureView() {
@@ -53,6 +58,11 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         mainImageView.cornerRadius5()
         mainImageCoverView.backgroundColor = .ggImgCover
         mainImageCoverView.cornerRadius5()
+        checkBgView.isHidden = true
+        checkBgView.backgroundColor = .ggDarkBlack.withAlphaComponent(0.7)
+        checkBgView.layer.borderWidth = 3
+        checkBgView.cornerRadius5()
+        checkImage.isHidden = true
         
         CurrentTheme.$currentTheme
             .bind(with: self) { owner, value in
@@ -64,12 +74,14 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
                 owner.folderBgView.backgroundColor = colors.text
                 owner.folderMarkImage.image = ImageLiterals.bookmark?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
                 owner.chevronImage.image = ImageLiterals.chevronForwardCircle?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
+                owner.checkBgView.layer.borderColor = colors.main.cgColor
+                owner.checkImage.image = ImageLiterals.check?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
             }
             .disposed(by: disposeBag)
     }
     
     private func configureHierarchy() {
-        contentView.addSubviews(folderBgView, mainImageView, mainImageCoverView, folderMarkImage, imageCountLabel, folderTitle, chevronImage)
+        contentView.addSubviews(folderBgView, mainImageView, mainImageCoverView, folderMarkImage, imageCountLabel, folderTitle, chevronImage, checkBgView, checkImage)
     }
     
     private func configureLayout() {
@@ -111,12 +123,26 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
             $0.trailing.equalToSuperview().inset(5)
             $0.size.equalTo(20)
         }
+        
+        checkBgView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        checkImage.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.size.equalTo(40)
+        }
     }
     
     func configureCell(_ data: ArchiveFolderEntity) {
         mainImageView.image = data.mainImage
         folderTitle.text = data.folderName
         imageCountLabel.text = data.photoCount
+    }
+    
+    func selectedToDelete(isSelected: Bool) {
+        checkBgView.isHidden = !isSelected
+        checkImage.isHidden = !isSelected
     }
     
     @available(*, unavailable)

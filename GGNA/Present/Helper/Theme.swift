@@ -91,4 +91,13 @@ enum ThemeColor {
         case (.dark, .secondary): return UIImage(named: "darkPurpleLaunch")
         }
     }
+    
+    func replaceMainImage(for theme: Theme) -> UIImage? {
+        switch (theme, self) {
+        case (.light, .primary): return UIImage(resource: .defaultLightPink)
+        case (.light, .secondary): return UIImage(resource: .defaultLightMint)
+        case (.dark, .primary): return UIImage(resource: .defaultDarkPink)
+        case (.dark, .secondary): return UIImage(resource: .defaultDarkPurple)
+        }
+    }
 }
