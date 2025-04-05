@@ -38,7 +38,8 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
                         folderName: $0.folderName,
                         createDate: $0.createFolderDate,
                         photoCount: "+" + $0.photoCards.count.formatted(),
-                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard?.imageName ?? "") ?? (image ?? UIImage(resource: .defaultDarkPink))
+                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard?.imageName ?? "") ?? (image ?? UIImage(resource: .defaultDarkPink)),
+                        secretMode: false
                     )
                     
                     entities.append(value)
@@ -51,7 +52,8 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
                         folderName: $0.folderName,
                         createDate: $0.createFolderDate,
                         photoCount: "+" + $0.photoCards.count.formatted(),
-                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: recent.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink))
+                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: recent.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink)),
+                        secretMode: recent.cardContent?.secretMode ?? false
                     )
                     
                     entities.append(value)
@@ -64,7 +66,8 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
                 folderName: $0.folderName,
                 createDate: $0.createFolderDate,
                 photoCount: "+" + $0.photoCards.count.formatted(),
-                mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard.imageName) ?? UIImage()
+                mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard.imageName) ?? UIImage(),
+                secretMode: mainCard.cardContent?.secretMode ?? false
             )
             
             entities.append(value)
