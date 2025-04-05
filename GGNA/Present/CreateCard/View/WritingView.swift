@@ -70,28 +70,6 @@ final class WritingView: BaseView {
         setupKeyboardToolbar()
     }
     
-    private func setupKeyboardToolbar() {
-        keyboardToolbar.sizeToFit()
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(title: "완료", style: .done, target: nil, action: nil)
-        
-        doneButton.rx.tap
-            .bind(with: self) { owner, _ in
-                owner.detailTextView.resignFirstResponder()
-                owner.keyboardDismissed.accept(())
-            }
-            .disposed(by: disposeBag)
-            
-        keyboardToolbar.items = [flexSpace, doneButton]
-        detailTextView.inputAccessoryView = keyboardToolbar
-        
-        // 자동완성 바 제거
-        detailTextView.autocorrectionType = .no
-        detailTextView.spellCheckingType = .no
-        detailTextView.autocapitalizationType = .none
-    }
-    
     private func configureBind() {
         
         setMainCardButton.rx.tap
@@ -169,6 +147,36 @@ final class WritingView: BaseView {
         datePickerManager.formattedDateString
             .bind(to: recordDate.rx.text)
             .disposed(by: disposeBag)
+    }
+    
+    private func setupKeyboardToolbar() {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        keyboardToolbar.sizeToFit()
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "완료", style: .done, target: nil, action: nil)
+        
+        doneButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.endEditing(true)
+                owner.keyboardDismissed.accept(())
+            }
+            .disposed(by: disposeBag)
+            
+        keyboardToolbar.items = [flexSpace, doneButton]
+        doneButton.tintColor = colors.main
+        
+        titleTextField.inputAccessoryView = keyboardToolbar
+        detailTextView.inputAccessoryView = keyboardToolbar
+        
+        // 자동완성 바 제거
+        detailTextView.autocorrectionType = .no
+        detailTextView.spellCheckingType = .no
+        detailTextView.autocapitalizationType = .none
     }
     
     override func configureView() {
