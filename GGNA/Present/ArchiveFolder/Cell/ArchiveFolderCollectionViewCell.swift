@@ -19,22 +19,35 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
     private let mainImageCoverView = UIView()
     private let folderMarkImage = BaseUIImageView(isCornered: false, image: nil)
     private let imageCountLabel = BaseUILabel(
-        text: "+10(test)",
+        text: "",
         color: .ggDarkWhite,
         alignment: .right,
         font: FontLiterals.folderCount
     )
     private let folderTitle = BaseUILabel(
-        text: "일이삼사오육칠",
+        text: "",
         color: .ggDarkWhite,
         font: FontLiterals.folderTitle
     )
     private let chevronImage = BaseUIImageView(isCornered: false, image: nil)
     
+    private let secretBgView = UIView()
+    private let blurEffectView: UIVisualEffectView
+    private let secretSymbolImage: BaseUIImageView
+    
     private let checkBgView = UIView()
     private let checkImage = BaseUIImageView(isCornered: false, image: nil)
     
     override init(frame: CGRect) {
+        
+        secretSymbolImage = BaseUIImageView(
+            isCornered: false,
+            image: ImageLiterals.lockFill?.withTintColor(.clear, renderingMode: .alwaysOriginal)
+        )
+        
+        let blurEffect = UIBlurEffect(style: .regular)
+        blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
         super.init(frame: frame)
         
         configureView()
@@ -48,6 +61,8 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         mainImageView.image = UIImage()
         imageCountLabel.text = ""
         folderTitle.text = ""
+        secretBgView.isHidden = true
+        secretSymbolImage.isHidden = true
         checkImage.isHidden = true
         checkBgView.isHidden = true
     }
@@ -55,9 +70,19 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
     private func configureView() {
         
         folderBgView.cornerRadius5()
+        
         mainImageView.cornerRadius5()
         mainImageCoverView.backgroundColor = .ggImgCover
         mainImageCoverView.cornerRadius5()
+        
+        secretBgView.cornerRadius5()
+        secretBgView.isHidden = true
+        
+        secretSymbolImage.isHidden = true
+        
+        blurEffectView.frame = secretBgView.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
         checkBgView.isHidden = true
         checkBgView.backgroundColor = .ggDarkBlack.withAlphaComponent(0.7)
         checkBgView.layer.borderWidth = 3
@@ -74,6 +99,7 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
                 owner.folderBgView.backgroundColor = colors.text
                 owner.folderMarkImage.image = ImageLiterals.bookmark?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
                 owner.chevronImage.image = ImageLiterals.chevronForwardCircle?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
+                owner.secretSymbolImage.image = ImageLiterals.lockFill?.withTintColor(colors.main80, renderingMode: .alwaysOriginal)
                 owner.checkBgView.layer.borderColor = colors.main.cgColor
                 owner.checkImage.image = ImageLiterals.check?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
             }
@@ -81,7 +107,8 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
     }
     
     private func configureHierarchy() {
-        contentView.addSubviews(folderBgView, mainImageView, mainImageCoverView, folderMarkImage, imageCountLabel, folderTitle, chevronImage, checkBgView, checkImage)
+        contentView.addSubviews(folderBgView, mainImageView, mainImageCoverView, chevronImage, secretBgView, folderMarkImage, imageCountLabel, folderTitle, secretSymbolImage, checkBgView, checkImage)
+        secretBgView.addSubview(blurEffectView)
     }
     
     private func configureLayout() {
@@ -99,6 +126,17 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         
         mainImageCoverView.snp.makeConstraints {
             $0.edges.equalTo(mainImageView)
+        }
+        
+        secretBgView.snp.makeConstraints {
+            $0.edges.equalTo(mainImageView)
+        }
+        
+        secretSymbolImage.snp.makeConstraints {
+            $0.centerX.equalTo(mainImageView)
+            $0.centerY.equalTo(mainImageView)
+            $0.width.equalTo(25)
+            $0.height.equalTo(30)
         }
         
         folderMarkImage.snp.makeConstraints {
@@ -138,6 +176,10 @@ final class ArchiveFolderCollectionViewCell: UICollectionViewCell, ReusableIdent
         mainImageView.image = data.mainImage
         folderTitle.text = data.folderName
         imageCountLabel.text = data.photoCount
+        
+        guard data.secretMode else { return }
+        secretBgView.isHidden = false
+        secretSymbolImage.isHidden = false
     }
     
     func selectedToDelete(isSelected: Bool) {

@@ -97,7 +97,6 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         photoBgView.layer.rasterizationScale = UIScreen.main.scale
         photoBgView.clipsToBounds = false
         
-        secretBgView.backgroundColor = .ggSelected
         secretBgView.cornerRadius5()
         
         secretBgView.isHidden = true
