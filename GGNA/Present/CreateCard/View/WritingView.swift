@@ -18,6 +18,7 @@ final class WritingView: BaseView {
     let inputTitleText = PublishRelay<String>()
     let inputDetailText = PublishRelay<String>()
     let isMainImage = BehaviorRelay(value: false)
+    let keyboardDismissed = PublishRelay<Void>() // 키보드 내림 이벤트
     
     private let cardView = UIView()
     private let appTitle: BaseUILabel
@@ -29,6 +30,7 @@ final class WritingView: BaseView {
     private let selectFolderTitle: BaseUILabel
     let selectFolderButton: SelectedFolderButton
     private let selectDateTitle: BaseUILabel
+    private let keyboardToolbar = UIToolbar() // 키보드 툴바 추가
     
     override init(frame: CGRect) {
         
@@ -63,6 +65,28 @@ final class WritingView: BaseView {
         super.init(frame: frame)
         
         configureBind()
+        setupKeyboardToolbar()
+    }
+    
+    private func setupKeyboardToolbar() {
+        keyboardToolbar.sizeToFit()
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "완료", style: .done, target: nil, action: nil)
+        
+        doneButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.detailTextView.resignFirstResponder()
+                owner.keyboardDismissed.accept(())
+            }
+            .disposed(by: disposeBag)
+            
+        keyboardToolbar.items = [flexSpace, doneButton]
+        detailTextView.inputAccessoryView = keyboardToolbar
+        
+        // 자동완성 바 제거
+        detailTextView.autocorrectionType = .no
+        detailTextView.spellCheckingType = .no
     }
     
     private func configureBind() {
