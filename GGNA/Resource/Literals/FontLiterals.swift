@@ -31,5 +31,5 @@ enum FontLiterals {
     static let folderCount: UIFont = UIFont(name: "MungyeongGamhongApple", size: 15) ?? .systemFont(ofSize: 15, weight: .heavy)
     static let writngTitle: UIFont = UIFont(name: "SangSangRockOTF", size: 32) ?? .systemFont(ofSize: 32, weight: .semibold)
     static let archivePhotoTitle: UIFont = UIFont(name: "Unreal_science_medicine", size: 20) ?? .systemFont(ofSize: 20, weight: .light)
-    static let archivePhotoDate: UIFont = UIFont(name: "Unreal_science_medicine", size: 12) ?? .systemFont(ofSize: 12, weight: .light)
+    static let archivePhotoDate: UIFont = UIFont(name: "Unreal_science_medicine", size: 12) ?? .systemFont(ofSize: 14, weight: .light)
 }

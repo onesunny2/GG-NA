@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RealmSwift
 import RxCocoa
 import RxSwift
 
@@ -13,6 +14,7 @@ final class ArchiveDetailViewModel: InputOutputModel {
     
     struct Input {
         let viewDidLoad: Observable<Void>
+        let deletePhotos: Observable<[FolderPhotosEntity]>
     }
     
     struct Output {
@@ -39,8 +41,41 @@ final class ArchiveDetailViewModel: InputOutputModel {
             }
             .disposed(by: disposeBag)
         
+        input.deletePhotos
+            .bind(with: self) { owner, entities in
+                owner.deletePhotoFromRealm(entities: entities)
+                photosData.accept(owner.repository.getPhotosFromFolder(folderName: owner.folder))
+            }
+            .disposed(by: disposeBag)
+        
         return Output(
             photosData: photosData.asDriver()
         )
+    }
+}
+
+extension ArchiveDetailViewModel {
+    
+    private func deletePhotoFromRealm(entities: [FolderPhotosEntity]) {
+        
+        let realm = try! Realm()
+        
+        let photos = realm.objects(PhotoCardRecord.self)
+        
+        do {
+            
+            try realm.write {
+                
+                for entity in entities {
+                    
+                    if let photoToDelete = photos.filter("imageName == %@", entity.imageName).first {
+                        realm.delete(photoToDelete)
+                    }
+                }
+            }
+            
+        } catch {
+            print("error: \(error)")
+        }
     }
 }

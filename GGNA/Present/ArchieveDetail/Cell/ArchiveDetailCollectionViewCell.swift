@@ -32,6 +32,9 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
     private let secretSymbolImage: BaseUIImageView
     private let secretTitle: BaseUILabel
     
+    private let checkBgView = UIView()
+    private let checkImage = BaseUIImageView(isCornered: false, image: nil)
+    
     override init(frame: CGRect) {
         
         secretSymbolImage = BaseUIImageView(
@@ -64,6 +67,8 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         secretTitle.text = ""
         secretBgView.isHidden = true
         secretSymbolImage.isHidden = true
+        checkImage.isHidden = true
+        checkBgView.isHidden = true
     }
     
     private func configureView() {
@@ -77,6 +82,8 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
                 
                 owner.secretTitle.textColor = colors.text
                 owner.secretSymbolImage.image = ImageLiterals.lockFill?.withTintColor(colors.main80, renderingMode: .alwaysOriginal)
+                owner.checkBgView.layer.borderColor = colors.main.cgColor
+                owner.checkImage.image = ImageLiterals.check?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
             }
             .disposed(by: disposeBag)
         
@@ -98,10 +105,16 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         
         blurEffectView.frame = secretBgView.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        checkBgView.isHidden = true
+        checkBgView.backgroundColor = .ggDarkBlack.withAlphaComponent(0.7)
+        checkBgView.layer.borderWidth = 3
+        checkBgView.cornerRadius5()
+        checkImage.isHidden = true
     }
     
     private func configureHierarchy() {
-        contentView.addSubviews(photoBgView, photoView, photoTitle, photoDate, secretBgView, secretSymbolImage, secretTitle)
+        contentView.addSubviews(photoBgView, photoView, photoTitle, photoDate, secretBgView, secretSymbolImage, secretTitle, checkBgView, checkImage)
         secretBgView.addSubview(blurEffectView)
     }
     
@@ -140,6 +153,15 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
             $0.top.equalTo(secretSymbolImage.snp.bottom).offset(15)
             $0.horizontalEdges.equalToSuperview().inset(10)
         }
+        
+        checkBgView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        checkImage.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.size.equalTo(40)
+        }
     }
     
     func configureCell(_ data: FolderPhotosEntity) {
@@ -151,6 +173,11 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         secretBgView.isHidden = false
         secretSymbolImage.isHidden = false
         secretTitle.text = data.title
+    }
+    
+    func selectedToDelete(isSelected: Bool) {
+        checkBgView.isHidden = !isSelected
+        checkImage.isHidden = !isSelected
     }
     
     @available(*, unavailable)

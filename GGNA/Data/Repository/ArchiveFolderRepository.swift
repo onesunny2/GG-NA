@@ -92,6 +92,7 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
             
             let result = FolderPhotosEntity(
                 image: loadImageFromDocument(foldername: folderName, fileName: $0.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink)),
+                imageName: $0.imageName,
                 isSelectedMain: $0.isSelectedMain,
                 title: $0.cardContent?.title ?? "",
                 date: $0.cardContent?.date ?? "",
