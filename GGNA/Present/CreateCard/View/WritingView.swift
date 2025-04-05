@@ -26,7 +26,8 @@ final class WritingView: BaseView {
     private let titleUnderline = UIView()
     private let detailTextView = UITextView()
     private let recordDate: BaseUILabel
-    private let setMainCardButton = SelectedMainImageButton()
+    private let setMainCardButton = SelectedButton(title: .메인카드설정)
+    private let setSecretModeButton = SelectedButton(title: .열람잠금설정)
     private let selectFolderTitle: BaseUILabel
     let selectFolderButton: SelectedFolderButton
     private let selectDateTitle: BaseUILabel
@@ -180,7 +181,7 @@ final class WritingView: BaseView {
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, appTitle, titleTextField, titleUnderline, detailTextView, recordDate, setMainCardButton, selectFolderTitle, selectFolderButton, selectDateTitle, datePickerManager.datePickerStackView)
+        addSubviews(cardView, appTitle, titleTextField, titleUnderline, detailTextView, recordDate, setMainCardButton, setSecretModeButton,  selectFolderTitle, selectFolderButton, selectDateTitle, datePickerManager.datePickerStackView)
     }
     
     override func configureLayout() {
@@ -225,6 +226,11 @@ final class WritingView: BaseView {
         setMainCardButton.snp.makeConstraints {
             $0.top.equalTo(cardView.snp.bottom).offset(10)
             $0.trailing.equalTo(cardView.snp.trailing).offset(-10)
+        }
+        
+        setSecretModeButton.snp.makeConstraints {
+            $0.top.equalTo(setMainCardButton.snp.bottom).offset(6)
+            $0.trailing.equalTo(setMainCardButton.snp.trailing)
         }
         
         selectFolderTitle.snp.makeConstraints {
