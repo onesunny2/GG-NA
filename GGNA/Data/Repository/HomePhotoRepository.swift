@@ -16,6 +16,10 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
     
     func getPhotosFromFolder(folderName: String) -> [HomePhotoCardEntity] {
         
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let image = color.replaceMainImage(for: theme)
+        
         let realm = try! Realm()
         let data = realm.objects(Folder.self).filter { $0.folderName == folderName }
         
@@ -23,6 +27,7 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
         
         let photos = Array(folder.photoCards)
         var entities: [HomePhotoCardEntity] = []
+        var mainImage: [HomePhotoCardEntity] = []
         
         for element in photos {
             
@@ -31,6 +36,7 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
                 videoData: Data(),
                 filter: Filter.original.name,
                 isSelectedMain: element.isSelectedMain,
+                createDate: element.cardContent?.createDate ?? Date(),
                 cardTitle: element.cardContent?.title,
                 cardDetail: element.cardContent?.detail,
                 cardDate: element.cardContent?.date,
@@ -38,10 +44,35 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
                 secretMode: element.cardContent?.secretMode ?? false
             )
             
-            entities.append(result)
+            if element.isSelectedMain {
+                mainImage.append(result)
+            } else {
+                entities.append(result)
+            }
         }
         
-        return entities
+        entities.sort { $0.createDate < $1.createDate }
+        if let main = mainImage.first {
+            entities.insert(main, at: 0)
+        }
+        
+        // 폴더 내 모든 사진 삭제 되었을 때 디폴트 이미지
+        guard entities.isEmpty else { return entities }
+        
+        let defaultImg = HomePhotoCardEntity(
+            imageData: image,
+            videoData: Data(),
+            filter: Filter.original.name,
+            isSelectedMain: true,
+            createDate: Date(),
+            cardTitle: "GG.NA",
+            cardDetail: "",
+            cardDate: "",
+            cardLocation: "",
+            secretMode: false
+        )
+        
+        return [defaultImg]
     }
     
     func loadImageFromDocument(foldername: String, fileName: String) -> UIImage? {
@@ -73,12 +104,12 @@ final class DummyHomePhotoRepository: HomePhotoRepository {
     func getPhotosFromFolder(folderName: String) -> [HomePhotoCardEntity] {
         
         return [
-            HomePhotoCardEntity(imageData: UIImage(named: "gg5"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "도레미파솔라시도레미", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
-            HomePhotoCardEntity(imageData: UIImage(named: "gg2"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle2", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
-            HomePhotoCardEntity(imageData: UIImage(named: "gg3"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle3", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
-            HomePhotoCardEntity(imageData: UIImage(named: "gg4"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle4", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
-            HomePhotoCardEntity(imageData: UIImage(named: "gg5"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle5", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
-            HomePhotoCardEntity(imageData: UIImage(named: "gg6"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle6", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false)
+//            HomePhotoCardEntity(imageData: UIImage(named: "gg5"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "도레미파솔라시도레미", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
+//            HomePhotoCardEntity(imageData: UIImage(named: "gg2"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle2", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
+//            HomePhotoCardEntity(imageData: UIImage(named: "gg3"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle3", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
+//            HomePhotoCardEntity(imageData: UIImage(named: "gg4"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle4", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
+//            HomePhotoCardEntity(imageData: UIImage(named: "gg5"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle5", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false),
+//            HomePhotoCardEntity(imageData: UIImage(named: "gg6"), videoData: Data(), filter: Filter.original.name, isSelectedMain: false, cardTitle: "cardTitle6", cardDetail: "cardDetail", cardDate: "2025.03.28", cardLocation: "서울시", secretMode: false)
         ]
     }
 }

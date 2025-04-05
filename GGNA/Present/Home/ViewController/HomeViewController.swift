@@ -15,7 +15,9 @@ final class HomeViewController: BaseViewController {
     private let viewModel: HomeViewModel
     private let disposeBag = DisposeBag()
     
-    private let suffleButton = CustomBarButton(ImageLiterals.shuffle)
+    private let viewWillAppear = PublishRelay<Void>()
+    
+    private let shuffleButton = CustomBarButton(ImageLiterals.shuffle)
     private let palleteButton = CustomBarButton(ImageLiterals.paintpalette)
     private let rightStackView = UIStackView()
     
@@ -25,16 +27,24 @@ final class HomeViewController: BaseViewController {
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         super.init()
+        
+        // TODO: 2차에 테마 업데이트 할 때 hidden 제거
+        shuffleButton.isHidden = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewWillAppear.accept(())
+    }
+    
     override func configureBind() {
         
         let input = HomeViewModel.Input(
-            viewDidLoad: Observable.just(())
+            viewWillAppear: viewWillAppear.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -112,7 +122,7 @@ final class HomeViewController: BaseViewController {
     }
     
     override func configureHierarchy() {
-        rightStackView.addArrangedSubviews(suffleButton, palleteButton)
+        rightStackView.addArrangedSubviews(shuffleButton, palleteButton)
         view.addSubviews(theme1BgCardView, theme1FirstCardView)
     }
     
