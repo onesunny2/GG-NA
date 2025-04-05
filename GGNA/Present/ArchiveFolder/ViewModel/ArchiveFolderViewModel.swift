@@ -100,7 +100,7 @@ extension ArchiveFolderViewModel {
     }
     
     // 삭제하려는 폴더 의 사진들 전부 삭제
-    func deleteFolderContents(folderName: String) {
+    private func deleteFolderContents(folderName: String) {
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return
         }
