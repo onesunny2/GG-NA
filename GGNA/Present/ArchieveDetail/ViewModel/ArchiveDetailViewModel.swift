@@ -13,7 +13,7 @@ import RxSwift
 final class ArchiveDetailViewModel: InputOutputModel {
     
     struct Input {
-        let viewDidLoad: Observable<Void>
+        let viewWillAppear: Observable<Void>
         let deletePhotos: Observable<[FolderPhotosEntity]>
     }
     
@@ -35,7 +35,7 @@ final class ArchiveDetailViewModel: InputOutputModel {
         
         let photosData = BehaviorRelay<[FolderPhotosEntity]>(value: repository.getPhotosFromFolder(folderName: folder))
         
-        input.viewDidLoad
+        input.viewWillAppear
             .bind(with: self) { owner, _ in
                 photosData.accept(owner.repository.getPhotosFromFolder(folderName: owner.folder))
             }

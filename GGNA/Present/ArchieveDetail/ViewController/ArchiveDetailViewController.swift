@@ -24,6 +24,7 @@ final class ArchiveDetailViewController: BaseViewController {
     private var isSelectionModeActive = false
     private var selectedPhotos = Set<FolderPhotosEntity>()
     private let deletePhotos = PublishRelay<[FolderPhotosEntity]>()
+    private let viewWillAppear = PublishRelay<Void>()
     
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
     private let emptyTitle: BaseUILabel
@@ -58,6 +59,7 @@ final class ArchiveDetailViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = false
+        viewWillAppear.accept(())
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -68,7 +70,7 @@ final class ArchiveDetailViewController: BaseViewController {
     override func configureBind() {
         
         let input = ArchiveDetailViewModel.Input(
-            viewDidLoad: Observable.just(()),
+            viewWillAppear: viewWillAppear.asObservable(),
             deletePhotos: deletePhotos.asObservable()
         )
         let output = viewModel.transform(from: input)
