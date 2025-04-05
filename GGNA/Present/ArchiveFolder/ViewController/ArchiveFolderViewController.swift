@@ -245,6 +245,7 @@ final class ArchiveFolderViewController: BaseViewController {
         rightStackView.spacing = 10
         
         collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.register(ArchiveFolderCollectionViewCell.self, forCellWithReuseIdentifier: ArchiveFolderCollectionViewCell.identifier)
     }
     

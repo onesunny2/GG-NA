@@ -38,13 +38,13 @@ final class CustomTabBarController: UITabBarController {
     }
     
     private func positionCustomTabBar() {
-            customTabBarView.snp.makeConstraints {
-                $0.width.equalTo(290)
-                $0.height.equalTo(65)
-                $0.centerX.equalToSuperview()
-                $0.bottom.equalTo(view.snp.bottom).offset(-40) 
-            }
+        customTabBarView.snp.makeConstraints {
+            $0.width.equalTo(290)
+            $0.height.equalTo(65)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.snp.bottom).offset(-30)
         }
+    }
     
     private func setupTabBarItems() {
 
@@ -189,7 +189,7 @@ final class CustomTabBarController: UITabBarController {
     
     private func adjustSafeAreaForCustomTabBar() {
         let customTabBarHeight: CGFloat = 65
-        let bottomOffset: CGFloat = 40
+        let bottomOffset: CGFloat = 30
         additionalSafeAreaInsets = UIEdgeInsets(top: 0, left: 0, bottom: customTabBarHeight + bottomOffset, right: 0)
     }
 }
