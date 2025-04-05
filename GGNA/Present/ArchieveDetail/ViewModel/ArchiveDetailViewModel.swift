@@ -31,11 +31,11 @@ final class ArchiveDetailViewModel: InputOutputModel {
     
     func transform(from input: Input) -> Output {
         
-        let photosData = BehaviorRelay<[FolderPhotosEntity]>(value: repository.getPhotosFromFolder())
+        let photosData = BehaviorRelay<[FolderPhotosEntity]>(value: repository.getPhotosFromFolder(folderName: folder))
         
         input.viewDidLoad
             .bind(with: self) { owner, _ in
-                photosData.accept(owner.repository.getPhotosFromFolder())
+                photosData.accept(owner.repository.getPhotosFromFolder(folderName: owner.folder))
             }
             .disposed(by: disposeBag)
         

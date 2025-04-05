@@ -20,12 +20,28 @@ final class ArchiveDetailViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+    private let emptyTitle: BaseUILabel
+    
     private var dataSource: UICollectionViewDiffableDataSource<ArchiveDetailSection, FolderPhotosEntity>!
     
     init(viewModel: ArchiveDetailViewModel) {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        emptyTitle = BaseUILabel(
+            text: StringLiteral.noPhoto.text,
+            color: colors.text,
+            alignment: .center,
+            font: FontLiterals.folderTitle,
+            line: 0
+        )
+        
         self.viewModel = viewModel
         super.init()
         configureDataSource()
+        emptyTitle.isHidden = true
     }
 
     override func viewDidLoad() {
@@ -53,6 +69,12 @@ final class ArchiveDetailViewController: BaseViewController {
         output.photosData
             .drive(with: self, onNext: { owner, entity in
                 owner.applySnapshot(with: entity)
+                
+                guard entity.isEmpty else {
+                    owner.emptyTitle.isHidden = true
+                    return
+                }
+                owner.emptyTitle.isHidden = false
             })
             .disposed(by: disposeBag)
         
@@ -142,12 +164,29 @@ final class ArchiveDetailViewController: BaseViewController {
     }
     
     override func configureHierarchy() {
-        view.addSubview(collectionView)
+        view.addSubviews(collectionView, emptyTitle)
     }
     
     override func configureLayout() {
         collectionView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        emptyTitle.snp.makeConstraints {
+            $0.center.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+}
+
+extension ArchiveDetailViewController {
+    
+    enum StringLiteral {
+        case noPhoto
+        
+        var text: String {
+            switch self {
+            case .noPhoto: return "현재 등록한 추억이 아직 없습니다."
+            }
         }
     }
 }

@@ -12,5 +12,6 @@ struct FolderPhotosEntity: Hashable {
     let isSelectedMain: Bool
     let title: String
     let date: String
+    let createDate: Date
     let secretMode: Bool
 }

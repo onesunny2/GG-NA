@@ -10,7 +10,7 @@ import RealmSwift
 
 protocol ArchiveFolderRepository: AnyObject {
     func getFolderInfo() -> [ArchiveFolderEntity]
-    func getPhotosFromFolder() -> [FolderPhotosEntity]
+    func getPhotosFromFolder(folderName: String) -> [FolderPhotosEntity]
 }
 
 final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
@@ -75,9 +75,36 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
         return entities
     }
     
-    func getPhotosFromFolder() -> [FolderPhotosEntity] {
+    func getPhotosFromFolder(folderName: String) -> [FolderPhotosEntity] {
         
-        return []
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let image = color.replaceMainImage(for: theme)
+        
+        let realm = try! Realm()
+        
+        guard let folder = realm.objects(Folder.self).where({ $0.folderName == folderName }).first else { return [] }
+        let photos = folder.photoCards
+        
+        var entities: [FolderPhotosEntity] = []
+        
+        photos.forEach {
+            
+            let result = FolderPhotosEntity(
+                image: loadImageFromDocument(foldername: folderName, fileName: $0.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink)),
+                isSelectedMain: $0.isSelectedMain,
+                title: $0.cardContent?.title ?? "",
+                date: $0.cardContent?.date ?? "",
+                createDate: $0.cardContent?.createDate ?? Date(),
+                secretMode: $0.cardContent?.secretMode ?? false
+            )
+            
+            entities.append(result)
+        }
+        
+        entities.sort { $0.createDate < $1.createDate }
+        
+        return entities
     }
     
     func loadImageFromDocument(foldername: String, fileName: String) -> UIImage? {
@@ -118,14 +145,14 @@ final class DummyArchiveFolderRepository: ArchiveFolderRepository {
         ]
     }
     
-    func getPhotosFromFolder() -> [FolderPhotosEntity] {
+    func getPhotosFromFolder(folderName: String) -> [FolderPhotosEntity] {
         return [
-            FolderPhotosEntity(image: UIImage(named: "gg1")!, isSelectedMain: false, title: "잠이 온다1", date: "2025.04.01 화요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg2")!, isSelectedMain: false, title: "잠이 온다2", date: "2025.04.02 수요일", secretMode: true),
-            FolderPhotosEntity(image: UIImage(named: "gg3")!, isSelectedMain: false, title: "잠이 온다3", date: "2025.04.03 목요일", secretMode: true),
-            FolderPhotosEntity(image: UIImage(named: "gg4")!, isSelectedMain: false, title: "잠이 온다4", date: "2025.04.04 금요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg5")!, isSelectedMain: false, title: "잠이 온다5", date: "2025.04.05 토요일", secretMode: false),
-            FolderPhotosEntity(image: UIImage(named: "gg6")!, isSelectedMain: false, title: "잠이 온다6", date: "2025.04.06 일요일", secretMode: true)
+//            FolderPhotosEntity(image: UIImage(named: "gg1")!, isSelectedMain: false, title: "잠이 온다1", date: "2025.04.01 화요일", secretMode: false),
+//            FolderPhotosEntity(image: UIImage(named: "gg2")!, isSelectedMain: false, title: "잠이 온다2", date: "2025.04.02 수요일", secretMode: true),
+//            FolderPhotosEntity(image: UIImage(named: "gg3")!, isSelectedMain: false, title: "잠이 온다3", date: "2025.04.03 목요일", secretMode: true),
+//            FolderPhotosEntity(image: UIImage(named: "gg4")!, isSelectedMain: false, title: "잠이 온다4", date: "2025.04.04 금요일", secretMode: false),
+//            FolderPhotosEntity(image: UIImage(named: "gg5")!, isSelectedMain: false, title: "잠이 온다5", date: "2025.04.05 토요일", secretMode: false),
+//            FolderPhotosEntity(image: UIImage(named: "gg6")!, isSelectedMain: false, title: "잠이 온다6", date: "2025.04.06 일요일", secretMode: true)
         ]
     }
 }
