@@ -88,6 +88,7 @@ final class WritingView: BaseView {
         // 자동완성 바 제거
         detailTextView.autocorrectionType = .no
         detailTextView.spellCheckingType = .no
+        detailTextView.autocapitalizationType = .none
     }
     
     private func configureBind() {
@@ -102,17 +103,19 @@ final class WritingView: BaseView {
             titleTextField.rx.controlEvent(.editingDidEndOnExit).withLatestFrom(titleTextField.rx.text.orEmpty),
             titleTextField.rx.controlEvent(.editingChanged).withLatestFrom(titleTextField.rx.text.orEmpty)
         )
-        .map { return $0.trimmingCharacters(in: .whitespaces) }
         .bind(with: self) { owner, text in
             
-            guard text.count > 7 else {
+            let trimmed = text.trimmingCharacters(in: .whitespaces)
+            guard trimmed != "" else { return }
+            
+            guard text.count > 10 else {
                 print(text)
                 owner.titleTextField.text = text
                 owner.inputTitleText.accept(text)
                 return
             }
             
-            let prefixed = String(text.prefix(7))
+            let prefixed = String(text.prefix(10))
             owner.titleTextField.text = prefixed
             owner.inputTitleText.accept(prefixed)
             
@@ -122,7 +125,6 @@ final class WritingView: BaseView {
         
         detailTextView.rx.didBeginEditing
             .withLatestFrom(detailTextView.rx.text.orEmpty)
-            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
                 guard text != writingViewLiterals.내용_플레이스_홀더.text else {
@@ -134,20 +136,22 @@ final class WritingView: BaseView {
         
         detailTextView.rx.didChange
             .withLatestFrom(detailTextView.rx.text.orEmpty)
-            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
-                guard text != "" else { return }
+                let trimmed = text.trimmingCharacters(in: .whitespaces)
+                
+                guard trimmed != "" else { return }
                 owner.inputDetailText.accept(text)
             }
             .disposed(by: disposeBag)
         
         detailTextView.rx.didEndEditing
             .withLatestFrom(detailTextView.rx.text.orEmpty)
-            .map { return $0.trimmingCharacters(in: .whitespaces) }
             .bind(with: self) { owner, text in
                 
-                guard text != "" else {
+                let trimmed = text.trimmingCharacters(in: .whitespaces)
+                
+                guard trimmed != "" else {
                     owner.detailTextView.text = writingViewLiterals.내용_플레이스_홀더.text
                     return
                 }
@@ -173,6 +177,9 @@ final class WritingView: BaseView {
         
         titleTextField.textColor = colors.background
         titleTextField.attributedPlaceholder = NSAttributedString(string: writingViewLiterals.타이틀_플레이스_홀더.text, attributes: placeholder)
+        titleTextField.autocorrectionType = .no
+        titleTextField.spellCheckingType = .no
+        titleTextField.autocapitalizationType = .none
         
         titleUnderline.backgroundColor = colors.gray
         
@@ -271,7 +278,7 @@ extension WritingView {
         var text: String {
             switch self {
             case .카드타이틀: return "GG.NA"
-            case .타이틀_플레이스_홀더: return "(최대 7자) 사진의 타이틀을 정해주세요 :>"
+            case .타이틀_플레이스_홀더: return "(최대 10자) 사진의 타이틀을 정해주세요 :>"
             case .내용_플레이스_홀더: return "(선택) 선택한 사진에 남기고 싶은 추억을 적어보아요"
             case .페이스_ID: return "Face ID로 잠금 설정"
             case .폴더_선택: return "저장 폴더 선택"
