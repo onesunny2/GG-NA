@@ -97,7 +97,6 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         photoBgView.layer.rasterizationScale = UIScreen.main.scale
         photoBgView.clipsToBounds = false
         
-        secretBgView.backgroundColor = .ggSelected
         secretBgView.cornerRadius5()
         
         secretBgView.isHidden = true
@@ -178,6 +177,12 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
     func selectedToDelete(isSelected: Bool) {
         checkBgView.isHidden = !isSelected
         checkImage.isHidden = !isSelected
+    }
+    
+    func openSecretMode() {
+        secretTitle.isHidden = true
+        secretBgView.isHidden = true
+        secretSymbolImage.isHidden = true
     }
     
     @available(*, unavailable)

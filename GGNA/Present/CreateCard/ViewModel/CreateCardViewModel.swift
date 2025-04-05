@@ -39,6 +39,7 @@ final class CreateCardViewModel: InputOutputModel {
         let selectedFolder: Observable<String>
         let inputDetailText: Observable<String>
         let zoomStatus: Observable<Bool>
+        let isSecretMode: Observable<Bool>
     }
     
     struct Output {
@@ -145,6 +146,16 @@ final class CreateCardViewModel: InputOutputModel {
             .bind(to: cardData)
             .disposed(by: disposeBag)
         
+        // 열람 잠금 설정 유무
+        input.isSecretMode
+            .withLatestFrom(cardData) { status, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.cardContent.isSecretMode = status
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
         // 폴더 (** 폴더는 따로 Realm에 저장하기 XX - 이미 폴더 생성 시 저장시킴)
         input.selectedFolder
             .withLatestFrom(cardData) { folder, currentData -> CardData in
@@ -222,9 +233,10 @@ extension CreateCardViewModel {
         let isDetailChanged = (currentData.cardContent.detail != initialData.cardContent.detail)
         let isMainSelectionChanged = (currentData.isSelectedMain != initialData.isSelectedMain)
         let isScaleChanged = (currentData.imageScale != initialData.imageScale)
+        let isSecretModeChanged = (currentData.cardContent.isSecretMode != initialData.cardContent.isSecretMode)
         
         return isImageChanged || isFolderNameChanged || isTitleChanged ||
-               isDateChanged || isDetailChanged || isMainSelectionChanged || isScaleChanged
+        isDateChanged || isDetailChanged || isMainSelectionChanged || isScaleChanged || isSecretModeChanged
     }
     
     private func allChanged(currentData: CardData, initialData: CardData) -> Bool {

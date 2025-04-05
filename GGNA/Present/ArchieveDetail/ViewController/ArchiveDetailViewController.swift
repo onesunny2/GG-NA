@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import LocalAuthentication
 import SnapKit
 import RxCocoa
 import RxSwift
@@ -104,7 +105,24 @@ final class ArchiveDetailViewController: BaseViewController {
                     guard let cell = owner.collectionView.cellForItem(at: indexPath) as? ArchiveDetailCollectionViewCell else { return }
                     cell.selectedToDelete(isSelected: owner.selectedPhotos.contains(entity))
                     
-                case false: break
+                case false:
+                    
+                    switch entity.secretMode {
+                    case true:
+                        Task {
+                            let success = await owner.authenticateWithFaceID()
+                            
+                            if success {
+                                
+                                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                                
+                                guard let cell = owner.collectionView.cellForItem(at: indexPath) as? ArchiveDetailCollectionViewCell else { return }
+                                cell.openSecretMode()
+                            }
+                        }
+                        
+                    case false: break
+                    }
                 }
             }
             .disposed(by: disposeBag)
@@ -146,7 +164,32 @@ final class ArchiveDetailViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    private func toggleSelectionMode() {
+    private func authenticateWithFaceID() async -> Bool {
+        
+        let context = LAContext()
+        var error: NSError?
+        
+        context.localizedFallbackTitle = "비밀번호로 열람"
+        context.localizedReason = StringLiteral.faceID.text
+        context.interactionNotAllowed = false
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            
+            let reason = StringLiteral.faceID.text
+            
+            do {
+                return try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason)
+            } catch {
+                
+                return false
+            }
+            
+        } else {
+            return false
+        }
+    }
+    
+    private func toggleSelectionMode() {  // 데이터 삭제 모드에 진입하기 위함
         isSelectionModeActive = !isSelectionModeActive
         
         // 네비게이션 바 아이템 상태 변경
@@ -256,10 +299,12 @@ extension ArchiveDetailViewController {
     
     enum StringLiteral {
         case noPhoto
+        case faceID
         
         var text: String {
             switch self {
             case .noPhoto: return "현재 등록한 추억이 아직 없습니다."
+            case .faceID: return "잠긴 추억을 보기 위해 인증이 필요합니다."
             }
         }
     }

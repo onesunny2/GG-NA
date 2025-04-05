@@ -12,4 +12,5 @@ struct ArchiveFolderEntity: Hashable {
     let createDate: Date
     let photoCount: String
     let mainImage: UIImage
+    let secretMode: Bool
 }
