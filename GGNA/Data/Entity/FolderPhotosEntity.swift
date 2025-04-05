@@ -9,8 +9,10 @@ import UIKit
 
 struct FolderPhotosEntity: Hashable {
     let image: UIImage
+    let imageName: String
     let isSelectedMain: Bool
     let title: String
     let date: String
+    let createDate: Date
     let secretMode: Bool
 }

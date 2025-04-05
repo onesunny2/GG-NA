@@ -12,7 +12,7 @@ import RxSwift
 final class HomeViewModel: InputOutputModel {
     
     struct Input {
-        let viewDidLoad: Observable<Void>
+        let viewWillAppear: Observable<Void>
     }
     
     struct Output {
@@ -35,7 +35,7 @@ final class HomeViewModel: InputOutputModel {
         // TODO: 나중에 폴더 선택 가능하게 하려면 UserDefault로 현재 선택한 폴더정보 저장 필요
         let currentPhotos = BehaviorRelay<[HomePhotoCardEntity]>(value: repository.getPhotosFromFolder(folderName: "기본"))
         
-        input.viewDidLoad
+        input.viewWillAppear
             .bind(with: self) { owner, _ in
                 currentPhotos.accept(owner.repository.getPhotosFromFolder(folderName: "기본"))
             }

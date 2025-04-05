@@ -99,7 +99,7 @@ final class ArchiveFolderViewController: BaseViewController {
                     cell.selectedToDelete(isSelected: owner.selectedFolders.contains(entity))
                    
                 case false:
-                    let rp = DummyArchiveFolderRepository()
+                    let rp = DefaultArchiveFolderRepository()
                     let vm = ArchiveDetailViewModel(repository: rp, folder: entity.folderName)
                     let vc = ArchiveDetailViewController(viewModel: vm)
                     owner.viewTransition(type: .navigation, vc: vc)
