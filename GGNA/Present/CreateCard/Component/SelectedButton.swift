@@ -7,7 +7,9 @@
 
 import UIKit
 
-final class SelectedMainImageButton: UIButton {
+final class SelectedButton: UIButton {
+    
+    private let title: Literal
     
     override var isSelected: Bool {
         didSet {
@@ -20,7 +22,8 @@ final class SelectedMainImageButton: UIButton {
         }
     }
     
-    init() {
+    init(title: Literal) {
+        self.title = title
         super.init(frame: .zero)
         isSelected = false
     }
@@ -31,7 +34,7 @@ final class SelectedMainImageButton: UIButton {
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .bold)
         
         var config = UIButton.Configuration.filled()
-        config.attributedTitle = AttributedString(Literal.메인카드설정.text, attributes: buttonContainer)
+        config.attributedTitle = AttributedString(title.text, attributes: buttonContainer)
         config.image = isSelected ? ImageLiterals.checkMark?.withConfiguration(buttonConfig) :  ImageLiterals.square?.withConfiguration(buttonConfig)
         config.baseBackgroundColor = .clear
         config.baseForegroundColor = color
@@ -53,14 +56,16 @@ final class SelectedMainImageButton: UIButton {
     }
 }
 
-extension SelectedMainImageButton {
+extension SelectedButton {
     
     enum Literal {
         case 메인카드설정
+        case 열람잠금설정
         
         var text: String {
             switch self {
             case .메인카드설정: "폴더의 메인카드로 설정"
+            case .열람잠금설정: "카드열람 잠금설정"
             }
         }
     }
