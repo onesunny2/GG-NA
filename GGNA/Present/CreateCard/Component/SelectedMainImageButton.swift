@@ -27,8 +27,8 @@ final class SelectedMainImageButton: UIButton {
     
     private func configureButton(_ color: UIColor, isSelected: Bool) -> UIButton.Configuration {
         
-        let buttonContainer = AttributeContainer().font(FontLiterals.subContent)
-        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 8)
+        let buttonContainer = AttributeContainer().font(FontLiterals.basicBadge13)
+        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .bold)
         
         var config = UIButton.Configuration.filled()
         config.attributedTitle = AttributedString(Literal.메인카드설정.text, attributes: buttonContainer)
