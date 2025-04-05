@@ -16,7 +16,7 @@ final class ThemeColorModalView: BaseViewController {
     
     private let modalTitle: BaseUILabel
     private let closeButton = UIButton()
-    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
     private let colorItems = BehaviorRelay<[ThemeColorList]>(value: [.darkPink, .lightPink])
     
     override init() {
@@ -92,13 +92,31 @@ final class ThemeColorModalView: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
-        let layout = UICollectionViewCompositionalLayout { _, _ in
+override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
-            let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(140), heightDimension: .absolute(150))
+        // 컬렉션뷰 높이에 맞게 레이아웃 업데이트
+        updateCollectionViewLayout()
+    }
+    
+    private func updateCollectionViewLayout() {
+        // 현재 컬렉션뷰의 높이 가져오기
+        let currentHeight = collectionView.frame.height
+        
+        // 새로운 레이아웃으로 교체
+        collectionView.setCollectionViewLayout(createCompositionalLayout(collectionViewHeight: currentHeight), animated: false)
+    }
+    
+    private func createCompositionalLayout(collectionViewHeight: CGFloat) -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { _, _ in
+            // 아이템 높이를 현재 컬렉션뷰 높이에 맞춤
+            let itemHeight = collectionViewHeight
+            
+            // 너비도 높이와 동일하게 설정 (정사각형)
+            let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(itemHeight), heightDimension: .absolute(itemHeight))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
-            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(140), heightDimension: .absolute(150))
+            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(itemHeight), heightDimension: .absolute(itemHeight))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
             
             let section = NSCollectionLayoutSection(group: group)
@@ -147,7 +165,7 @@ final class ThemeColorModalView: BaseViewController {
         collectionView.snp.makeConstraints {
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.top.equalTo(modalTitle.snp.bottom).offset(32)
-            $0.height.equalTo(150) 
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(20) // 하단 여백 20으로 설정
         }
     }
 }
