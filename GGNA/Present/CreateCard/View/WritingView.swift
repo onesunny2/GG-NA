@@ -18,7 +18,8 @@ final class WritingView: BaseView {
     let inputTitleText = PublishRelay<String>()
     let inputDetailText = PublishRelay<String>()
     let isMainImage = BehaviorRelay(value: false)
-    let keyboardDismissed = PublishRelay<Void>() // 키보드 내림 이벤트
+    let isSecretMode = BehaviorRelay(value: false)
+    let keyboardDismissed = PublishRelay<Void>()
     
     private let cardView = UIView()
     private let appTitle: BaseUILabel
@@ -96,6 +97,12 @@ final class WritingView: BaseView {
         setMainCardButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.isMainImage.accept(owner.setMainCardButton.isSelected)
+            }
+            .disposed(by: disposeBag)
+        
+        setSecretModeButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.isSecretMode.accept(owner.setSecretModeButton.isSelected)
             }
             .disposed(by: disposeBag)
  

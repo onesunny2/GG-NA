@@ -67,7 +67,8 @@ final class CreateCardViewController: BaseViewController {
             isSelectedMainImage: writingView.isMainImage.asObservable(),
             selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable(),
             inputDetailText: writingView.inputDetailText.asObservable(),
-            zoomStatus: zoomStatus.asObservable()
+            zoomStatus: zoomStatus.asObservable(),
+            isSecretMode: writingView.isSecretMode.asObservable()
         )
         let output = viewModel.transform(from: input)
         
