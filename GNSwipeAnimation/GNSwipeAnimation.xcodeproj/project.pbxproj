@@ -10,22 +10,9 @@
 		435201942DA2C9C500C10FF4 /* GNSwipeAnimation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GNSwipeAnimation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		4352019B2DA2C9C500C10FF4 /* Exceptions for "GNSwipeAnimation" folder in "GNSwipeAnimation" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			publicHeaders = (
-				GNSwipeAnimation.h,
-			);
-			target = 435201932DA2C9C500C10FF4 /* GNSwipeAnimation */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		435201962DA2C9C500C10FF4 /* GNSwipeAnimation */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				4352019B2DA2C9C500C10FF4 /* Exceptions for "GNSwipeAnimation" folder in "GNSwipeAnimation" target */,
-			);
 			path = GNSwipeAnimation;
 			sourceTree = "<group>";
 		};
@@ -163,6 +150,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -196,6 +184,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

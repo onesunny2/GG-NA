@@ -18,7 +18,7 @@
                BlueprintIdentifier = "43D12F312D944A4E001E2C93"
                BuildableName = "GGNA.app"
                BlueprintName = "GGNA"
-               ReferencedContainer = "container:.xcodeproj">
+               ReferencedContainer = "container:GGNA.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "43D12F312D944A4E001E2C93"
             BuildableName = "GGNA.app"
             BlueprintName = "GGNA"
-            ReferencedContainer = "container:.xcodeproj">
+            ReferencedContainer = "container:GGNA.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "43D12F312D944A4E001E2C93"
             BuildableName = "GGNA.app"
             BlueprintName = "GGNA"
-            ReferencedContainer = "container:.xcodeproj">
+            ReferencedContainer = "container:GGNA.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
