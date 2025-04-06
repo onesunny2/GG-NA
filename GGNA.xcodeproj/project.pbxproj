@@ -135,7 +135,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 43D12F2D2D944A4E001E2C93 /* Build configuration list for PBXProject "GGNA" */;
+			buildConfigurationList = 43D12F2D2D944A4E001E2C93 /* Build configuration list for PBXProject ".xcodeproj" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -371,7 +371,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		43D12F2D2D944A4E001E2C93 /* Build configuration list for PBXProject "GGNA" */ = {
+		43D12F2D2D944A4E001E2C93 /* Build configuration list for PBXProject ".xcodeproj" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				43D12F482D944A50001E2C93 /* Debug */,
