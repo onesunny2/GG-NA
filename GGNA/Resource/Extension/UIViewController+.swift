@@ -93,7 +93,7 @@ extension UIViewController {
         )
         
         let cancelAction = UIAlertAction(title: "취소", style: .default)
-        let okayAction = UIAlertAction(title: "확인", style: .cancel) { _ in
+        let okayAction = UIAlertAction(title: "확인", style: .default) { _ in
             self.dismiss(animated: true)
         }
         
