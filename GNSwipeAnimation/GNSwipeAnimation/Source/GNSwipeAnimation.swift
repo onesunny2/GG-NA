@@ -7,98 +7,223 @@
 
 import UIKit
 
-public class GNSwipeGestureHandler {
+public enum SwipeDirection {
+    case left
+    case right
+}
+
+public class GNCardSwipeManager<T: UIView> {
     
-    public enum SwipeDirection {
-        case left
-        case right
-    }
+    private var cardContainerView: UIView
+    private var cardViews: [T] = []
+    private var currentCardIndex = 0
+    private var dataSource: [Any] = []
     
-    // 스와이프 진행 상태
-    public enum SwipeState {
-        case swiping(progress: CGFloat, direction: SwipeDirection)
-        case completed(direction: SwipeDirection)
-        case cancelled
-    }
+    private var allowSwipeWithSingleItem: Bool = false
     
-    public var swipeStateChanged: ((SwipeState) -> Void)?
+    public var onSwipe: ((Int, SwipeDirection) -> Void)?
+    public var onCardChanged: ((Int) -> Void)?
+    public var configureCard: ((T, Any, Int) -> Void)?
     
-    public var threshold: CGFloat = 0.3  // 스와이프 임계값
+    // 내가 하려는 기본 카드의 속성으로 기본값 둠 (값의 수정은 직접 프로퍼티에 접근하지 않고 매서드로 변경시킴)
+    private var maxRotationAngle: CGFloat = .pi / 10
+    private var swipeThreshold: CGFloat = 100
+    private var animationDuration: TimeInterval = 0.3
+    private var stackedCardScale: CGFloat = 1.0
+    private var stackedCardAlpha: CGFloat = 1.0
+    private var initialCardRotation: CGFloat = -CGFloat.pi / 60
     
-    public var allowedDirections: Set<SwipeDirection> = [.left, .right]
-    
-    private weak var targetView: UIView?
-    private var panGestureRecognizer: UIPanGestureRecognizer?
-    private var initialPoint: CGPoint = .zero
-    
-    public init(targetView: UIView) {
-        self.targetView = targetView
-        configGestureRecognizer(at: targetView)
-    }
-    
-    private func configGestureRecognizer(at view: UIView) {
+    public init(containerView: UIView, cardViews: [T]) {
+        self.cardContainerView = containerView
+        self.cardViews = cardViews
         
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
-        view.addGestureRecognizer(panGesture)
-        view.isUserInteractionEnabled = true
-        panGestureRecognizer = panGesture
+        setupCards()
     }
     
-    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
+    // MARK: 개별 속성 조절
+    public func setMaxRotationAngle(_ value: CGFloat) {
+        maxRotationAngle = value
+    }
+    
+    public func setswipeThreshold(_ value: CGFloat) {
+        swipeThreshold = value
+    }
+    
+    public func setanimationDuration(_ value: TimeInterval) {
+        animationDuration = value
+    }
+    
+    public func setstackedCardScale(_ value: CGFloat) {
+        stackedCardScale = value
+    }
+    
+    public func setstackedCardAlpha(_ value: CGFloat) {
+        stackedCardAlpha = value
+    }
+    
+    public func setinitialCardRotation(_ value: CGFloat) {
+        initialCardRotation = value
+    }
+    
+    // MARK: cardView 설정
+    private func setupCards() {
         
-        guard let view = targetView, let superView = view.superview else { return }
+        for cardView in cardViews {
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+            cardView.addGestureRecognizer(panGesture)
+            cardView.isUserInteractionEnabled = true
+        }
+    }
+    
+    public func setupWithData(_ data: [Any]) {
+        self.dataSource = data
+        currentCardIndex = 0
         
-        let translation = gesture.translation(in: superView)
+        resetCards()
+        
+        for (index, cardView) in cardViews.enumerated() {
+            if index < data.count {
+                configureCard?(cardView, data[index], index)
+                cardView.isHidden = false
+                
+                styleCard(cardView, at: index)
+            } else {
+                cardView.isHidden = true
+            }
+        }
+        
+        if data.count == 1 {
+            for i in 1..<cardViews.count {
+                cardViews[i].isHidden = true
+            }
+        }
+        
+        if let frontCard = cardViews.first {
+            cardContainerView.bringSubviewToFront(frontCard)
+        }
+    }
+    
+    public func swipeCurrentCard(direction: SwipeDirection) {
+        
+        // 데이터 1개이면 스와이프 금지
+        guard dataSource.count != 1 && !allowSwipeWithSingleItem else { return }
+        
+        guard let currentCard = cardViews.first else { return }
+        
+        let screenWidth = cardContainerView.bounds.width
+        let directionMultiplier: CGFloat = (direction == .right) ? 1 : -1
+        
+        UIView.animate(withDuration: animationDuration, animations: {
+            currentCard.transform = CGAffineTransform(translationX: directionMultiplier * screenWidth * 1.5, y: 0)
+        }) { _ in
+            
+            currentCard.transform = CGAffineTransform.identity
+            self.showNextCard(direction: direction)
+        }
+    }
+    
+    private func resetCards() {
+        for cardView in cardViews {
+            cardView.transform = CGAffineTransform.identity
+            cardView.alpha = 1.0
+        }
+    }
+    
+    private func styleCard(_ cardView: T, at index: Int) {
+       
+        cardView.transform = CGAffineTransform.identity
+        
+        if index == 0 {
+            
+            cardView.transform = CGAffineTransform(rotationAngle: initialCardRotation)
+            cardView.alpha = 1.0
+        } else {
+            
+            cardView.transform = CGAffineTransform(rotationAngle: initialCardRotation)
+                .scaledBy(x: stackedCardScale, y: stackedCardScale)
+            cardView.alpha = stackedCardAlpha
+        }
+    }
+    
+    private func showNextCard(direction: SwipeDirection = .right) {
+
+        // 1개의 데이터면 추가 카드 없음
+        guard dataSource.count != 1 && !allowSwipeWithSingleItem else { return }
+        
+        currentCardIndex += 1
+        
+        if currentCardIndex >= dataSource.count {
+            currentCardIndex = 0
+        }
+        
+        onCardChanged?(currentCardIndex)
+//        onSwipe?(currentCardIndex - 1, direction)
+        
+        for (index, cardView) in cardViews.enumerated() {
+            
+            let dataIndex = (currentCardIndex + index) % max(dataSource.count, 1)
+            
+            if dataIndex < dataSource.count {
+                cardView.isHidden = false
+                configureCard?(cardView, dataSource[dataIndex], dataIndex)
+                
+                styleCard(cardView, at: index)
+            } else {
+                cardView.isHidden = true
+            }
+            
+            if index == 0 {
+                cardContainerView.bringSubviewToFront(cardView)
+            }
+        }
+    }
+    
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        guard let card = gesture.view as? T,
+              card == cardViews.first,
+              !dataSource.isEmpty else { return }
+        
+        // 데이터 1개면 제스쳐 허용하지 않음
+        guard dataSource.count != 1 && !allowSwipeWithSingleItem else { return }
+        
+        let translation = gesture.translation(in: cardContainerView)
         let xFromCenter = translation.x
-        let yFromCenter = translation.y
         
         switch gesture.state {
         case .began:
-            initialPoint = view.center
+            break
             
-        case .changed:  // 손으로 잡고 있는 동안의 변화 감지
-            // 현재 카드의 위치
-            view.center = CGPoint(x: initialPoint.x + xFromCenter, y: initialPoint.y + yFromCenter)
+        case .changed:
             
-            // 어느 방향인지
-            let direction: SwipeDirection = xFromCenter > 0 ? .right : .left
-            let maxDistance = superView.bounds.width * threshold
-            let progress = min(1.0, abs(xFromCenter) / maxDistance)
+            let rotationAngle = (xFromCenter / cardContainerView.bounds.width) * maxRotationAngle
             
-            guard allowedDirections.contains(direction) else { return }
-            swipeStateChanged?(.swiping(progress: progress, direction: direction))
+            card.transform = CGAffineTransform(translationX: xFromCenter, y: translation.y)
+                .rotated(by: rotationAngle)
             
-        case .ended:  // 손을 떼어냈을 때
-            let screenWidth = superView.bounds.width
-            let overThreshold = abs(xFromCenter) > screenWidth * threshold
+        case .ended, .cancelled:
             
-            let direction: SwipeDirection = xFromCenter > 0 ? .right : .left
-            
-            guard overThreshold && allowedDirections.contains(direction) else {
+            if abs(xFromCenter) > swipeThreshold {
                 
-                // 기준치만큼 이동하지 않았다면 제자리로
-                view.center = initialPoint
-                swipeStateChanged?(.cancelled)
+                let screenWidth = cardContainerView.bounds.width
+                let direction: SwipeDirection = xFromCenter > 0 ? .right : .left
+                let directionMultiplier: CGFloat = xFromCenter > 0 ? 1 : -1
                 
-                return
+                UIView.animate(withDuration: animationDuration, animations: {
+                    card.transform = CGAffineTransform(translationX: directionMultiplier * screenWidth * 1.5, y: 0)
+                }) { _ in
+                    
+                    card.transform = CGAffineTransform.identity
+                    self.showNextCard(direction: direction)
+                }
+            } else {
+                
+                UIView.animate(withDuration: animationDuration) {
+                    card.transform = CGAffineTransform(rotationAngle: self.initialCardRotation)
+                }
             }
             
-            swipeStateChanged?(.completed(direction: direction))
-            
-        case .cancelled:
-            view.center = initialPoint
-            swipeStateChanged?(.cancelled)
-            
-        default: break
+        default:
+            break
         }
-    }
-
-    public func cleanup() {
-        if let panGesture = panGestureRecognizer, let view = targetView {
-            view.removeGestureRecognizer(panGesture)
-        }
-        panGestureRecognizer = nil
-        swipeStateChanged = nil
     }
 }
-
