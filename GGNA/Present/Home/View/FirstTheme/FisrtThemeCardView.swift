@@ -1,5 +1,5 @@
 //
-//  HomeCardView.swift
+//  FirstThemeCardView.swift
 //  GGNA
 //
 //  Created by Lee Wonsun on 3/31/25.
@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-final class FisrtThemeCardView: BaseView {
+final class FirstThemeCardView: BaseView {
     
     private let cardView = BaseUIImageView(image: nil, cornerRadius: 30)
     private let cardCoverView = UIView()
@@ -25,6 +25,13 @@ final class FisrtThemeCardView: BaseView {
     override func configureView() {
         
         cardView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
+
+        layer.cornerRadius = 30
+        layer.shadowColor = UIColor.ggSelected.cgColor
+        layer.shadowOffset = CGSize(width: 2, height: 2)
+        layer.shadowRadius = 5
+        layer.shadowOpacity = 0.6
+        layer.masksToBounds = false
         
         cardCoverView.cornerRadius30()
         cardCoverView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)

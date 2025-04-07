@@ -21,8 +21,7 @@ final class HomeViewController: BaseViewController {
     private let palleteButton = CustomBarButton(ImageLiterals.paintpalette)
     private let rightStackView = UIStackView()
     
-    private let theme1BgCardView = UIView()
-    private let theme1FirstCardView = FisrtThemeCardView()
+    private let themeView = FirstThemeView()
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -39,44 +38,6 @@ final class HomeViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewWillAppear.accept(())
-    }
-    
-    override func configureBind() {
-        
-        let input = HomeViewModel.Input(
-            viewWillAppear: viewWillAppear.asObservable()
-        )
-        let output = viewModel.transform(from: input)
-        
-        output.currentPhotos
-            .drive(with: self) { owner, photos in
-                
-                guard let photo = photos.first else { return }
-                owner.theme1FirstCardView.setImage(photo)
-            }
-            .disposed(by: disposeBag)
-        
-        palleteButton.rx.tap
-            .bind(with: self) { owner, _ in
-                owner.presentColorThemeSheet()
-            }
-            .disposed(by: disposeBag)
-        
-        CurrentTheme.$currentTheme
-            .bind(with: self) { owner, value in
-                
-                let theme = value.theme
-                let color = value.color
-                let colors = color.setColor(for: theme)
-                
-                let attribute: [NSAttributedString.Key: Any] = [.foregroundColor: colors.text]
-                
-                owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
-                owner.navigationController?.navigationBar.tintColor = colors.text
-                owner.theme1BgCardView.backgroundColor = colors.main
-                owner.view.backgroundColor = colors.background
-            }
-            .disposed(by: disposeBag)
     }
     
     private func presentColorThemeSheet() {
@@ -102,6 +63,46 @@ final class HomeViewController: BaseViewController {
         present(modalVC, animated: true)
     }
     
+    override func configureBind() {
+        
+        let input = HomeViewModel.Input(
+            viewWillAppear: viewWillAppear.asObservable()
+        )
+        let output = viewModel.transform(from: input)
+        
+        output.currentPhotos
+            .drive(with: self) { owner, photos in
+                owner.themeView.setupCardViews(with: photos)
+            }
+            .disposed(by: disposeBag)
+        
+        palleteButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.presentColorThemeSheet()
+            }
+            .disposed(by: disposeBag)
+        
+        CurrentTheme.$currentTheme
+            .bind(with: self) { owner, value in
+                
+                let theme = value.theme
+                let color = value.color
+                let colors = color.setColor(for: theme)
+                
+                // 네비게이션 바 스타일 업데이트
+                let attribute: [NSAttributedString.Key: Any] = [.foregroundColor: colors.text]
+                owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
+                owner.navigationController?.navigationBar.tintColor = colors.text
+                
+                // themeView에 색상 전달
+                owner.themeView.updateThemeColors(with: colors)
+                
+                // 배경색 업데이트
+                owner.view.backgroundColor = colors.background
+            }
+            .disposed(by: disposeBag)
+    }
+    
     override func configureNavigation() {
         
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -116,29 +117,16 @@ final class HomeViewController: BaseViewController {
         rightStackView.axis = .horizontal
         rightStackView.alignment = .center
         rightStackView.spacing = 15
-        
-        theme1BgCardView.cornerRadius30()
-        theme1BgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 60)
     }
     
     override func configureHierarchy() {
         rightStackView.addArrangedSubviews(shuffleButton, palleteButton)
-        view.addSubviews(theme1BgCardView, theme1FirstCardView)
+        view.addSubview(themeView)
     }
     
     override func configureLayout() {
-        theme1BgCardView.snp.makeConstraints {
-            $0.centerX.equalTo(view.safeAreaLayoutGuide)
-            $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(17)
-            $0.width.equalTo(view.snp.width).multipliedBy(0.8)
-            $0.height.equalTo(view.snp.height).multipliedBy(0.6)
-        }
-        
-        theme1FirstCardView.snp.makeConstraints {
-            $0.centerX.equalTo(view.safeAreaLayoutGuide)
-            $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(17)
-            $0.width.equalTo(view.snp.width).multipliedBy(0.8)
-            $0.height.equalTo(view.snp.height).multipliedBy(0.6)
+        themeView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
 }
