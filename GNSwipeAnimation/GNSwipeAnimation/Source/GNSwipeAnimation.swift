@@ -86,7 +86,7 @@ public class GNCardSwipeManager<T: UIView> {
                 configureCard?(cardView, data[index], index)
                 cardView.isHidden = false
                 
-                styleCard(cardView, at: index)
+                transformCard(cardView, at: index)
             } else {
                 cardView.isHidden = true
             }
@@ -129,7 +129,7 @@ public class GNCardSwipeManager<T: UIView> {
         }
     }
     
-    private func styleCard(_ cardView: T, at index: Int) {
+    private func transformCard(_ cardView: T, at index: Int) {
        
         cardView.transform = CGAffineTransform.identity
         
@@ -167,7 +167,7 @@ public class GNCardSwipeManager<T: UIView> {
                 cardView.isHidden = false
                 configureCard?(cardView, dataSource[dataIndex], dataIndex)
                 
-                styleCard(cardView, at: index)
+                transformCard(cardView, at: index)
             } else {
                 cardView.isHidden = true
             }
