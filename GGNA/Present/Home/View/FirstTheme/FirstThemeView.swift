@@ -46,7 +46,7 @@ final class FirstThemeView: BaseView {
     
     override func configureView() {
         bgCardView.cornerRadius30()
-        bgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 60)
+        bgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 90)
     }
     
     override func configureHierarchy() {
@@ -55,25 +55,22 @@ final class FirstThemeView: BaseView {
     
     override func configureLayout() {
         bgCardView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(17)
-            $0.horizontalEdges.equalToSuperview().inset(30)
-            $0.height.equalTo(UIScreen.main.bounds.height * 0.55)
+            $0.horizontalEdges.equalToSuperview().inset(40)
+            $0.height.equalTo(UIScreen.main.bounds.height * 0.6)
         }
         
         // 나머지 카드도 동일하게 설정
         secondCardView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(17)
-            $0.horizontalEdges.equalToSuperview().inset(30)
-            $0.height.equalTo(UIScreen.main.bounds.height * 0.55)
+            $0.horizontalEdges.equalToSuperview().inset(40)
+            $0.height.equalTo(UIScreen.main.bounds.height * 0.6)
         }
         
         firstCardView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(17)
-            $0.horizontalEdges.equalToSuperview().inset(30)
-            $0.height.equalTo(UIScreen.main.bounds.height * 0.55)
+            $0.horizontalEdges.equalToSuperview().inset(40)
+            $0.height.equalTo(UIScreen.main.bounds.height * 0.6)
         }
     }
 }

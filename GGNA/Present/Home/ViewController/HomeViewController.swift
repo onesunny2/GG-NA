@@ -17,7 +17,7 @@ final class HomeViewController: BaseViewController {
     
     private let viewWillAppear = PublishRelay<Void>()
     
-    private let shuffleButton = CustomBarButton(ImageLiterals.shuffle)
+    private let shuffleButton = CustomBarButton(ImageLiterals.change)
     private let palleteButton = CustomBarButton(ImageLiterals.paintpalette)
     private let rightStackView = UIStackView()
     
@@ -28,7 +28,7 @@ final class HomeViewController: BaseViewController {
         super.init()
         
         // TODO: 2차에 테마 업데이트 할 때 hidden 제거
-        shuffleButton.isHidden = true
+        shuffleButton.isHidden = false
     }
 
     override func viewDidLoad() {
@@ -116,11 +116,11 @@ final class HomeViewController: BaseViewController {
         rightStackView.distribution = .equalSpacing
         rightStackView.axis = .horizontal
         rightStackView.alignment = .center
-        rightStackView.spacing = 15
+        rightStackView.spacing = 12
     }
     
     override func configureHierarchy() {
-        rightStackView.addArrangedSubviews(shuffleButton, palleteButton)
+        rightStackView.addArrangedSubviews(palleteButton, shuffleButton)
         view.addSubview(themeView)
     }
     

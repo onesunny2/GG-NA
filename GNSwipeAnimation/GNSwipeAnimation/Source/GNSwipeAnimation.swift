@@ -31,7 +31,7 @@ public class GNCardSwipeManager<T: UIView> {
     private var animationDuration: TimeInterval = 0.3
     private var stackedCardScale: CGFloat = 1.0
     private var stackedCardAlpha: CGFloat = 1.0
-    private var initialCardRotation: CGFloat = -CGFloat.pi / 60
+    private var initialCardRotation: CGFloat = -CGFloat.pi / 90
     
     public init(containerView: UIView, cardViews: [T]) {
         self.cardContainerView = containerView

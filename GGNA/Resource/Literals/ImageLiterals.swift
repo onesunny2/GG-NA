@@ -29,7 +29,7 @@ enum ImageLiterals {
     static let zoomOut: UIImage? = UIImage(systemName: "arrow.down.right.and.arrow.up.left.circle.fill")
     
     /// Navigation BarButtonItem에서 사용하는 Image Assets
-    static let shuffle: UIImage? = UIImage(systemName: "shuffle")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
+    static let change: UIImage? = UIImage(systemName: "arrow.left.arrow.right")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
     static let paintpalette: UIImage? = UIImage(systemName: "paintpalette.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
     static let folderPlus: UIImage? = UIImage(systemName: "folder.fill.badge.plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
     static let trashFill: UIImage? = UIImage(systemName: "trash.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20))
