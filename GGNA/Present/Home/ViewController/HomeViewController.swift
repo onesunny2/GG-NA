@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import GNSwipeAnimation
 import SnapKit
 import RxCocoa
 import RxSwift
