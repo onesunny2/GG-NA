@@ -61,7 +61,7 @@ final class LaunchViewController: BaseViewController {
                 let defaultPhoto = PhotoCardRecord(
                     imageScale: true,
                     videoData: Data(),
-                    filter: Original.original.type,
+                    filter: Filter.original.type,
                     isSelectedMain: true,
                     cardContent: cardContent
                 )
