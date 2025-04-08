@@ -11,7 +11,8 @@ import SnapKit
 final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
     
     private let defaultImageView = BaseUIImageView(isCornered: false, image: nil)
-    private let selectedCoverView = UIView()
+    private let checkBgView = UIView()
+    private let checkImage = BaseUIImageView(isCornered: false, image: nil)
     private let filterNameBgView = UIView()
     private let filterName = BaseUILabel(
         text: "",
@@ -32,12 +33,12 @@ final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
         super.prepareForReuse()
         
         filterName.text = ""
-        selectedCoverView.isHidden = true
     }
     
     private func configureView() {
         backgroundColor = .clear
-        selectedCoverView.isHidden = true
+        checkBgView.isHidden = true
+        checkImage.isHidden = true
         defaultImageView.clipsToBounds = true
         filterNameBgView.backgroundColor = .ggDarkBlack.withAlphaComponent(0.7)
         
@@ -45,11 +46,14 @@ final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
         
-        selectedCoverView.backgroundColor = colors.main.withAlphaComponent(0.4)
+        checkBgView.layer.borderWidth = 3
+        checkBgView.layer.borderColor = colors.main.cgColor
+        checkBgView.backgroundColor = .ggDarkBlack.withAlphaComponent(0.7)
+        checkImage.image = ImageLiterals.check?.withTintColor(colors.main, renderingMode: .alwaysOriginal)
     }
     
     private func configureHierarchy() {
-        contentView.addSubviews(defaultImageView, selectedCoverView, filterNameBgView,  filterName)
+        contentView.addSubviews(defaultImageView, filterNameBgView, checkBgView, checkImage, filterName)
     }
     
     private func configureLayout() {
@@ -57,8 +61,12 @@ final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
             $0.edges.equalToSuperview()
         }
         
-        selectedCoverView.snp.makeConstraints {
+        checkBgView.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+        
+        checkImage.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
         
         filterNameBgView.snp.makeConstraints {
@@ -74,10 +82,15 @@ final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
     func configureCell(type: Filter) {
         
         let defaultImage = UIImage(resource: .ggnaDefault)
-        let filteredImage = ImageFilterManager.applyFilterAtUIImage(type, to: defaultImage)
+        let filteredImage = ImageFilterManager.applyFilterFromUIImage(type, to: defaultImage)
         
         defaultImageView.image = filteredImage
         filterName.text = type.koreanName
+    }
+    
+    func configureSelectedFilter(status: Bool) {
+        checkBgView.isHidden = status ? false : true
+        checkImage.isHidden = status ? false : true
     }
     
     @available(*, unavailable)
