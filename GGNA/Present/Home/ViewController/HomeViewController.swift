@@ -79,7 +79,6 @@ final class HomeViewController: BaseViewController {
             .drive(with: self) { owner, entities in
                 
                 owner.configureFolderMenu(entities) { folderName in
-                    print(folderName)
                     owner.changeFolder.accept(folderName)
                 }
             }
@@ -98,15 +97,10 @@ final class HomeViewController: BaseViewController {
                 let color = value.color
                 let colors = color.setColor(for: theme)
                 
-                // 네비게이션 바 스타일 업데이트
                 let attribute: [NSAttributedString.Key: Any] = [.foregroundColor: colors.text]
                 owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
                 owner.navigationController?.navigationBar.tintColor = colors.text
-                
-                // themeView에 색상 전달
                 owner.themeView.updateThemeColors(with: colors)
-                
-                // 배경색 업데이트
                 owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
