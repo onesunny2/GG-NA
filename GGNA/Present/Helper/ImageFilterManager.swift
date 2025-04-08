@@ -44,14 +44,32 @@ enum ImageFilterManager {
         guard let originImage = UIImage(data: data) else { return nil }
         
         guard let ciImage = CIImage(data: data) else { return nil }
+        // 원본 이미지의 경계 저장
+        let originalExtent = ciImage.extent
+        
         guard let ciFilter = filter.filter else { return nil }
         
         ciFilter.setValue(ciImage, forKey: kCIInputImageKey)
         
         guard let newImage = ciFilter.outputImage else { return nil }
         
+        // 필터 후 크기가 변경되었는지 확인
+        let outputExtent = newImage.extent
+        
+        // 출력 이미지의 크기가 다른 경우 원본 크기로 조정
+        let finalImage: CIImage
+        if outputExtent.size.width != originalExtent.size.width ||
+           outputExtent.size.height != originalExtent.size.height {
+            
+            // 원본 이미지 경계로 크롭하거나 확장
+            finalImage = newImage.cropped(to: originalExtent)
+
+        } else {
+            finalImage = newImage
+        }
+        
         let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(newImage, from: newImage.extent) else { return nil }
+        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
         return UIImage(cgImage: cgImage, scale: originImage.scale, orientation: originImage.imageOrientation)
     }
