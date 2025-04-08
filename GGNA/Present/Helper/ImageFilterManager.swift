@@ -19,19 +19,29 @@ enum ImageFilterManager {
         
         // 그 외 필터는 CIImage 변환
         guard let ciImage = CIImage(data: imageData) else { return nil }
+        let originalExtent = ciImage.extent
         
         // 필터 객체
         guard let ciFilter = filter.filter else { return nil }
         
         ciFilter.setValue(ciImage, forKey: kCIInputImageKey)
         
-        // TODO: 필터별 추가 파라미터 설정 가능
-        
         guard let newImage = ciFilter.outputImage else { return nil }
         
-        // 다시 UIImage로 변환
+        let outputExtent = newImage.extent
+        
+        let finalImage: CIImage
+        if outputExtent.size.width != originalExtent.size.width ||
+           outputExtent.size.height != originalExtent.size.height {
+            
+            finalImage = newImage.cropped(to: originalExtent)
+
+        } else {
+            finalImage = newImage
+        }
+        
         let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(newImage, from: newImage.extent) else { return nil }
+        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
         return UIImage(cgImage: cgImage)
     }
