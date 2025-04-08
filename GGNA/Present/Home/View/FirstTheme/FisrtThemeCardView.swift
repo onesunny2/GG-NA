@@ -35,7 +35,7 @@ final class FirstThemeCardView: BaseView {
         
         cardCoverView.cornerRadius30()
         cardCoverView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
-        cardCoverView.backgroundColor = .ggImgCover.withAlphaComponent(0.6)
+        cardCoverView.backgroundColor = .ggImgCover.withAlphaComponent(0.3)
         
         cardTitle.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
     }
