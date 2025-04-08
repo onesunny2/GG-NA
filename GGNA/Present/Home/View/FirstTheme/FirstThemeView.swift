@@ -16,6 +16,7 @@ final class FirstThemeView: BaseView {
     private let secondCardView = FirstThemeCardView()
     
     private var cardSwipeManager: GNCardSwipeManager<FirstThemeCardView>!
+    private var photoData: [HomePhotoCardEntity] = []
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,15 +34,31 @@ final class FirstThemeView: BaseView {
             guard let photo = data as? HomePhotoCardEntity else { return }
             cardView.setImage(photo)
         }
+        
+        cardSwipeManager.onCardChanged = { index in
+            self.setCardNumbering(current: index)
+        }
     }
     
     // viewController에서 데이터 전달받을 메서드
     func setupCardViews(with photos: [HomePhotoCardEntity]) {
         cardSwipeManager.setupWithData(photos)
+        photoData = photos
+        
+        guard !photos.isEmpty else { return }
+        setCardNumbering(current: 0)
     }
     
     func updateThemeColors(with colors: ColorSet) {
         bgCardView.backgroundColor = colors.main
+    }
+    
+    private func setCardNumbering(current index: Int) {
+        let total = photoData.count
+        let current = index + 1
+        
+        firstCardView.setCardNumber(total: total, current: current)
+        secondCardView.setCardNumber(total: total, current: (current % total) + 1)
     }
     
     override func configureView() {
