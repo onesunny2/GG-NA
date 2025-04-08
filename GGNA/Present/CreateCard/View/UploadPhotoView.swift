@@ -27,8 +27,11 @@ final class UploadPhotoView: BaseView {
     private let filterTitle: BaseUILabel
     private lazy var filterCollectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
     
+    private var previousSelectedIndexPath: IndexPath = IndexPath(item: 0, section: 0)
+    
     var tappedUploadButton = PublishRelay<Void>()
     var zoomStatus = PublishRelay<Bool>()
+    var selectedFilter = BehaviorRelay(value: Filter.original)
     
     override init(frame: CGRect) {
         
@@ -52,13 +55,19 @@ final class UploadPhotoView: BaseView {
         
         super.init(frame: frame)
         bind()
+        switchCollectionViewHidden(isSelectedImg: false)
     }
     
     func getCurrentImage() -> UIImage? {
         return cardImageView.image
     }
     
-    func setImage(_ image: UIImage) {
+    func switchCollectionViewHidden(isSelectedImg: Bool) {
+        filterCollectionView.isHidden = isSelectedImg ? false : true
+        filterTitle.isHidden = isSelectedImg ? false : true
+    }
+    
+    func setImage(_ image: UIImage?) {
         cardImageView.contentMode = .scaleAspectFill
         cardImageView.image = image
         uploadIcon.isHidden = true
@@ -100,8 +109,31 @@ final class UploadPhotoView: BaseView {
                     cellIdentifier: FilterCollectionViewCell.identifier,
                     cellType: FilterCollectionViewCell.self
                 )
-            ) { index, item, cell in
+            ) { [weak self] index, item, cell in
+                
+                guard let self else { return }
+                
                 cell.configureCell(type: item)
+                
+                let isSelected = (self.selectedFilter.value == item)
+                cell.configureSelectedFilter(status: isSelected)
+            }
+            .disposed(by: disposeBag)
+        
+        filterCollectionView.rx.modelSelected(Filter.self)
+            .bind(with: self) { owner, filter in
+                
+                owner.selectedFilter.accept(filter)
+                
+                for cell in owner.filterCollectionView.visibleCells {
+                    if let filterCell = cell as? FilterCollectionViewCell,
+                       let indexPath = owner.filterCollectionView.indexPath(for: cell),
+                       let item = try? owner.filterCollectionView.rx.model(at: indexPath) as Filter {
+                        
+                        let isSelected = (filter == item)
+                        filterCell.configureSelectedFilter(status: isSelected)
+                    }
+                }
             }
             .disposed(by: disposeBag)
         
@@ -155,7 +187,7 @@ final class UploadPhotoView: BaseView {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 15
+        section.interGroupSpacing = 10
         section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 30, bottom: 0, trailing: 30)
         section.orthogonalScrollingBehavior = .continuous
         

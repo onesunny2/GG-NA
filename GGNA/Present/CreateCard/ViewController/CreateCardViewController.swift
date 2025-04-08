@@ -74,9 +74,25 @@ final class CreateCardViewController: BaseViewController {
         
         output.downSampledImage
             .drive(with: self) { owner, image in
+                owner.photoUploadView.switchCollectionViewHidden(isSelectedImg: true)
                 owner.photoUploadView.setImage(image)
             }
             .disposed(by: disposeBag)
+        
+        Observable.combineLatest(
+            pickedImageData,
+            photoUploadView.selectedFilter
+        )
+        .bind(with: self) { owner, value in
+            
+            let imageData = value.0
+            let filter = value.1
+            let image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
+            
+            // TODO: DB에 필터 정보도 저장해야 함
+            owner.photoUploadView.setImage(image)
+        }
+        .disposed(by: disposeBag)
         
         writingView.selectFolderButton.tappedAddFolder  // 폴더 생성 눌렀을 때
             .bind(with: self) { owner, _ in
