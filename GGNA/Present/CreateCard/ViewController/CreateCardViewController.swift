@@ -231,9 +231,6 @@ final class CreateCardViewController: BaseViewController {
     
     override func configureLayout() {
         
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first  else { return }
-        
         switchStackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
             $0.centerX.equalTo(view.safeAreaLayoutGuide)
@@ -242,7 +239,7 @@ final class CreateCardViewController: BaseViewController {
         photoUploadView.snp.makeConstraints {
             $0.top.equalTo(switchStackView.snp.bottom).offset(20)
             $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(window.bounds.height / 2)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         writingView.snp.makeConstraints {

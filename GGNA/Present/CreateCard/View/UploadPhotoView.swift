@@ -24,6 +24,8 @@ final class UploadPhotoView: BaseView {
     private let uploadButton = TextFilledButton(title: uploadViewLiterals.사진올리기.text)
     private let zoomInIcon: CircularSymbolView // true 활성화
     private let zoomOutIcon: CircularSymbolView // false 활성화
+    private let filterTitle: BaseUILabel
+    private lazy var filterCollectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
     
     var tappedUploadButton = PublishRelay<Void>()
     var zoomStatus = PublishRelay<Bool>()
@@ -42,9 +44,18 @@ final class UploadPhotoView: BaseView {
             symbol: ImageLiterals.zoomOut,
             symbolColor: colors.main
         )
+        filterTitle = BaseUILabel(
+            text: uploadViewLiterals.필터.text,
+            color: colors.text,
+            font: FontLiterals.subTitle
+        )
         
         super.init(frame: frame)
         bind()
+    }
+    
+    func getCurrentImage() -> UIImage? {
+        return cardImageView.image
     }
     
     func setImage(_ image: UIImage) {
@@ -83,6 +94,17 @@ final class UploadPhotoView: BaseView {
     
     private func bind() {
         
+        Observable.just(Filter.allCases)
+            .bind(
+                to: filterCollectionView.rx.items(
+                    cellIdentifier: FilterCollectionViewCell.identifier,
+                    cellType: FilterCollectionViewCell.self
+                )
+            ) { index, item, cell in
+                cell.configureCell(type: item)
+            }
+            .disposed(by: disposeBag)
+        
         zoomOutIcon.rx.tapgesture
             .bind(with: self) { owner, _ in
                 owner.zoomStatus.accept(false)
@@ -113,7 +135,36 @@ final class UploadPhotoView: BaseView {
             .disposed(by: disposeBag)
     }
     
+    private func createCollectionViewLayout() -> UICollectionViewLayout {
+       
+        let width = UIScreen.main.bounds.width
+        
+        let itemWidth = width / 3.5
+        let itemHeight = itemWidth * 1.3
+
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(itemWidth),
+            heightDimension: .absolute(itemHeight)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(itemWidth),
+            heightDimension: .absolute(itemHeight)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 15
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 30, bottom: 0, trailing: 30)
+        section.orthogonalScrollingBehavior = .continuous
+        
+        return UICollectionViewCompositionalLayout(section: section)
+    }
+    
     override func configureView() {
+        
+        backgroundColor = .clear
         
         cardView.backgroundColor = colors.text
         cardView.cornerRadius15()
@@ -121,10 +172,14 @@ final class UploadPhotoView: BaseView {
         
         zoomInIcon.isHidden = true
         zoomOutIcon.isHidden = true
+        
+        filterCollectionView.backgroundColor = .clear
+        filterCollectionView.showsHorizontalScrollIndicator = false
+        filterCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.identifier)
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, cardImageView, uploadIcon, uploadButton, zoomInIcon, zoomOutIcon)
+        addSubviews(cardView, cardImageView, uploadIcon, uploadButton, zoomInIcon, zoomOutIcon, filterTitle, filterCollectionView)
     }
     
     override func configureLayout() {
@@ -144,13 +199,13 @@ final class UploadPhotoView: BaseView {
         
         uploadIcon.snp.makeConstraints {
             $0.centerX.equalTo(safeAreaLayoutGuide)
-            $0.centerY.equalTo(safeAreaLayoutGuide).offset(-18)
+            $0.centerY.equalTo(cardView).offset(-18)
             $0.size.equalTo(30)
         }
         
         uploadButton.snp.makeConstraints {
             $0.centerX.equalTo(safeAreaLayoutGuide)
-            $0.centerY.equalTo(safeAreaLayoutGuide).offset(18)
+            $0.centerY.equalTo(cardView).offset(18)
         }
         
         zoomInIcon.snp.makeConstraints {
@@ -161,6 +216,17 @@ final class UploadPhotoView: BaseView {
         zoomOutIcon.snp.makeConstraints {
             $0.trailing.bottom.equalTo(cardView).inset(10)
             $0.size.equalTo(40)
+        }
+        
+        filterTitle.snp.makeConstraints {
+            $0.top.equalTo(cardView.snp.bottom).offset(32)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(30)
+        }
+        
+        filterCollectionView.snp.makeConstraints {
+            $0.top.equalTo(filterTitle.snp.bottom).offset(15)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.height.equalTo(UIScreen.main.bounds.width / 3.5 * 1.3)
         }
     }
 }
@@ -174,7 +240,7 @@ extension UploadPhotoView {
         var text: String {
             switch self {
             case .사진올리기: return "사진 올리기"
-            case .필터: return "필터􀆈"
+            case .필터: return "필터"
             }
         }
     }
