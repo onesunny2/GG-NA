@@ -13,13 +13,16 @@ final class HomeViewModel: InputOutputModel {
     
     struct Input {
         let viewWillAppear: Observable<Void>
+        let changeFolder: Observable<String>
     }
     
     struct Output {
         let currentPhotos: Driver<[HomePhotoCardEntity]>
+        let currentFolders: Driver<[HomeFolderEntity]>
     }
     
     private let repository: HomePhotoRepository
+    private let folderDefaults = SavingFolder.folder
     private let disposeBag = DisposeBag()
     
     init(repository: HomePhotoRepository) {
@@ -33,16 +36,25 @@ final class HomeViewModel: InputOutputModel {
     func transform(from input: Input) -> Output {
         
         // TODO: 나중에 폴더 선택 가능하게 하려면 UserDefault로 현재 선택한 폴더정보 저장 필요
-        let currentPhotos = BehaviorRelay<[HomePhotoCardEntity]>(value: repository.getPhotosFromFolder(folderName: "기본"))
+        let currentPhotos = BehaviorRelay<[HomePhotoCardEntity]>(value: repository.getPhotosFromFolder(folderName: folderDefaults))
+        let currentFolders = BehaviorRelay(value: repository.getFolders())
         
         input.viewWillAppear
             .bind(with: self) { owner, _ in
-                currentPhotos.accept(owner.repository.getPhotosFromFolder(folderName: "기본"))
+                currentPhotos.accept(owner.repository.getPhotosFromFolder(folderName: owner.folderDefaults))
+                currentFolders.accept(owner.repository.getFolders())
+            }
+            .disposed(by: disposeBag)
+        
+        input.changeFolder
+            .bind(with: self) { owner, name in
+                currentPhotos.accept(owner.repository.getPhotosFromFolder(folderName: name))
             }
             .disposed(by: disposeBag)
         
         return Output(
-            currentPhotos: currentPhotos.asDriver()
+            currentPhotos: currentPhotos.asDriver(),
+            currentFolders: currentFolders.asDriver()
         )
     }
 }
