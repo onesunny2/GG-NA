@@ -10,7 +10,7 @@ import SnapKit
 
 final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
     
-    private let defaultImageView = BaseUIImageView(isCornered: false, image: UIImage(resource: .ggnaDefault))
+    private let defaultImageView = BaseUIImageView(isCornered: false, image: nil)
     private let selectedCoverView = UIView()
     private let filterNameBgView = UIView()
     private let filterName = BaseUILabel(
@@ -72,6 +72,11 @@ final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
     }
     
     func configureCell(type: Filter) {
+        
+        let defaultImage = UIImage(resource: .ggnaDefault)
+        let filteredImage = ImageFilterManager.applyFilterAtUIImage(type, to: defaultImage)
+        
+        defaultImageView.image = filteredImage
         filterName.text = type.koreanName
     }
     

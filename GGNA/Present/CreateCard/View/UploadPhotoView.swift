@@ -219,12 +219,12 @@ final class UploadPhotoView: BaseView {
         }
         
         filterTitle.snp.makeConstraints {
-            $0.top.equalTo(cardView.snp.bottom).offset(32)
+            $0.top.equalTo(cardView.snp.bottom).offset(24)
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(30)
         }
         
         filterCollectionView.snp.makeConstraints {
-            $0.top.equalTo(filterTitle.snp.bottom).offset(15)
+            $0.top.equalTo(filterTitle.snp.bottom).offset(10)
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide)
             $0.height.equalTo(UIScreen.main.bounds.width / 3.5 * 1.3)
         }
