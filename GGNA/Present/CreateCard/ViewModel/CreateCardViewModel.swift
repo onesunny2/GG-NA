@@ -62,7 +62,7 @@ final class CreateCardViewModel: InputOutputModel {
              imageData: UIImage(),
              imageScale: true,
              videoData: nil,
-             filter: Filter.original.name,
+             filter: Original.original.type,
              isSelectedMain: false,
              cardContent: CardData.CardContentData()
          )
@@ -84,7 +84,7 @@ final class CreateCardViewModel: InputOutputModel {
             imageData: UIImage(),
             imageScale: true,
             videoData: nil,
-            filter: Filter.original.name,
+            filter: Original.original.type,
             isSelectedMain: false,
             cardContent: CardData.CardContentData()
         )
