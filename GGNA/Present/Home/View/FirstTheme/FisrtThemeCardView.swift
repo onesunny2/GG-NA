@@ -17,8 +17,14 @@ final class FirstThemeCardView: BaseView {
         color: .ggDarkWhite,
         font: FontLiterals.normalCardTitle
     )
+    private let cardNumbering = BaseUILabel(
+        text: "",
+        color: .ggDarkWhite,
+        font: FontLiterals.modalVCTitle
+    )
     
     override init(frame: CGRect) {
+        
         super.init(frame: frame)
     }
     
@@ -35,13 +41,15 @@ final class FirstThemeCardView: BaseView {
         
         cardCoverView.cornerRadius30()
         cardCoverView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
-        cardCoverView.backgroundColor = .ggImgCover
+        cardCoverView.backgroundColor = .ggImgCover.withAlphaComponent(0.3)
         
         cardTitle.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
+        
+        cardNumbering.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, cardCoverView, cardTitle)
+        addSubviews(cardView, cardCoverView, cardTitle, cardNumbering)
     }
     
     override func configureLayout() {
@@ -57,6 +65,11 @@ final class FirstThemeCardView: BaseView {
             $0.trailing.equalTo(cardView.snp.trailing).inset(5)
             $0.bottom.equalTo(cardView.snp.bottom).offset(-15)
         }
+        
+        cardNumbering.snp.makeConstraints {
+            $0.top.equalTo(cardView.snp.top).offset(10)
+            $0.trailing.equalTo(cardView.snp.trailing).offset(-30)
+        }
     }
     
     func setImage(_ data: HomePhotoCardEntity) {
@@ -68,5 +81,9 @@ final class FirstThemeCardView: BaseView {
         
         cardView.image = image
         cardTitle.text = data.cardTitle
+    }
+    
+    func setCardNumber(total: Int, current: Int) {
+        cardNumbering.text = "\(current)/\(total)"
     }
 }

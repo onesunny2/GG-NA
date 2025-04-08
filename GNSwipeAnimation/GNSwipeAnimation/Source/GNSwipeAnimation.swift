@@ -22,16 +22,16 @@ public class GNCardSwipeManager<T: UIView> {
     private var allowSwipeWithSingleItem: Bool = false
     
     public var onSwipe: ((Int, SwipeDirection) -> Void)?
-    public var onCardChanged: ((Int) -> Void)?
+    public var onCardChanged: ((Int, Int) -> Void)?
     public var configureCard: ((T, Any, Int) -> Void)?
     
     // 내가 하려는 기본 카드의 속성으로 기본값 둠 (값의 수정은 직접 프로퍼티에 접근하지 않고 매서드로 변경시킴)
     private var maxRotationAngle: CGFloat = .pi / 10
-    private var swipeThreshold: CGFloat = 100
+    private var swipeThreshold: CGFloat = UIScreen.main.bounds.width * 0.35
     private var animationDuration: TimeInterval = 0.3
     private var stackedCardScale: CGFloat = 1.0
     private var stackedCardAlpha: CGFloat = 1.0
-    private var initialCardRotation: CGFloat = -CGFloat.pi / 60
+    private var initialCardRotation: CGFloat = -CGFloat.pi / 90
     
     public init(containerView: UIView, cardViews: [T]) {
         self.cardContainerView = containerView
@@ -156,8 +156,7 @@ public class GNCardSwipeManager<T: UIView> {
             currentCardIndex = 0
         }
         
-        onCardChanged?(currentCardIndex)
-//        onSwipe?(currentCardIndex - 1, direction)
+        onCardChanged?(dataSource.count, currentCardIndex)
         
         for (index, cardView) in cardViews.enumerated() {
             
@@ -196,31 +195,31 @@ public class GNCardSwipeManager<T: UIView> {
         case .changed:
             
             let rotationAngle = (xFromCenter / cardContainerView.bounds.width) * maxRotationAngle
-            
-            card.transform = CGAffineTransform(translationX: xFromCenter, y: translation.y)
-                .rotated(by: rotationAngle)
+             
+             card.transform = CGAffineTransform(translationX: xFromCenter, y: translation.y)
+                 .rotated(by: rotationAngle)
             
         case .ended, .cancelled:
             
-            if abs(xFromCenter) > swipeThreshold {
-                
-                let screenWidth = cardContainerView.bounds.width
-                let direction: SwipeDirection = xFromCenter > 0 ? .right : .left
-                let directionMultiplier: CGFloat = xFromCenter > 0 ? 1 : -1
-                
-                UIView.animate(withDuration: animationDuration, animations: {
-                    card.transform = CGAffineTransform(translationX: directionMultiplier * screenWidth * 1.5, y: 0)
-                }) { _ in
-                    
-                    card.transform = CGAffineTransform.identity
-                    self.showNextCard(direction: direction)
-                }
-            } else {
-                
-                UIView.animate(withDuration: animationDuration) {
-                    card.transform = CGAffineTransform(rotationAngle: self.initialCardRotation)
-                }
-            }
+            // 손가락을 뗀 후에만 임계값을 체크하여 카드 스와이프 여부 결정
+             if abs(xFromCenter) > swipeThreshold {
+                 
+                 let screenWidth = cardContainerView.bounds.width
+                 let direction: SwipeDirection = xFromCenter > 0 ? .right : .left
+                 let directionMultiplier: CGFloat = xFromCenter > 0 ? 1 : -1
+                 
+                 UIView.animate(withDuration: animationDuration, animations: {
+                     card.transform = CGAffineTransform(translationX: directionMultiplier * screenWidth * 1.5, y: 0)
+                 }) { _ in
+                     card.transform = CGAffineTransform.identity
+                     self.showNextCard(direction: direction)
+                 }
+             } else {
+                 // 임계값을 넘지 않았을 경우, 원래 위치로 되돌림
+                 UIView.animate(withDuration: animationDuration) {
+                     card.transform = CGAffineTransform(rotationAngle: self.initialCardRotation)
+                 }
+             }
             
         default:
             break

@@ -33,20 +33,35 @@ final class FirstThemeView: BaseView {
             guard let photo = data as? HomePhotoCardEntity else { return }
             cardView.setImage(photo)
         }
+        
+        cardSwipeManager.onCardChanged = { total, index in
+            self.setCardNumbering(total: total, current: index)
+        }
     }
     
     // viewController에서 데이터 전달받을 메서드
     func setupCardViews(with photos: [HomePhotoCardEntity]) {
         cardSwipeManager.setupWithData(photos)
+        
+        guard !photos.isEmpty else { return }
+        setCardNumbering(total: photos.count, current: 0)
     }
     
     func updateThemeColors(with colors: ColorSet) {
         bgCardView.backgroundColor = colors.main
     }
     
+    private func setCardNumbering(total: Int, current index: Int) {
+        let total = total
+        let current = index + 1
+        
+        firstCardView.setCardNumber(total: total, current: current)
+        secondCardView.setCardNumber(total: total, current: (current % total) + 1)
+    }
+    
     override func configureView() {
         bgCardView.cornerRadius30()
-        bgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 60)
+        bgCardView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 90)
     }
     
     override func configureHierarchy() {
@@ -55,25 +70,22 @@ final class FirstThemeView: BaseView {
     
     override func configureLayout() {
         bgCardView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(17)
-            $0.horizontalEdges.equalToSuperview().inset(30)
-            $0.height.equalTo(UIScreen.main.bounds.height * 0.55)
+            $0.horizontalEdges.equalToSuperview().inset(40)
+            $0.height.equalTo(UIScreen.main.bounds.height * 0.6)
         }
         
         // 나머지 카드도 동일하게 설정
         secondCardView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(17)
-            $0.horizontalEdges.equalToSuperview().inset(30)
-            $0.height.equalTo(UIScreen.main.bounds.height * 0.55)
+            $0.horizontalEdges.equalToSuperview().inset(40)
+            $0.height.equalTo(UIScreen.main.bounds.height * 0.6)
         }
         
         firstCardView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(17)
-            $0.horizontalEdges.equalToSuperview().inset(30)
-            $0.height.equalTo(UIScreen.main.bounds.height * 0.55)
+            $0.horizontalEdges.equalToSuperview().inset(40)
+            $0.height.equalTo(UIScreen.main.bounds.height * 0.6)
         }
     }
 }

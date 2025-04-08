@@ -16,8 +16,9 @@ final class HomeViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     
     private let viewWillAppear = PublishRelay<Void>()
+    private let changeFolder = PublishRelay<String>()
     
-    private let shuffleButton = CustomBarButton(ImageLiterals.shuffle)
+    private let changeButton = CustomBarButton(ImageLiterals.change)
     private let palleteButton = CustomBarButton(ImageLiterals.paintpalette)
     private let rightStackView = UIStackView()
     
@@ -26,9 +27,6 @@ final class HomeViewController: BaseViewController {
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         super.init()
-        
-        // TODO: 2차에 테마 업데이트 할 때 hidden 제거
-        shuffleButton.isHidden = true
     }
 
     override func viewDidLoad() {
@@ -66,13 +64,23 @@ final class HomeViewController: BaseViewController {
     override func configureBind() {
         
         let input = HomeViewModel.Input(
-            viewWillAppear: viewWillAppear.asObservable()
+            viewWillAppear: viewWillAppear.asObservable(),
+            changeFolder: changeFolder.asObservable()
         )
         let output = viewModel.transform(from: input)
         
         output.currentPhotos
             .drive(with: self) { owner, photos in
                 owner.themeView.setupCardViews(with: photos)
+            }
+            .disposed(by: disposeBag)
+        
+        output.currentFolders
+            .drive(with: self) { owner, entities in
+                
+                owner.configureFolderMenu(entities) { folderName in
+                    owner.changeFolder.accept(folderName)
+                }
             }
             .disposed(by: disposeBag)
         
@@ -89,18 +97,32 @@ final class HomeViewController: BaseViewController {
                 let color = value.color
                 let colors = color.setColor(for: theme)
                 
-                // 네비게이션 바 스타일 업데이트
                 let attribute: [NSAttributedString.Key: Any] = [.foregroundColor: colors.text]
                 owner.navigationController?.navigationBar.largeTitleTextAttributes = attribute
                 owner.navigationController?.navigationBar.tintColor = colors.text
-                
-                // themeView에 색상 전달
                 owner.themeView.updateThemeColors(with: colors)
-                
-                // 배경색 업데이트
                 owner.view.backgroundColor = colors.background
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func configureFolderMenu(_ entities: [HomeFolderEntity], completion: @escaping (String) -> ()) {
+        
+        var folderActions: [UIMenuElement] = []
+        
+        let savedFolder = SavingFolder.folder
+        
+        for entity in entities {
+            let action = UIAction(title: entity.folderName, state: (entity.folderName == savedFolder) ? .on : .off) { _ in
+                completion(entity.folderName)
+            }
+            
+            folderActions.append(action)
+        }
+        
+        let menu = UIMenu(title: StringLiteral.폴더변경.text, children: folderActions)
+        changeButton.menu = menu
+        changeButton.showsMenuAsPrimaryAction = true
     }
     
     override func configureNavigation() {
@@ -116,17 +138,32 @@ final class HomeViewController: BaseViewController {
         rightStackView.distribution = .equalSpacing
         rightStackView.axis = .horizontal
         rightStackView.alignment = .center
-        rightStackView.spacing = 15
+        rightStackView.spacing = 12
     }
     
     override func configureHierarchy() {
-        rightStackView.addArrangedSubviews(shuffleButton, palleteButton)
+        rightStackView.addArrangedSubviews(palleteButton, changeButton)
         view.addSubview(themeView)
     }
     
     override func configureLayout() {
         themeView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+}
+
+extension HomeViewController {
+    
+    enum StringLiteral {
+        case 폴더변경
+        case 카드테마변경
+        
+        var text: String {
+            switch self {
+            case .폴더변경: return "사진폴더 변경"
+            case .카드테마변경: return "카드테마 변경"
+            }
         }
     }
 }
