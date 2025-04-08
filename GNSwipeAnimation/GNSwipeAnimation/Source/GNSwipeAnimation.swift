@@ -22,7 +22,7 @@ public class GNCardSwipeManager<T: UIView> {
     private var allowSwipeWithSingleItem: Bool = false
     
     public var onSwipe: ((Int, SwipeDirection) -> Void)?
-    public var onCardChanged: ((Int) -> Void)?
+    public var onCardChanged: ((Int, Int) -> Void)?
     public var configureCard: ((T, Any, Int) -> Void)?
     
     // 내가 하려는 기본 카드의 속성으로 기본값 둠 (값의 수정은 직접 프로퍼티에 접근하지 않고 매서드로 변경시킴)
@@ -156,8 +156,7 @@ public class GNCardSwipeManager<T: UIView> {
             currentCardIndex = 0
         }
         
-        onCardChanged?(currentCardIndex)
-//        onSwipe?(currentCardIndex - 1, direction)
+        onCardChanged?(dataSource.count, currentCardIndex)
         
         for (index, cardView) in cardViews.enumerated() {
             
