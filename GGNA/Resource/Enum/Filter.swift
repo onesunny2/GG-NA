@@ -9,7 +9,8 @@ import Foundation
 import CoreImage
 import CoreImage.CIFilterBuiltins
 
-enum Filter: String {
+enum Filter: String, CaseIterable {
+    case original
     case colorInvert
     case colorPosterize
     case maskToAlpha
@@ -27,8 +28,9 @@ enum Filter: String {
         return self.rawValue
     }
     
-    var filter: CIFilter {
+    var filter: CIFilter? {
         switch self {
+        case .original: return nil
         case .colorInvert: return CIFilter.colorInvert()
         case .colorPosterize: return CIFilter.colorPosterize()
         case .maskToAlpha: return CIFilter.maskToAlpha()
@@ -46,6 +48,7 @@ enum Filter: String {
     
     var koreanName: String {
         switch self {
+        case .original: return "오리지널"
         case .colorInvert: return "색상 반전"
         case .colorPosterize: return "색상 포스터화"
         case .maskToAlpha: return "마스크 투명화"
@@ -59,17 +62,5 @@ enum Filter: String {
         case .sepiaTone: return "세피아 톤"
         case .xRay: return "X-Ray 효과"
         }
-    }
-}
-
-enum Original: String {
-    case original
-    
-    var type: String {
-        return self.rawValue
-    }
-    
-    var koreanName: String {
-        return "오리지널"
     }
 }
