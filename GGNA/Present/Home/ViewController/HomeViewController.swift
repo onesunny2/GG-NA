@@ -110,9 +110,10 @@ final class HomeViewController: BaseViewController {
         
         var folderActions: [UIMenuElement] = []
         
+        let savedFolder = SavingFolder.folder
+        
         for entity in entities {
-            
-            let action = UIAction(title: entity.folderName) { _ in
+            let action = UIAction(title: entity.folderName, state: (entity.folderName == savedFolder) ? .on : .off) { _ in
                 completion(entity.folderName)
             }
             

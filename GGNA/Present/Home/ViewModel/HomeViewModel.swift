@@ -48,6 +48,7 @@ final class HomeViewModel: InputOutputModel {
             .bind(with: self) { owner, name in
                 SavingFolder.folder = name
                 currentPhotos.accept(owner.repository.getPhotosFromFolder(folderName: name))
+                currentFolders.accept(owner.repository.getFolders())
             }
             .disposed(by: disposeBag)
         
