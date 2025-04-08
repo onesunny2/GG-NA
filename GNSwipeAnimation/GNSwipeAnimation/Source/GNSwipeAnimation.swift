@@ -27,7 +27,7 @@ public class GNCardSwipeManager<T: UIView> {
     
     // 내가 하려는 기본 카드의 속성으로 기본값 둠 (값의 수정은 직접 프로퍼티에 접근하지 않고 매서드로 변경시킴)
     private var maxRotationAngle: CGFloat = .pi / 10
-    private var swipeThreshold: CGFloat = 150
+    private var swipeThreshold: CGFloat = UIScreen.main.bounds.width * 0.35
     private var animationDuration: TimeInterval = 0.3
     private var stackedCardScale: CGFloat = 1.0
     private var stackedCardAlpha: CGFloat = 1.0
