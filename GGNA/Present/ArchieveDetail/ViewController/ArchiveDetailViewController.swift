@@ -109,6 +109,13 @@ final class ArchiveDetailViewController: BaseViewController {
                     
                     switch entity.secretMode {
                     case true:
+                        
+                        guard let cell = owner.collectionView.cellForItem(at: indexPath) as? ArchiveDetailCollectionViewCell else { return }
+                        
+                        guard cell.isFaceIDUnlocked() else {
+                            return
+                        }
+                        
                         Task {
                             let success = await owner.authenticateWithFaceID()
                             
