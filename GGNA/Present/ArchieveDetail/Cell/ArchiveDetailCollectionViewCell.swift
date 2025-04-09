@@ -14,6 +14,8 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
     
     private let disposeBag = DisposeBag()
     
+    private var isUnlocked = true
+    
     private let photoBgView = UIView()
     private let photoView = BaseUIImageView(image: nil)
     private let photoTitle = BaseUILabel(
@@ -183,6 +185,11 @@ final class ArchiveDetailCollectionViewCell: UICollectionViewCell, ReusableIdent
         secretTitle.isHidden = true
         secretBgView.isHidden = true
         secretSymbolImage.isHidden = true
+        isUnlocked = false
+    }
+    
+    func isFaceIDUnlocked() -> Bool {
+        return isUnlocked
     }
     
     @available(*, unavailable)
