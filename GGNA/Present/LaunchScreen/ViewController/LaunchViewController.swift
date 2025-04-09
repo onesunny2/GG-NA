@@ -52,7 +52,7 @@ final class LaunchViewController: BaseViewController {
                 
                 // default 사진 추가
                 let cardContent = CardContent()
-                cardContent.title = "뭘보냥"
+                cardContent.title = "안녕하새오"
                 cardContent.createDate = Date()
                 cardContent.date = "2024.05.07 화요일"
                 cardContent.secretMode = false
@@ -62,6 +62,7 @@ final class LaunchViewController: BaseViewController {
                     imageScale: true,
                     videoData: Data(),
                     filter: Filter.original.type,
+                    filterValue: 0.0,
                     isSelectedMain: true,
                     cardContent: cardContent
                 )
