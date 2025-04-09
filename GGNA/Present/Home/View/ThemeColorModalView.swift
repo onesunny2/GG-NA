@@ -14,6 +14,8 @@ final class ThemeColorModalView: BaseViewController {
     
     private let disposeBag = DisposeBag()
     
+    private var isThemeChanging = false
+    
     private let modalTitle: BaseUILabel
     private let closeButton = UIButton()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
@@ -51,6 +53,8 @@ final class ThemeColorModalView: BaseViewController {
         collectionView.rx.modelSelected(ThemeColorList.self)
             .bind(with: self) { owner, item in
                 
+                owner.isThemeChanging = true
+                
                 var theme: Theme = .dark
                 var color: ThemeColor = .primary
                 
@@ -70,6 +74,11 @@ final class ThemeColorModalView: BaseViewController {
                 
                 CurrentTheme.currentTheme = (theme, color)
                 CurrentTheme.applyCurrentTheme()
+                
+                Task {
+                    try? await Task.sleep(nanoseconds: 1)
+                    owner.isThemeChanging = false
+                }
             }
             .disposed(by: disposeBag)
         
@@ -100,6 +109,9 @@ override func viewDidLayoutSubviews() {
     }
     
     private func updateCollectionViewLayout() {
+        
+        guard !isThemeChanging else { return }
+        
         // 현재 컬렉션뷰의 높이 가져오기
         let currentHeight = collectionView.frame.height
         
