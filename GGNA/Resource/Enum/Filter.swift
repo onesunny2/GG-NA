@@ -9,7 +9,7 @@ import Foundation
 import CoreImage
 import CoreImage.CIFilterBuiltins
 
-enum Filter: String, CaseIterable {
+enum Filter: String, CaseIterable, Codable {
     case original
     case bloom
     case gloom

@@ -54,10 +54,13 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
         
         for element in photos {
             
+            guard let filterInfo = element.getFilterInfo() else { return [] }
+            
             let result = HomePhotoCardEntity(
                 imageData: loadImageFromDocument(foldername: folderName, fileName: element.imageName),
                 videoData: Data(),
-                filter: Filter.original.type,
+                filter: filterInfo.filter,
+                filterValue: filterInfo.filterValue,
                 isSelectedMain: element.isSelectedMain,
                 createDate: element.cardContent?.createDate ?? Date(),
                 cardTitle: element.cardContent?.title,
@@ -85,7 +88,8 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
         let defaultImg = HomePhotoCardEntity(
             imageData: image,
             videoData: Data(),
-            filter: Filter.original.type,
+            filter: .original,
+            filterValue: 0.0,
             isSelectedMain: true,
             createDate: Date(),
             cardTitle: "GG.NA",

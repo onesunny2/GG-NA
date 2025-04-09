@@ -13,8 +13,7 @@ final class PhotoCardRecord: Object, Identifiable {
     @Persisted var imageName: String
     @Persisted var imageScale: Bool
     @Persisted var videoData: Data?
-    @Persisted var filter: String
-    @Persisted var filterValue: Double
+    @Persisted var filterInfo: Data
     @Persisted var isSelectedMain: Bool
     @Persisted var cardContent: CardContent?
     
@@ -24,8 +23,7 @@ final class PhotoCardRecord: Object, Identifiable {
     convenience init(
         imageScale: Bool,
         videoData: Data,
-        filter: String,
-        filterValue: Double,
+        filterInfo: FilterInfo,
         isSelectedMain: Bool,
         cardContent: CardContent
     ) {
@@ -33,10 +31,29 @@ final class PhotoCardRecord: Object, Identifiable {
         self.imageName = self.id.stringValue
         self.imageScale = imageScale
         self.videoData = videoData
-        self.filter = filter
-        self.filterValue = filterValue
+        
+        do {
+            let encoder = JSONEncoder()
+            self.filterInfo = try encoder.encode(filterInfo)
+            
+        } catch {
+            print("Failed encoding Filter: \(error)")
+        }
+        
         self.isSelectedMain = isSelectedMain
         self.cardContent = cardContent
+    }
+    
+    func getFilterInfo() -> FilterInfo? {
+        
+        do {
+            let decoder = JSONDecoder()
+            return try decoder.decode(FilterInfo.self, from: self.filterInfo)
+            
+        } catch {
+            print("Failed Decoding Filter: \(error)")
+            return nil
+        }
     }
 }
 
