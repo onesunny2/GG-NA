@@ -17,7 +17,7 @@ final class ThemeColorModalView: BaseViewController {
     private let modalTitle: BaseUILabel
     private let closeButton = UIButton()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
-    private let colorItems = BehaviorRelay<[ThemeColorList]>(value: [.darkPink, .lightPink])
+    private let colorItems = BehaviorRelay<[ThemeColorList]>(value: [.darkPink, .darkPurple, .lightPink])
     
     override init() {
         
