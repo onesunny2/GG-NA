@@ -8,11 +8,8 @@
 import UIKit
 
 struct HomePhotoCardEntity {
-
     let imageData: UIImage?
     let videoData: Data?
-    let filter: Filter
-    let filterValue: CGFloat
     let isSelectedMain: Bool
     let createDate: Date
     let cardTitle: String?

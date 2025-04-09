@@ -9,5 +9,5 @@ import Foundation
 
 struct FilterInfo: Codable {
     let filter: Filter
-    let filterValue: CGFloat
+    let filterValue: Double
 }
