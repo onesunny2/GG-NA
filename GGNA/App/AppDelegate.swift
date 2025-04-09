@@ -48,16 +48,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate {
     
     func migration() {
-        
-        // 환경을 어떤 내용으로 바꿀건데?: 버전을 1로 바꿀거야
         let config = Realm.Configuration(schemaVersion: 1) { migration, oldSchemaVersion in
             
-            // MARK: 모든 마이그레이션 코드는 여기에
-            // 0 -> 1: PhotoCardRecord에 filterValue(Double) 추가
-            if oldSchemaVersion < 1 { }
+            // 0 -> 1: PhotoCardRecord에 filterInfo(Data) 추가
+            if oldSchemaVersion < 1 {
+                migration.enumerateObjects(ofType: PhotoCardRecord.className()) { oldObject, newObject in
+                    guard let newObject else { return }
+                    
+                    if let oldObject = oldObject {
+                        let oldFilter = oldObject["filter"] as? String ?? "original"
+                        
+                        let filter: Filter
+                        switch oldFilter {
+                        default: filter = .original
+                        }
+                        
+                        let filterValue = 0.0
+                        
+                        let filterInfo = FilterInfo(filter: filter, filterValue: filterValue)
+                        
+                        do {
+                            let encoder = JSONEncoder()
+                            let filterInfoData = try encoder.encode(filterInfo)
+                            newObject["filterInfo"] = filterInfoData
+                        } catch {
+                            print("Migration encoding error: \(error)")
+                            
+                            let defaultFilter = FilterInfo(filter: .original, filterValue: 0.0)
+                            if let defaultData = try? JSONEncoder().encode(defaultFilter) {
+                                newObject["filterInfo"] = defaultData
+                            } else {
+                                newObject["filterInfo"] = Data()
+                            }
+                        }
+                    } else {
+                        let defaultFilter = FilterInfo(filter: .original, filterValue: 0.0)
+                        if let defaultData = try? JSONEncoder().encode(defaultFilter) {
+                            newObject["filterInfo"] = defaultData
+                        } else {
+                            newObject["filterInfo"] = Data()
+                        }
+                    }
+                }
+            }
         }
-        
-        // 아래의 defaultConfiguration 환경을 바꿔주려는 것
+
         Realm.Configuration.defaultConfiguration = config
     }
 }
