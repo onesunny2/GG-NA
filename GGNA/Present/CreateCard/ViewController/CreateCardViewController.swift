@@ -74,9 +74,25 @@ final class CreateCardViewController: BaseViewController {
         
         output.downSampledImage
             .drive(with: self) { owner, image in
+                owner.photoUploadView.switchCollectionViewHidden(isSelectedImg: true)
                 owner.photoUploadView.setImage(image)
             }
             .disposed(by: disposeBag)
+        
+        Observable.combineLatest(
+            pickedImageData,
+            photoUploadView.selectedFilter
+        )
+        .bind(with: self) { owner, value in
+            
+            let imageData = value.0
+            let filter = value.1
+            let image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
+            
+            // TODO: DB에 필터 정보도 저장해야 함
+            owner.photoUploadView.setImage(image)
+        }
+        .disposed(by: disposeBag)
         
         writingView.selectFolderButton.tappedAddFolder  // 폴더 생성 눌렀을 때
             .bind(with: self) { owner, _ in
@@ -231,9 +247,6 @@ final class CreateCardViewController: BaseViewController {
     
     override func configureLayout() {
         
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first  else { return }
-        
         switchStackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
             $0.centerX.equalTo(view.safeAreaLayoutGuide)
@@ -242,7 +255,7 @@ final class CreateCardViewController: BaseViewController {
         photoUploadView.snp.makeConstraints {
             $0.top.equalTo(switchStackView.snp.bottom).offset(20)
             $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(window.bounds.height / 2)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         writingView.snp.makeConstraints {

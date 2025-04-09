@@ -24,9 +24,19 @@ final class UploadPhotoView: BaseView {
     private let uploadButton = TextFilledButton(title: uploadViewLiterals.사진올리기.text)
     private let zoomInIcon: CircularSymbolView // true 활성화
     private let zoomOutIcon: CircularSymbolView // false 활성화
+    private let filterTitle: BaseUILabel
+    private lazy var filterCollectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+    
+    // 밝기 조절 관련 UI 요소
+    private let brightnessSlider = CustomSlider(minValue: 0.0, maxValue: 1.0, initialValue: 0.5)
+    private let brightnessIcon = BaseUIImageView(isCornered: false, image: ImageLiterals.filter)
+    
+    private var previousSelectedIndexPath: IndexPath = IndexPath(item: 0, section: 0)
     
     var tappedUploadButton = PublishRelay<Void>()
     var zoomStatus = PublishRelay<Bool>()
+    var selectedFilter = BehaviorRelay(value: Filter.original)
+    var brightnessValue = PublishRelay<CGFloat>()
     
     override init(frame: CGRect) {
         
@@ -42,17 +52,36 @@ final class UploadPhotoView: BaseView {
             symbol: ImageLiterals.zoomOut,
             symbolColor: colors.main
         )
+        filterTitle = BaseUILabel(
+            text: uploadViewLiterals.필터.text,
+            color: colors.text,
+            font: FontLiterals.subTitle
+        )
         
         super.init(frame: frame)
         bind()
+        switchCollectionViewHidden(isSelectedImg: false)
     }
     
-    func setImage(_ image: UIImage) {
+    func getCurrentImage() -> UIImage? {
+        return cardImageView.image
+    }
+    
+    func switchCollectionViewHidden(isSelectedImg: Bool) {
+        filterCollectionView.isHidden = isSelectedImg ? false : true
+        filterTitle.isHidden = isSelectedImg ? false : true
+        brightnessIcon.isHidden = isSelectedImg ? false : true
+        brightnessSlider.isHidden = isSelectedImg ? false : true
+    }
+    
+    func setImage(_ image: UIImage?) {
         cardImageView.contentMode = .scaleAspectFill
         cardImageView.image = image
         uploadIcon.isHidden = true
         uploadButton.isHidden = true
         zoomOutIcon.isHidden = false
+        brightnessIcon.isHidden = false
+        brightnessSlider.isHidden = false
     }
     
     func setZoomIcon(_ status: Bool) {
@@ -83,6 +112,40 @@ final class UploadPhotoView: BaseView {
     
     private func bind() {
         
+        Observable.just(Filter.allCases)
+            .bind(
+                to: filterCollectionView.rx.items(
+                    cellIdentifier: FilterCollectionViewCell.identifier,
+                    cellType: FilterCollectionViewCell.self
+                )
+            ) { [weak self] index, item, cell in
+                
+                guard let self else { return }
+                
+                cell.configureCell(type: item)
+                
+                let isSelected = (self.selectedFilter.value == item)
+                cell.configureSelectedFilter(status: isSelected)
+            }
+            .disposed(by: disposeBag)
+        
+        filterCollectionView.rx.modelSelected(Filter.self)
+            .bind(with: self) { owner, filter in
+                
+                owner.selectedFilter.accept(filter)
+                
+                for cell in owner.filterCollectionView.visibleCells {
+                    if let filterCell = cell as? FilterCollectionViewCell,
+                       let indexPath = owner.filterCollectionView.indexPath(for: cell),
+                       let item = try? owner.filterCollectionView.rx.model(at: indexPath) as Filter {
+                        
+                        let isSelected = (filter == item)
+                        filterCell.configureSelectedFilter(status: isSelected)
+                    }
+                }
+            }
+            .disposed(by: disposeBag)
+        
         zoomOutIcon.rx.tapgesture
             .bind(with: self) { owner, _ in
                 owner.zoomStatus.accept(false)
@@ -111,9 +174,48 @@ final class UploadPhotoView: BaseView {
                 owner.tappedUploadButton.accept(())
             }
             .disposed(by: disposeBag)
+            
+        // 슬라이더 값 변경 바인딩
+        brightnessSlider.valueChanged
+            .bind(with: self) { owner, value in
+                // 퍼센트로 표시 (0.0 ~ 1.0 -> 0% ~ 100%)
+//                let percentValue = Int(value * 100)
+//                owner.brightnessValueLabel.text = "\(percentValue)%"
+                owner.brightnessValue.accept(value)
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func createCollectionViewLayout() -> UICollectionViewLayout {
+       
+        let width = UIScreen.main.bounds.width
+        
+        let itemWidth = width / 3.5
+        let itemHeight = itemWidth * 1.3
+
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(itemWidth),
+            heightDimension: .absolute(itemHeight)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(itemWidth),
+            heightDimension: .absolute(itemHeight)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 10
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 30, bottom: 0, trailing: 30)
+        section.orthogonalScrollingBehavior = .continuous
+        
+        return UICollectionViewCompositionalLayout(section: section)
     }
     
     override func configureView() {
+        
+        backgroundColor = .clear
         
         cardView.backgroundColor = colors.text
         cardView.cornerRadius15()
@@ -121,10 +223,20 @@ final class UploadPhotoView: BaseView {
         
         zoomInIcon.isHidden = true
         zoomOutIcon.isHidden = true
+        
+        filterCollectionView.backgroundColor = .clear
+        filterCollectionView.showsHorizontalScrollIndicator = false
+        filterCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.identifier)
+        
+        // 밝기 관련 UI 설정
+        brightnessIcon.tintColor = colors.main
+        brightnessIcon.contentMode = .scaleAspectFit
+        brightnessIcon.isHidden = true
+        brightnessSlider.isHidden = true
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, cardImageView, uploadIcon, uploadButton, zoomInIcon, zoomOutIcon)
+        addSubviews(cardView, cardImageView, uploadIcon, uploadButton, zoomInIcon, zoomOutIcon, filterTitle, filterCollectionView, brightnessIcon, brightnessSlider)
     }
     
     override func configureLayout() {
@@ -144,13 +256,13 @@ final class UploadPhotoView: BaseView {
         
         uploadIcon.snp.makeConstraints {
             $0.centerX.equalTo(safeAreaLayoutGuide)
-            $0.centerY.equalTo(safeAreaLayoutGuide).offset(-18)
+            $0.centerY.equalTo(cardView).offset(-18)
             $0.size.equalTo(30)
         }
         
         uploadButton.snp.makeConstraints {
             $0.centerX.equalTo(safeAreaLayoutGuide)
-            $0.centerY.equalTo(safeAreaLayoutGuide).offset(18)
+            $0.centerY.equalTo(cardView).offset(18)
         }
         
         zoomInIcon.snp.makeConstraints {
@@ -162,9 +274,26 @@ final class UploadPhotoView: BaseView {
             $0.trailing.bottom.equalTo(cardView).inset(10)
             $0.size.equalTo(40)
         }
+        
+        brightnessSlider.snp.makeConstraints {
+            $0.centerY.equalTo(zoomOutIcon)
+            $0.leading.equalTo(cardView.snp.leading).inset(16)
+            $0.trailing.equalTo(zoomInIcon.snp.leading).offset(-15)
+            $0.height.equalTo(30)
+        }
+        
+        filterTitle.snp.makeConstraints {
+            $0.top.equalTo(cardView.snp.bottom).offset(24)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(30)
+        }
+        
+        filterCollectionView.snp.makeConstraints {
+            $0.top.equalTo(filterTitle.snp.bottom).offset(10)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.height.equalTo(UIScreen.main.bounds.width / 3.5 * 1.3)
+        }
     }
 }
-
 extension UploadPhotoView {
     
     enum uploadViewLiterals {
@@ -174,7 +303,7 @@ extension UploadPhotoView {
         var text: String {
             switch self {
             case .사진올리기: return "사진 올리기"
-            case .필터: return "필터􀆈"
+            case .필터: return "필터"
             }
         }
     }
