@@ -16,6 +16,7 @@ struct CardData {
     var imageScale: Bool
     var videoData: Data?
     var filter: String
+    var filterValue: Double
     var isSelectedMain: Bool
     var cardContent: CardContentData
     
@@ -27,6 +28,8 @@ struct CardData {
         var isSecretMode: Bool = false
     }
 }
+
+typealias SavedFilterInfo = (name: String, value: CGFloat)
 
 final class CreateCardViewModel: InputOutputModel {
     
@@ -40,6 +43,7 @@ final class CreateCardViewModel: InputOutputModel {
         let inputDetailText: Observable<String>
         let zoomStatus: Observable<Bool>
         let isSecretMode: Observable<Bool>
+        let filterInfo: Observable<SavedFilterInfo>
     }
     
     struct Output {
@@ -63,6 +67,7 @@ final class CreateCardViewModel: InputOutputModel {
              imageScale: true,
              videoData: nil,
              filter: Filter.original.type,
+             filterValue: 0.0,
              isSelectedMain: false,
              cardContent: CardData.CardContentData()
          )
@@ -85,6 +90,7 @@ final class CreateCardViewModel: InputOutputModel {
             imageScale: true,
             videoData: nil,
             filter: Filter.original.type,
+            filterValue: 0.0,
             isSelectedMain: false,
             cardContent: CardData.CardContentData()
         )
@@ -100,6 +106,17 @@ final class CreateCardViewModel: InputOutputModel {
                 newData.imageData = downImage
                 downSampledImage.accept(downImage)  // UI로 다운샘플링 이미지 내보내기
                 
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 필터정보
+        input.filterInfo
+            .withLatestFrom(cardData) { filterInfo, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.filter = filterInfo.name
+                newData.filterValue = Double(filterInfo.value)
                 return newData
             }
             .bind(to: cardData)
@@ -288,6 +305,7 @@ extension CreateCardViewModel {
                     imageScale: userData.imageScale,
                     videoData: userData.videoData ?? Data(),
                     filter: userData.filter,
+                    filterValue: userData.filterValue,
                     isSelectedMain: userData.isSelectedMain,
                     cardContent: cardContent
                 )

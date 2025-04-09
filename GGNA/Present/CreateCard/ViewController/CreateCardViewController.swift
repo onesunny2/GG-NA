@@ -12,11 +12,12 @@ import RxCocoa
 import RxSwift
 
 final class CreateCardViewController: BaseViewController {
-    
+
     private let viewModel: CreateCardViewModel
     private let disposeBag = DisposeBag()
     private let pickedImageData = PublishRelay<Data>()
     private let zoomStatus = PublishRelay<Bool>()
+    private let selectedFilter = PublishRelay<SavedFilterInfo>()
     
     private let closeButton: UIButton = {
         let button = UIButton()
@@ -68,7 +69,8 @@ final class CreateCardViewController: BaseViewController {
             selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable(),
             inputDetailText: writingView.inputDetailText.asObservable(),
             zoomStatus: zoomStatus.asObservable(),
-            isSecretMode: writingView.isSecretMode.asObservable()
+            isSecretMode: writingView.isSecretMode.asObservable(),
+            filterInfo: selectedFilter.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -94,13 +96,19 @@ final class CreateCardViewController: BaseViewController {
             guard filter != .original else {
                 image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
                 owner.photoUploadView.setImage(image)
+                owner.selectedFilter.accept((filter.type, 0.0))
                 return
             }
             
             image = ImageFilterManager.applyFilterFromData(filter, to: imageData, value: filterValue)
             
-            // TODO: DB에 필터 정보도 저장해야 함
             owner.photoUploadView.setImage(image)
+            
+            guard filter.effect != nil else {
+                owner.selectedFilter.accept((filter.type, 0.0))
+                return
+            }
+            owner.selectedFilter.accept((filter.type, filterValue))
         }
         .disposed(by: disposeBag)
         
