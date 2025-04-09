@@ -16,8 +16,8 @@ final class CustomSlider: UIView {
     private let trackFilledView = UIView()
     private let thumbView = UIView()
     
-    private let minimumValue: CGFloat
-    private let maximumValue: CGFloat
+    private var minimumValue: CGFloat
+    private var maximumValue: CGFloat
     private var currentValue: CGFloat
     
     private let thumbSize: CGFloat = 20
@@ -140,6 +140,14 @@ final class CustomSlider: UIView {
         } else {
             updateSliderUI(fillWidth: fillWidth)
         }
+    }
+    
+    func updateRange(minValue: CGFloat, maxValue: CGFloat, initialValue: CGFloat, animated: Bool = true) {
+        
+        self.minimumValue = minValue
+        self.maximumValue = maxValue
+        
+        setValue(initialValue, animated: animated)
     }
     
     private func updateSliderUI(fillWidth: CGFloat) {
