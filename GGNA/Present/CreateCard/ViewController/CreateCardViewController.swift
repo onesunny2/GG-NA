@@ -81,13 +81,23 @@ final class CreateCardViewController: BaseViewController {
         
         Observable.combineLatest(
             pickedImageData,
-            photoUploadView.selectedFilter
+            photoUploadView.selectedFilter,
+            photoUploadView.filterValue
         )
         .bind(with: self) { owner, value in
             
             let imageData = value.0
             let filter = value.1
-            let image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
+            let filterValue = value.2
+            var image: UIImage?
+            
+            guard filter != .original else {
+                image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
+                owner.photoUploadView.setImage(image)
+                return
+            }
+            
+            image = ImageFilterManager.applyFilterFromData(filter, to: imageData, value: filterValue)
             
             // TODO: DB에 필터 정보도 저장해야 함
             owner.photoUploadView.setImage(image)

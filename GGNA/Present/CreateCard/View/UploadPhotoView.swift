@@ -36,7 +36,7 @@ final class UploadPhotoView: BaseView {
     var tappedUploadButton = PublishRelay<Void>()
     var zoomStatus = PublishRelay<Bool>()
     var selectedFilter = BehaviorRelay(value: Filter.original)
-    var brightnessValue = PublishRelay<CGFloat>()
+    var filterValue = PublishRelay<CGFloat>()
     
     override init(frame: CGRect) {
         
@@ -70,10 +70,6 @@ final class UploadPhotoView: BaseView {
     func switchCollectionViewHidden(isSelectedImg: Bool) {
         filterCollectionView.isHidden = isSelectedImg ? false : true
         filterTitle.isHidden = isSelectedImg ? false : true
-//        brightnessIcon.isHidden = isSelectedImg ? false : true
-        
-        // 선택되었고, 선택한 필터가 true이면 
-//        filterSlider.isHidden = isSelectedImg ? false : true
     }
     
     func setImage(_ image: UIImage?) {
@@ -82,12 +78,6 @@ final class UploadPhotoView: BaseView {
         uploadIcon.isHidden = true
         uploadButton.isHidden = true
         zoomOutIcon.isHidden = false
-    }
-    
-    func setSlider(selected filter: Filter) {
-        
-        let parameter = filter.parameter
-        
     }
     
     func setZoomIcon(_ status: Bool) {
@@ -163,6 +153,7 @@ final class UploadPhotoView: BaseView {
                     initialValue: parameter.defaultValue,
                     animated: false
                 )
+                owner.filterValue.accept(parameter.defaultValue)
                 owner.filterSlider.isHidden = false
             }
             .disposed(by: disposeBag)
@@ -202,7 +193,7 @@ final class UploadPhotoView: BaseView {
                 // 퍼센트로 표시 (0.0 ~ 1.0 -> 0% ~ 100%)
 //                let percentValue = Int(value * 100)
 //                owner.brightnessValueLabel.text = "\(percentValue)%"
-                owner.brightnessValue.accept(value)
+                owner.filterValue.accept(value)
             }
             .disposed(by: disposeBag)
     }
