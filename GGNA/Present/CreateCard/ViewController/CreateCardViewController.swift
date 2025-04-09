@@ -17,7 +17,7 @@ final class CreateCardViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     private let pickedImageData = PublishRelay<Data>()
     private let zoomStatus = PublishRelay<Bool>()
-    private let selectedFilter = PublishRelay<SavedFilterInfo>()
+    private let selectedFilter = PublishRelay<FilterInfo>()
     
     private let closeButton: UIButton = {
         let button = UIButton()
@@ -96,7 +96,10 @@ final class CreateCardViewController: BaseViewController {
             guard filter != .original else {
                 image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
                 owner.photoUploadView.setImage(image)
-                owner.selectedFilter.accept((filter.type, 0.0))
+                
+                let filterInfo = FilterInfo(filter: filter, filterValue: 0.0)
+                owner.selectedFilter.accept(filterInfo)
+                
                 return
             }
             
@@ -105,10 +108,12 @@ final class CreateCardViewController: BaseViewController {
             owner.photoUploadView.setImage(image)
             
             guard filter.effect != nil else {
-                owner.selectedFilter.accept((filter.type, 0.0))
+                let filterInfo = FilterInfo(filter: filter, filterValue: 0.0)
+                owner.selectedFilter.accept(filterInfo)
                 return
             }
-            owner.selectedFilter.accept((filter.type, filterValue))
+            let filterInfo = FilterInfo(filter: filter, filterValue: filterValue)
+            owner.selectedFilter.accept(filterInfo)
         }
         .disposed(by: disposeBag)
         
