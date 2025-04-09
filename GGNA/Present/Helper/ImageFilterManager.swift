@@ -17,7 +17,7 @@ enum ImageFilterManager {
         // 1) original
         guard filter != .original else { return image }
         
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return nil }
+        guard let imageData = image.jpegData(compressionQuality: 0.6) else { return nil }
         
         // 그 외 필터는 CIImage 변환
         guard let ciImage = CIImage(data: imageData) else { return nil }
@@ -45,7 +45,52 @@ enum ImageFilterManager {
         let context = CIContext(options: nil)
         guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
-        return UIImage(cgImage: cgImage)
+        return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+    }
+    
+    static func applyFilterFromUIImage(_ filter: Filter, to image: UIImage, value: CGFloat) -> UIImage? {
+        
+        // 1) original
+        guard filter != .original else { return image }
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.6) else { return nil }
+        
+        // 그 외 필터는 CIImage 변환
+        guard let ciImage = CIImage(data: imageData) else { return nil }
+        let originalExtent = ciImage.extent
+        
+        // 필터 객체
+        guard let ciFilter = filter.filter else { return nil }
+        
+        ciFilter.setValue(ciImage, forKey: kCIInputImageKey)
+        
+        switch filter.effect {
+        case "intensity": ciFilter.setValue(value, forKey: kCIInputIntensityKey)
+        case "scale": ciFilter.setValue(value, forKey: kCIInputScaleKey)
+        case "noiseLevel": ciFilter.setValue(value, forKey: "inputNoiseLevel")
+        case "radius": ciFilter.setValue(value, forKey: kCIInputRadiusKey)
+        case "levels": ciFilter.setValue(value, forKey: "inputLevels")
+        default: break
+        }
+        
+        guard let newImage = ciFilter.outputImage else { return nil }
+        
+        let outputExtent = newImage.extent
+        
+        let finalImage: CIImage
+        if outputExtent.size.width != originalExtent.size.width ||
+           outputExtent.size.height != originalExtent.size.height {
+            
+            finalImage = newImage.cropped(to: originalExtent)
+
+        } else {
+            finalImage = newImage
+        }
+        
+        let context = CIContext(options: nil)
+        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
+        
+        return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     }
     
     // 데이터에 필터링
@@ -87,6 +132,7 @@ enum ImageFilterManager {
         return UIImage(cgImage: cgImage, scale: originImage.scale, orientation: originImage.imageOrientation)
     }
     
+    // 슬라이더로 전달받은 필터 값 
     static func applyFilterFromData(_ filter: Filter, to data: Data, value: CGFloat) -> UIImage? {
         
         // 1) original
