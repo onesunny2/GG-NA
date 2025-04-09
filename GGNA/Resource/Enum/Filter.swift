@@ -87,4 +87,30 @@ enum Filter: String, CaseIterable {
         case .xRay: return "X-Ray 효과"
         }
     }
+    
+    var effect: String? {
+        switch self {
+        case .original: nil
+        case .bloom: "intensity"
+        case .gloom: "intensity"
+        case .photoEffectChrome: nil
+        case .photoEffectFade: nil
+        case .photoEffectInstant: nil
+        case .photoEffectMono: nil
+        case .photoEffectNoir: nil
+        case .photoEffectProcess: nil
+        case .comicEffect: nil
+        case .depthOfField: nil
+        case .pixellate: "scale"
+        case .noiseReduction: "noiseLevel"
+        case .motionBlur: "radius"
+        case .boxBlur: "radius"
+        case .discBlur: "radius"
+        case .colorPosterize: "levels"
+        case .photoEffectTransfer: nil
+        case .sepiaTone: "intensity"
+        case .colorInvert: nil
+        case .xRay: nil
+        }
+    }
 }
