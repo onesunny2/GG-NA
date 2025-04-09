@@ -9,11 +9,13 @@ import UIKit
 
 enum ThemeColorList {
     case darkPink
+    case darkPurple
     case lightPink
     
     var theme: String {
         switch self {
         case .darkPink: return "Dark"
+        case .darkPurple: return "Dark"
         case .lightPink: return "Light"
         }
     }
@@ -21,6 +23,7 @@ enum ThemeColorList {
     var color: UIColor {
         switch self {
         case .darkPink: return .ggDarkPink
+        case .darkPurple: return .ggDarkPurple
         case .lightPink: return .ggLightPink
         }
     }
