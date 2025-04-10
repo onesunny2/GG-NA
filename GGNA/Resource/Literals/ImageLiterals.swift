@@ -12,7 +12,9 @@ enum ImageLiterals {
     /// 앱 내 ViewController 화면에서 사용하는 Image Assets
     static let photoCircleFill: UIImage? = UIImage(systemName: "photo.circle.fill")
     static let pencilCircleFill: UIImage? = UIImage(systemName: "square.and.pencil.circle.fill")
-    static let upload: UIImage? = UIImage(systemName: "square.and.arrow.up.fill")?.withTintColor(.ggGray, renderingMode: .alwaysOriginal)
+    static let album: UIImage? = UIImage(systemName: "photo.on.rectangle.angled.fill")
+    static let camera: UIImage? = UIImage(systemName: "camera.fill")
+    static let chevronRight: UIImage? = UIImage(systemName: "chevron.right")
     static let check: UIImage? = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(.ggDarkWhite, renderingMode: .alwaysOriginal)
     static let bookmark: UIImage? = UIImage(systemName: "bookmark.fill")
     static let chevronForwardCircle: UIImage? = UIImage(systemName: "chevron.forward.circle.fill")
