@@ -6,14 +6,25 @@
 //
 
 import UIKit
+import RealmSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+       
+        migration()
+        
+        let realm = try! Realm()
+        
+        // 현재 사용자가 쓰고 있는 DB Schema Version 확인
+        do {
+            let version = try schemaVersionAtURL(realm.configuration.fileURL!)
+            print("Schema Version", version)
+        } catch {
+            print("Schema Failed")
+        }
+        
         return true
     }
 
@@ -34,3 +45,54 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate {
+    
+    func migration() {
+        let config = Realm.Configuration(schemaVersion: 1) { migration, oldSchemaVersion in
+            
+            // 0 -> 1: PhotoCardRecord에 filterInfo(Data) 추가
+            if oldSchemaVersion < 1 {
+                migration.enumerateObjects(ofType: PhotoCardRecord.className()) { oldObject, newObject in
+                    guard let newObject else { return }
+                    
+                    if let oldObject = oldObject {
+                        let oldFilter = oldObject["filter"] as? String ?? "original"
+                        
+                        let filter: Filter
+                        switch oldFilter {
+                        default: filter = .original
+                        }
+                        
+                        let filterValue = 0.0
+                        
+                        let filterInfo = FilterInfo(filter: filter, filterValue: filterValue)
+                        
+                        do {
+                            let encoder = JSONEncoder()
+                            let filterInfoData = try encoder.encode(filterInfo)
+                            newObject["filterInfo"] = filterInfoData
+                        } catch {
+//                            print("Migration encoding error: \(error)")
+                            
+                            let defaultFilter = FilterInfo(filter: .original, filterValue: 0.0)
+                            if let defaultData = try? JSONEncoder().encode(defaultFilter) {
+                                newObject["filterInfo"] = defaultData
+                            } else {
+                                newObject["filterInfo"] = Data()
+                            }
+                        }
+                    } else {
+                        let defaultFilter = FilterInfo(filter: .original, filterValue: 0.0)
+                        if let defaultData = try? JSONEncoder().encode(defaultFilter) {
+                            newObject["filterInfo"] = defaultData
+                        } else {
+                            newObject["filterInfo"] = Data()
+                        }
+                    }
+                }
+            }
+        }
+
+        Realm.Configuration.defaultConfiguration = config
+    }
+}

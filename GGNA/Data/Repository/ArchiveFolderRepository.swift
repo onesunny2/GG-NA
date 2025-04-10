@@ -34,6 +34,7 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
                 
                 switch $0.photoCards.count {
                 case 0:
+                    
                     let value = ArchiveFolderEntity(
                         folderName: $0.folderName,
                         createDate: $0.createFolderDate,
@@ -48,11 +49,15 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
                     
                     let recent = $0.photoCards.sorted { $0.cardContent?.createDate ?? Date() < $1.cardContent?.createDate ?? Date() }.first!
                     
+                    guard let filterInfo = recent.getFilterInfo() else { return }
+                    guard let originalImage = loadImageFromDocument(foldername: $0.folderName, fileName: recent.imageName) else { return }
+                    let filteringImage = ImageFilterManager.applyFilterFromUIImage(filterInfo.filter, to: originalImage, value: filterInfo.filterValue)
+                    
                     let value = ArchiveFolderEntity(
                         folderName: $0.folderName,
                         createDate: $0.createFolderDate,
                         photoCount: "+" + $0.photoCards.count.formatted(),
-                        mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: recent.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink)),
+                        mainImage: filteringImage ?? (image ?? UIImage(resource: .defaultDarkPink)),
                         secretMode: recent.cardContent?.secretMode ?? false
                     )
                     
@@ -62,11 +67,15 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
                 return
             }
             
+            guard let filterInfo = mainCard.getFilterInfo() else { return }
+            guard let originalImage = loadImageFromDocument(foldername: $0.folderName, fileName: mainCard.imageName) else { return }
+            let filteringImage = ImageFilterManager.applyFilterFromUIImage(filterInfo.filter, to: originalImage, value: filterInfo.filterValue)
+            
             let value = ArchiveFolderEntity(
                 folderName: $0.folderName,
                 createDate: $0.createFolderDate,
                 photoCount: "+" + $0.photoCards.count.formatted(),
-                mainImage: loadImageFromDocument(foldername: $0.folderName, fileName: mainCard.imageName) ?? UIImage(),
+                mainImage: filteringImage ?? UIImage(),
                 secretMode: mainCard.cardContent?.secretMode ?? false
             )
             
@@ -93,8 +102,12 @@ final class DefaultArchiveFolderRepository: ArchiveFolderRepository {
         
         photos.forEach {
             
+            guard let filterInfo = $0.getFilterInfo() else { return }
+            guard let originalImage = loadImageFromDocument(foldername: folderName, fileName: $0.imageName) else { return }
+            let filteringImage = ImageFilterManager.applyFilterFromUIImage(filterInfo.filter, to: originalImage, value: filterInfo.filterValue)
+            
             let result = FolderPhotosEntity(
-                image: loadImageFromDocument(foldername: folderName, fileName: $0.imageName) ?? (image ?? UIImage(resource: .defaultDarkPink)),
+                image: filteringImage ?? (image ?? UIImage(resource: .defaultDarkPink)),
                 imageName: $0.imageName,
                 isSelectedMain: $0.isSelectedMain,
                 title: $0.cardContent?.title ?? "",

@@ -12,11 +12,12 @@ import RxCocoa
 import RxSwift
 
 final class CreateCardViewController: BaseViewController {
-    
+
     private let viewModel: CreateCardViewModel
     private let disposeBag = DisposeBag()
     private let pickedImageData = PublishRelay<Data>()
     private let zoomStatus = PublishRelay<Bool>()
+    private let selectedFilter = PublishRelay<FilterInfo>()
     
     private let closeButton: UIButton = {
         let button = UIButton()
@@ -68,7 +69,8 @@ final class CreateCardViewController: BaseViewController {
             selectedFolder: writingView.selectFolderButton.tappedSelectedFolder.asObservable(),
             inputDetailText: writingView.inputDetailText.asObservable(),
             zoomStatus: zoomStatus.asObservable(),
-            isSecretMode: writingView.isSecretMode.asObservable()
+            isSecretMode: writingView.isSecretMode.asObservable(),
+            filterInfo: selectedFilter.asObservable()
         )
         let output = viewModel.transform(from: input)
         
@@ -81,16 +83,37 @@ final class CreateCardViewController: BaseViewController {
         
         Observable.combineLatest(
             pickedImageData,
-            photoUploadView.selectedFilter
+            photoUploadView.selectedFilter,
+            photoUploadView.filterValue
         )
         .bind(with: self) { owner, value in
             
             let imageData = value.0
             let filter = value.1
-            let image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
+            let filterValue = value.2
+            var image: UIImage?
             
-            // TODO: DB에 필터 정보도 저장해야 함
+            guard filter != .original else {
+                image = ImageFilterManager.applyFilterFromData(filter, to: imageData)
+                owner.photoUploadView.setImage(image)
+                
+                let filterInfo = FilterInfo(filter: filter, filterValue: 0.0)
+                owner.selectedFilter.accept(filterInfo)
+                
+                return
+            }
+            
+            image = ImageFilterManager.applyFilterFromData(filter, to: imageData, value: filterValue)
+            
             owner.photoUploadView.setImage(image)
+            
+            guard filter.effect != nil else {
+                let filterInfo = FilterInfo(filter: filter, filterValue: 0.0)
+                owner.selectedFilter.accept(filterInfo)
+                return
+            }
+            let filterInfo = FilterInfo(filter: filter, filterValue: filterValue)
+            owner.selectedFilter.accept(filterInfo)
         }
         .disposed(by: disposeBag)
         

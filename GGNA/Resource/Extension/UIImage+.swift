@@ -10,18 +10,22 @@ import UIKit
 extension UIImage {
     
     func downSample(scale: CGFloat) -> UIImage {
-        guard let pngData = self.pngData() else { return UIImage() }
-        let data = pngData as CFData
-        let imageSource = CGImageSourceCreateWithData(data, nil)!
-        let maxPixel = max(self.size.width, self.size.height) * scale
-        let options = [
-            kCGImageSourceThumbnailMaxPixelSize: maxPixel,
-            kCGImageSourceCreateThumbnailFromImageAlways: true
-        ] as CFDictionary
-
-        guard let scaledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) else { return UIImage() }
-
-        return UIImage(cgImage: scaledImage)
+        autoreleasepool {
+//            guard let pngData = self.pngData() else { return UIImage() }
+//            let data = pngData as CFData
+            guard let jpegData = self.jpegData(compressionQuality: 0.8) else { return UIImage() }
+            let data = jpegData as CFData
+            let imageSource = CGImageSourceCreateWithData(data, nil)!
+            let maxPixel = max(self.size.width, self.size.height) * scale
+            let options = [
+                kCGImageSourceThumbnailMaxPixelSize: maxPixel,
+                kCGImageSourceCreateThumbnailFromImageAlways: true
+            ] as CFDictionary
+            
+            guard let scaledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) else { return UIImage() }
+            
+            return UIImage(cgImage: scaledImage)
+        }
     }
     
     func fixImageOrientation() -> UIImage {

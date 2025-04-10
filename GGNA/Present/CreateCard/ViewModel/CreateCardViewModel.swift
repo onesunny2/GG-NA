@@ -15,7 +15,7 @@ struct CardData {
     var imageData: UIImage
     var imageScale: Bool
     var videoData: Data?
-    var filter: String
+    var filterInfo: FilterInfo
     var isSelectedMain: Bool
     var cardContent: CardContentData
     
@@ -40,6 +40,7 @@ final class CreateCardViewModel: InputOutputModel {
         let inputDetailText: Observable<String>
         let zoomStatus: Observable<Bool>
         let isSecretMode: Observable<Bool>
+        let filterInfo: Observable<FilterInfo>
     }
     
     struct Output {
@@ -62,7 +63,7 @@ final class CreateCardViewModel: InputOutputModel {
              imageData: UIImage(),
              imageScale: true,
              videoData: nil,
-             filter: Filter.original.type,
+             filterInfo: FilterInfo(filter: .original, filterValue: 0.0),
              isSelectedMain: false,
              cardContent: CardData.CardContentData()
          )
@@ -84,7 +85,7 @@ final class CreateCardViewModel: InputOutputModel {
             imageData: UIImage(),
             imageScale: true,
             videoData: nil,
-            filter: Filter.original.type,
+            filterInfo: FilterInfo(filter: .original, filterValue: 0.0),
             isSelectedMain: false,
             cardContent: CardData.CardContentData()
         )
@@ -96,10 +97,20 @@ final class CreateCardViewModel: InputOutputModel {
                 
                 guard let image = UIImage(data: imgData) else { return newData }
                 let orientationFixed = image.fixImageOrientation()
-                let downImage = orientationFixed.downSample(scale: 0.8)
+                let downImage = orientationFixed.downSample(scale: (imgData.count > 5000000) ? 0.1 : 0.5)
                 newData.imageData = downImage
                 downSampledImage.accept(downImage)  // UI로 다운샘플링 이미지 내보내기
                 
+                return newData
+            }
+            .bind(to: cardData)
+            .disposed(by: disposeBag)
+        
+        // 필터정보
+        input.filterInfo
+            .withLatestFrom(cardData) { filterInfo, currentData -> CardData in
+                var newData = currentData ?? defaultCardData
+                newData.filterInfo = filterInfo
                 return newData
             }
             .bind(to: cardData)
@@ -283,11 +294,11 @@ extension CreateCardViewModel {
                 cardContent.detail = content.detail ?? ""
                 cardContent.location = content.location ?? ""
                 cardContent.secretMode = content.isSecretMode
-                
+
                 let cardRecord = PhotoCardRecord(
                     imageScale: userData.imageScale,
                     videoData: userData.videoData ?? Data(),
-                    filter: userData.filter,
+                    filterInfo: userData.filterInfo,
                     isSelectedMain: userData.isSelectedMain,
                     cardContent: cardContent
                 )
