@@ -35,7 +35,7 @@ final class PhotoCardRecord: Object, Identifiable {
         do {
             let encoder = JSONEncoder()
             self.filterInfo = try encoder.encode(filterInfo)
-            print("encoding filterInfo: \(self.filterInfo)")
+//            print("encoding filterInfo: \(self.filterInfo)")
         } catch {
             print("Failed encoding Filter: \(error)")
         }
@@ -46,7 +46,7 @@ final class PhotoCardRecord: Object, Identifiable {
     
     func getFilterInfo() -> FilterInfo? {
         do {
-            print("Filter data length: \(self.filterInfo.count) bytes")
+//            print("Filter data length: \(self.filterInfo.count) bytes")
             if self.filterInfo.isEmpty {
                 print("Warning: Filter data is empty!")
                 return nil

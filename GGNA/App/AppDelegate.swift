@@ -72,7 +72,7 @@ extension AppDelegate {
                             let filterInfoData = try encoder.encode(filterInfo)
                             newObject["filterInfo"] = filterInfoData
                         } catch {
-                            print("Migration encoding error: \(error)")
+//                            print("Migration encoding error: \(error)")
                             
                             let defaultFilter = FilterInfo(filter: .original, filterValue: 0.0)
                             if let defaultData = try? JSONEncoder().encode(defaultFilter) {
