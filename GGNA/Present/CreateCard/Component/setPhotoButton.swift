@@ -11,40 +11,52 @@ import SnapKit
 final class setPhotoButton: UIButton {
     
     private let iconImageView = UIImageView()
-    private let titleLabel = UILabel()
-    private let arrowImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+    private let buttonTitle = UILabel()
+    private let arrowImageView = BaseUIImageView(isCornered: false, image: ImageLiterals.chevronRight)
     
-    init(icon: UIImage, title: String, backgroundColor: UIColor) {
+    init(icon: UIImage?, title: String, backgroundColor: UIColor) {
         super.init(frame: .zero)
-        
-        self.backgroundColor = backgroundColor
-        layer.cornerRadius = 25
-        
-        // 아이콘 설정
+
         iconImageView.image = icon
+        buttonTitle.text = title
+
+        configureView()
+        configureHierarchy()
+        configureLayout()
+    }
+    
+    private func configureView() {
+        
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        backgroundColor = colors.main80
+        layer.cornerRadius = 10
+        
         iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = .white
+        iconImageView.tintColor = .ggDarkWhite
         
-        // 타이틀 설정
-        titleLabel.text = title
-        titleLabel.textColor = .white
-        titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         
-        // 화살표 설정
+        buttonTitle.textColor = .ggDarkWhite
+        buttonTitle.font = FontLiterals.subTitleBold
+        
         arrowImageView.contentMode = .scaleAspectFit
-        arrowImageView.tintColor = .white
-        
-        // 뷰 계층 설정
-        addSubviews(iconImageView, titleLabel, arrowImageView)
-        
-        // 레이아웃 설정
+        arrowImageView.tintColor = .ggDarkWhite
+    }
+    
+    private func configureHierarchy() {
+        addSubviews(iconImageView, buttonTitle, arrowImageView)
+    }
+    
+    private func configureLayout() {
         iconImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(16)
             $0.centerY.equalToSuperview()
-            $0.size.equalTo(24)
+            $0.size.equalTo(30)
         }
         
-        titleLabel.snp.makeConstraints {
+        buttonTitle.snp.makeConstraints {
             $0.leading.equalTo(iconImageView.snp.trailing).offset(10)
             $0.centerY.equalToSuperview()
         }
@@ -56,6 +68,7 @@ final class setPhotoButton: UIButton {
         }
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
