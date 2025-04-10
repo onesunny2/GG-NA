@@ -189,10 +189,8 @@ final class UploadPhotoView: BaseView {
             
         // 슬라이더 값 변경 바인딩
         filterSlider.valueChanged
+            .debounce(.milliseconds(10), scheduler: MainScheduler.instance)
             .bind(with: self) { owner, value in
-                // 퍼센트로 표시 (0.0 ~ 1.0 -> 0% ~ 100%)
-//                let percentValue = Int(value * 100)
-//                owner.brightnessValueLabel.text = "\(percentValue)%"
                 owner.filterValue.accept(value)
             }
             .disposed(by: disposeBag)
