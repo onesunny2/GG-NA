@@ -55,13 +55,13 @@ final class WritingView: BaseView {
         selectFolderTitle = BaseUILabel(
             text: writingViewLiterals.폴더_선택.text,
             color: colors.text,
-            font: FontLiterals.subTitle
+            font: FontLiterals.subTitleBold
         )
         selectFolderButton = SelectedFolderButton(bgColor: colors.gray)
         selectDateTitle = BaseUILabel(
             text: writingViewLiterals.날짜_선택.text,
             color: colors.text,
-            font: FontLiterals.subTitle
+            font: FontLiterals.subTitleBold
         )
         
         super.init(frame: frame)

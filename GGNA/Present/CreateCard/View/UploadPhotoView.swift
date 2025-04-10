@@ -20,8 +20,16 @@ final class UploadPhotoView: BaseView {
     
     private let cardView = UIView()
     private let cardImageView = BaseUIImageView(image: nil, cornerRadius: 15)
-    private let uploadIcon = BaseUIImageView(isCornered: false, image: ImageLiterals.upload)
-    private let uploadButton = TextFilledButton(title: uploadViewLiterals.사진올리기.text)
+    private let cameraButton = setPhotoButton(
+        icon: ImageLiterals.camera,
+        title: uploadViewLiterals.카메라.text,
+        backgroundColor: .systemPink
+    )
+    private let albumButton = setPhotoButton(
+        icon: ImageLiterals.album,
+        title: uploadViewLiterals.앨범.text,
+        backgroundColor: .systemPink
+    )
     private let zoomInIcon: CircularSymbolView // true 활성화
     private let zoomOutIcon: CircularSymbolView // false 활성화
     private let filterTitle: BaseUILabel
@@ -33,7 +41,8 @@ final class UploadPhotoView: BaseView {
     
     private var previousSelectedIndexPath: IndexPath = IndexPath(item: 0, section: 0)
     
-    var tappedUploadButton = PublishRelay<Void>()
+    var tappedCameraButton = PublishRelay<Void>()
+    var tappedAlbumButton = PublishRelay<Void>()
     var zoomStatus = PublishRelay<Bool>()
     var selectedFilter = BehaviorRelay(value: Filter.original)
     var filterValue = PublishRelay<CGFloat>()
@@ -55,7 +64,7 @@ final class UploadPhotoView: BaseView {
         filterTitle = BaseUILabel(
             text: uploadViewLiterals.필터.text,
             color: colors.text,
-            font: FontLiterals.subTitle
+            font: FontLiterals.subTitleBold
         )
         
         super.init(frame: frame)
@@ -75,8 +84,8 @@ final class UploadPhotoView: BaseView {
     func setImage(_ image: UIImage?) {
         cardImageView.contentMode = .scaleAspectFill
         cardImageView.image = image
-        uploadIcon.isHidden = true
-        uploadButton.isHidden = true
+        cameraButton.isHidden = true
+        albumButton.isHidden = true
         zoomOutIcon.isHidden = false
     }
     
@@ -170,9 +179,17 @@ final class UploadPhotoView: BaseView {
             }
             .disposed(by: disposeBag)
         
-        uploadButton.rx.tap
+        // 카메라 버튼 바인딩
+        cameraButton.rx.tap
             .bind(with: self) { owner, _ in
-                owner.tappedUploadButton.accept(())
+                owner.tappedCameraButton.accept(())
+            }
+            .disposed(by: disposeBag)
+        
+        // 앨범 버튼 바인딩
+        albumButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.tappedAlbumButton.accept(())
             }
             .disposed(by: disposeBag)
         
@@ -183,7 +200,9 @@ final class UploadPhotoView: BaseView {
             }
             .bind(with: self) { owner, value in
                 guard value else { return }
-                owner.tappedUploadButton.accept(())
+                // 이미지가 있을 때 탭하면 확대/축소 전환
+                let currentMode = owner.cardImageView.contentMode == .scaleAspectFill
+                owner.zoomStatus.accept(!currentMode)
             }
             .disposed(by: disposeBag)
             
@@ -246,7 +265,7 @@ final class UploadPhotoView: BaseView {
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, cardImageView, uploadIcon, uploadButton, zoomInIcon, zoomOutIcon, filterTitle, filterCollectionView, brightnessIcon, filterSlider)
+        addSubviews(cardView, cardImageView, cameraButton, albumButton, zoomInIcon, zoomOutIcon, filterTitle, filterCollectionView, brightnessIcon, filterSlider)
     }
     
     override func configureLayout() {
@@ -264,15 +283,18 @@ final class UploadPhotoView: BaseView {
             $0.edges.equalTo(cardView)
         }
         
-        uploadIcon.snp.makeConstraints {
-            $0.centerX.equalTo(safeAreaLayoutGuide)
-            $0.centerY.equalTo(cardView).offset(-18)
-            $0.size.equalTo(30)
+        cameraButton.snp.makeConstraints {
+            $0.centerX.equalTo(cardView)
+            $0.centerY.equalTo(cardView).offset(-30)
+            $0.width.equalTo(180)
+            $0.height.equalTo(50)
         }
         
-        uploadButton.snp.makeConstraints {
-            $0.centerX.equalTo(safeAreaLayoutGuide)
-            $0.centerY.equalTo(cardView).offset(18)
+        albumButton.snp.makeConstraints {
+            $0.centerX.equalTo(cardView)
+            $0.top.equalTo(cameraButton.snp.bottom).offset(10)
+            $0.width.equalTo(180)
+            $0.height.equalTo(50)
         }
         
         zoomInIcon.snp.makeConstraints {
@@ -307,12 +329,14 @@ final class UploadPhotoView: BaseView {
 extension UploadPhotoView {
     
     enum uploadViewLiterals {
-        case 사진올리기
+        case 카메라
+        case 앨범
         case 필터
         
         var text: String {
             switch self {
-            case .사진올리기: return "사진 올리기"
+            case .카메라: return "카메라"
+            case .앨범: return "앨범"
             case .필터: return "필터"
             }
         }

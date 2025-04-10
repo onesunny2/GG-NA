@@ -140,7 +140,7 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
-        photoUploadView.tappedUploadButton
+        photoUploadView.tappedAlbumButton
             .bind(with: self) { owner, _ in
                 owner.openphotoPicker()
             }
