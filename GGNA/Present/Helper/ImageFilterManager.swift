@@ -10,6 +10,7 @@ import CoreImage
 
 enum ImageFilterManager {
     
+    private static let context = CIContext(options: nil)
     
     // UIImage를 필터링
     static func applyFilterFromUIImage(_ filter: Filter, to image: UIImage) -> UIImage? {
@@ -42,8 +43,7 @@ enum ImageFilterManager {
             finalImage = newImage
         }
         
-        let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
+        guard let cgImage = ImageFilterManager.context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
         return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     }
@@ -87,8 +87,7 @@ enum ImageFilterManager {
             finalImage = newImage
         }
         
-        let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
+        guard let cgImage = ImageFilterManager.context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
         return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     }
@@ -126,8 +125,7 @@ enum ImageFilterManager {
             finalImage = newImage
         }
         
-        let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
+        guard let cgImage = ImageFilterManager.context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
         return UIImage(cgImage: cgImage, scale: originImage.scale, orientation: originImage.imageOrientation)
     }
@@ -175,8 +173,7 @@ enum ImageFilterManager {
             finalImage = newImage
         }
         
-        let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(finalImage, from: originalExtent) else { return nil }
+        guard let cgImage = ImageFilterManager.context.createCGImage(finalImage, from: originalExtent) else { return nil }
         
         return UIImage(cgImage: cgImage, scale: originImage.scale, orientation: originImage.imageOrientation)
     }
