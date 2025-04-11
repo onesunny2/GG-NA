@@ -30,6 +30,7 @@ final class UploadPhotoView: BaseView {
         title: uploadViewLiterals.앨범.text,
         backgroundColor: .systemPink
     )
+    private let deleteImageButton: BaseUIButton
     private let zoomInIcon: CircularSymbolView // true 활성화
     private let zoomOutIcon: CircularSymbolView // false 활성화
     private let filterTitle: BaseUILabel
@@ -43,6 +44,7 @@ final class UploadPhotoView: BaseView {
     
     var tappedCameraButton = PublishRelay<Void>()
     var tappedAlbumButton = PublishRelay<Void>()
+    var tappedImageView = PublishRelay<Void>()
     var zoomStatus = PublishRelay<Bool>()
     var selectedFilter = BehaviorRelay(value: Filter.original)
     var filterValue = PublishRelay<CGFloat>()
@@ -53,6 +55,10 @@ final class UploadPhotoView: BaseView {
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
         
+        deleteImageButton = BaseUIButton(
+            image: ImageLiterals.xmark,
+            foreground: colors.main
+        )
         zoomInIcon = CircularSymbolView(
             symbol: ImageLiterals.zoomIn,
             symbolColor: colors.main
@@ -87,6 +93,18 @@ final class UploadPhotoView: BaseView {
         cameraButton.isHidden = true
         albumButton.isHidden = true
         zoomOutIcon.isHidden = false
+        deleteImageButton.isHidden = false
+    }
+    
+    func resetImage() {
+        cardImageView.image = nil
+        cameraButton.isHidden = false
+        albumButton.isHidden = false
+        zoomOutIcon.isHidden = true
+        zoomInIcon.isHidden = true
+        deleteImageButton.isHidden = true
+        filterSlider.isHidden = true
+        switchCollectionViewHidden(isSelectedImg: false)
     }
     
     func setZoomIcon(_ status: Bool) {
@@ -167,6 +185,12 @@ final class UploadPhotoView: BaseView {
             }
             .disposed(by: disposeBag)
         
+        deleteImageButton.rx.tapgesture
+             .bind(with: self) { owner, _ in
+                 owner.resetImage()
+             }
+             .disposed(by: disposeBag)
+        
         zoomOutIcon.rx.tapgesture
             .bind(with: self) { owner, _ in
                 owner.zoomStatus.accept(false)
@@ -198,9 +222,7 @@ final class UploadPhotoView: BaseView {
             }
             .bind(with: self) { owner, value in
                 guard value else { return }
-                // 이미지가 있을 때 탭하면 확대/축소 전환
-                let currentMode = owner.cardImageView.contentMode == .scaleAspectFill
-                owner.zoomStatus.accept(!currentMode)
+                owner.tappedImageView.accept(())
             }
             .disposed(by: disposeBag)
             
@@ -250,6 +272,7 @@ final class UploadPhotoView: BaseView {
         
         zoomInIcon.isHidden = true
         zoomOutIcon.isHidden = true
+        deleteImageButton.isHidden = true
         
         filterCollectionView.backgroundColor = .clear
         filterCollectionView.showsHorizontalScrollIndicator = false
@@ -263,7 +286,7 @@ final class UploadPhotoView: BaseView {
     }
     
     override func configureHierarchy() {
-        addSubviews(cardView, cardImageView, cameraButton, albumButton, zoomInIcon, zoomOutIcon, filterTitle, filterCollectionView, brightnessIcon, filterSlider)
+        addSubviews(cardView, cardImageView, cameraButton, albumButton, deleteImageButton, zoomInIcon, zoomOutIcon, filterTitle, filterCollectionView, brightnessIcon, filterSlider)
     }
     
     override func configureLayout() {
@@ -293,6 +316,12 @@ final class UploadPhotoView: BaseView {
             $0.top.equalTo(cameraButton.snp.bottom).offset(10)
             $0.width.equalTo(180)
             $0.height.equalTo(50)
+        }
+        
+        deleteImageButton.snp.makeConstraints {
+            $0.top.equalTo(cardView).offset(20)
+            $0.leading.equalTo(cardView).offset(20)
+            $0.size.equalTo(30)
         }
         
         zoomInIcon.snp.makeConstraints {
