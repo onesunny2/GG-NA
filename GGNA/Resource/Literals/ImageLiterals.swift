@@ -12,7 +12,9 @@ enum ImageLiterals {
     /// 앱 내 ViewController 화면에서 사용하는 Image Assets
     static let photoCircleFill: UIImage? = UIImage(systemName: "photo.circle.fill")
     static let pencilCircleFill: UIImage? = UIImage(systemName: "square.and.pencil.circle.fill")
-    static let upload: UIImage? = UIImage(systemName: "square.and.arrow.up.fill")?.withTintColor(.ggGray, renderingMode: .alwaysOriginal)
+    static let album: UIImage? = UIImage(systemName: "photo.on.rectangle.angled.fill")
+    static let camera: UIImage? = UIImage(systemName: "camera.fill")
+    static let chevronRight: UIImage? = UIImage(systemName: "chevron.right")
     static let check: UIImage? = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(.ggDarkWhite, renderingMode: .alwaysOriginal)
     static let bookmark: UIImage? = UIImage(systemName: "bookmark.fill")
     static let chevronForwardCircle: UIImage? = UIImage(systemName: "chevron.forward.circle.fill")
@@ -20,12 +22,15 @@ enum ImageLiterals {
     static let square: UIImage? = UIImage(systemName: "square")
     static let checkMark: UIImage? = UIImage(systemName: "checkmark.square.fill")
     static let filter: UIImage? = UIImage(systemName: "camera.macro.circle.fill")
+    static let rotateCircleFill: UIImage? = UIImage(systemName: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 30))
+    static let circleFill: UIImage? = UIImage(systemName: "circle.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 44))
     
     /// Navigation TabBar에서 사용하는 Image Assets
     static let home: UIImage? = UIImage(systemName: "house.fill")
     static let folder: UIImage? = UIImage(systemName: "folder.fill")
     static let plus: UIImage? = UIImage(systemName: "plus")
-    static let xmark: UIImage? = UIImage(systemName: "xmark.circle.fill")
+    static let xmarkCircleFill: UIImage? = UIImage(systemName: "xmark.circle.fill")
+    static let xmark: UIImage? = UIImage(systemName: "xmark")?.withConfiguration(UIImage.SymbolConfiguration(weight: .semibold))
     static let zoomIn: UIImage? = UIImage(systemName: "arrow.up.backward.and.arrow.down.forward.circle.fill")
     static let zoomOut: UIImage? = UIImage(systemName: "arrow.down.right.and.arrow.up.left.circle.fill")
     
