@@ -6,3 +6,8 @@
 //
 
 import Foundation
+import AVFoundation
+
+final class CameraManager: NSObject {
+    
+}
