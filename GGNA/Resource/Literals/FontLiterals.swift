@@ -18,6 +18,7 @@ enum FontLiterals {
     static let subTitleBold: UIFont = .systemFont(ofSize: 16, weight: .bold)
     static let folderTitle: UIFont = .systemFont(ofSize: 16, weight: .bold)
     static let placeholder: UIFont = .systemFont(ofSize: 13, weight: .regular)
+    static let navigationText17: UIFont = .systemFont(ofSize: 17, weight: .regular)
     
     // MARK: Launch Screen
     static let smallLaunch: UIFont = .systemFont(ofSize: 18, weight: .regular)
@@ -30,6 +31,7 @@ enum FontLiterals {
     
     // MARK: CustomFont
     static let folderCount: UIFont = UIFont(name: "MungyeongGamhongApple", size: 15) ?? .systemFont(ofSize: 15, weight: .heavy)
+    static let cameraTitle: UIFont = UIFont(name: "SangSangRockOTF", size: 24) ?? .systemFont(ofSize: 32, weight: .semibold)
     static let writngTitle: UIFont = UIFont(name: "SangSangRockOTF", size: 32) ?? .systemFont(ofSize: 32, weight: .semibold)
     static let archivePhotoTitle: UIFont = UIFont(name: "Unreal_science_medicine", size: 20) ?? .systemFont(ofSize: 20, weight: .light)
     static let archivePhotoDate: UIFont = UIFont(name: "Unreal_science_medicine", size: 12) ?? .systemFont(ofSize: 14, weight: .light)
