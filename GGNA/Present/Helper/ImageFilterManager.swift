@@ -10,7 +10,7 @@ import CoreImage
 
 enum ImageFilterManager {
     
-    private static let context = CIContext(options: nil)
+    static let context = CIContext(options: nil)
     
     // UIImage를 필터링
     static func applyFilterFromUIImage(_ filter: Filter, to image: UIImage) -> UIImage? {
