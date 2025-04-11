@@ -146,6 +146,14 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        photoUploadView.tappedCameraButton
+            .bind(with: self) { owner, _ in
+                let vc = CameraViewController()
+                let nv = UINavigationController(rootViewController: vc)
+                owner.viewTransition(type: .fullScreen, vc: nv)
+            }
+            .disposed(by: disposeBag)
+        
         output.noChangedData
             .drive(with: self) { owner, _ in
                 owner.dismiss(animated: true)

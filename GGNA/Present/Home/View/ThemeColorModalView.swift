@@ -147,7 +147,7 @@ override func viewDidLayoutSubviews() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
         
         var config = UIButton.Configuration.filled()
-        config.image = ImageLiterals.xmark?.withConfiguration(imageConfig)
+        config.image = ImageLiterals.xmarkCircleFill?.withConfiguration(imageConfig)
         config.baseForegroundColor = .ggGray
         config.baseBackgroundColor = .clear
         config.contentInsets = NSDirectionalEdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)

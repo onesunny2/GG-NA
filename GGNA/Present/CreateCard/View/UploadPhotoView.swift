@@ -179,14 +179,12 @@ final class UploadPhotoView: BaseView {
             }
             .disposed(by: disposeBag)
         
-        // 카메라 버튼 바인딩
         cameraButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.tappedCameraButton.accept(())
             }
             .disposed(by: disposeBag)
         
-        // 앨범 버튼 바인딩
         albumButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.tappedAlbumButton.accept(())
