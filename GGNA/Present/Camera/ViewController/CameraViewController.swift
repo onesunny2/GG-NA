@@ -12,6 +12,9 @@ import RxSwift
 
 final class CameraViewController: BaseViewController {
     
+    private let cameraManager: CameraManager
+    private let videoView: VideoView
+    
     private let disposeBag = DisposeBag()
     
     private let closeButton: BaseUIButton
@@ -25,7 +28,12 @@ final class CameraViewController: BaseViewController {
     private let changeModeBGView = UIView()
     private let changeModeButton: BaseUIButton
     
-    override init() {
+    let capturedImageRelay = PublishRelay<Data>()
+    
+    init(cameraManager: CameraManager, videoView: VideoView) {
+        
+        self.cameraManager = cameraManager
+        self.videoView = videoView
         
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
@@ -57,19 +65,38 @@ final class CameraViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCamera()
+    }
+    
+    private func setupCamera() {
+        // 카메라 뷰에 VideoView 추가
+        cameraView.addSubview(videoView)
+        videoView.frame = cameraView.bounds
+        videoView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        // 카메라 매니저 설정
+        cameraManager.setupCamera(view: videoView)
     }
     
     override func configureBind() {
         
         captureButton.rx.tap
             .bind(with: self) { owner, _ in
+                
+                if let capturedImage = owner.cameraManager.takePhoto() {
+                    
+                    owner.capturedImageRelay.accept(capturedImage)
+                    // 세션 다시 시작 (사진 촬영 후)
+                    owner.cameraManager.startSession()
+                }
+                
                 owner.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
         
         changeModeButton.rx.tap
             .bind(with: self) { owner, _ in
-                print("tapped changemodebutton")
+                owner.cameraManager.changeDevicePotision()
             }
             .disposed(by: disposeBag)
         
@@ -100,8 +127,7 @@ final class CameraViewController: BaseViewController {
     }
     
     override func configureView() {
-        view.backgroundColor = .clear
-        cameraView.backgroundColor = .ggDarkWhite  // TODO: 카메라 연결되면 clear로
+        cameraView.backgroundColor = .clear
         captureBGView.backgroundColor = .clear
         captureBGView.layer.borderWidth = 1.5
         captureBGView.layer.cornerRadius = 32
@@ -111,6 +137,7 @@ final class CameraViewController: BaseViewController {
     }
     
     private func configureSpecificView(colors: ColorSet) {
+        view.backgroundColor = colors.background
         captureBGView.layer.borderColor = colors.text.cgColor
         bottomBarView.backgroundColor = colors.background.withAlphaComponent(0.7)
     }
@@ -121,7 +148,7 @@ final class CameraViewController: BaseViewController {
     
     override func configureLayout() {
         cameraView.snp.makeConstraints {
-            $0.edges.equalTo(view)
+            $0.edges.equalTo(view.snp.edges)
         }
         
         bottomBarView.snp.makeConstraints {
@@ -132,6 +159,7 @@ final class CameraViewController: BaseViewController {
         appNameBGView.snp.makeConstraints {
             $0.leading.equalTo(view.safeAreaLayoutGuide)
             $0.trailing.equalTo(captureBGView.snp.leading)
+            $0.centerY.equalTo(bottomBarView)
             $0.height.equalTo(10)
         }
         
@@ -155,6 +183,7 @@ final class CameraViewController: BaseViewController {
         changeModeBGView.snp.makeConstraints {
             $0.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.leading.equalTo(captureBGView.snp.trailing)
+            $0.centerY.equalTo(bottomBarView)
             $0.height.equalTo(10)
         }
         
