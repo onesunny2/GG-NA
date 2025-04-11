@@ -140,6 +140,12 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        photoUploadView.tappedImageView
+            .bind(with: self) { owner, _ in
+                owner.openphotoPicker()
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.tappedAlbumButton
             .bind(with: self) { owner, _ in
                 owner.openphotoPicker()
