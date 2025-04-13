@@ -70,7 +70,7 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
                 secretMode: element.cardContent?.secretMode ?? false
             )
             
-            if result.isSelectedMain {
+            if result.isSelectedMain && !result.secretMode {
                 mainImage.append(result)
             } else if !result.secretMode {
                 entities.append(result)

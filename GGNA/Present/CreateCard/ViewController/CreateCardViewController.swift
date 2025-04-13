@@ -140,6 +140,12 @@ final class CreateCardViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        photoUploadView.tappedImageView
+            .bind(with: self) { owner, _ in
+                owner.openphotoPicker()
+            }
+            .disposed(by: disposeBag)
+        
         photoUploadView.tappedAlbumButton
             .bind(with: self) { owner, _ in
                 owner.openphotoPicker()
@@ -148,9 +154,21 @@ final class CreateCardViewController: BaseViewController {
         
         photoUploadView.tappedCameraButton
             .bind(with: self) { owner, _ in
-                let vc = CameraViewController()
+                
+                let cm = CameraManager()
+                let videoView = VideoView()
+                let vc = CameraViewController(cameraManager: cm, videoView: videoView)
+                
+                vc.capturedImageRelay
+                    .bind(with: self) { owner, image in
+                        owner.zoomStatus.accept(true)
+                        owner.pickedImageData.accept(image)
+                    }
+                    .disposed(by: owner.disposeBag)
+                
                 let nv = UINavigationController(rootViewController: vc)
                 owner.viewTransition(type: .fullScreen, vc: nv)
+
             }
             .disposed(by: disposeBag)
         
