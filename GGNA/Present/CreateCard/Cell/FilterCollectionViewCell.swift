@@ -79,10 +79,9 @@ final class FilterCollectionViewCell: UICollectionViewCell, ReusableIdentifier {
         }
     }
     
-    func configureCell(type: Filter) {
+    func configureCell(type: Filter, selected image: UIImage) {
         
-        let defaultImage = UIImage(resource: .ggnaDefault)
-        let filteredImage = ImageFilterManager.applyFilterFromUIImage(type, to: defaultImage)
+        let filteredImage = ImageFilterManager.applyFilterFromUIImage(type, to: image)
         
         defaultImageView.image = filteredImage
         filterName.text = type.koreanName
