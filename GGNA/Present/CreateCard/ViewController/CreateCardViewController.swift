@@ -170,8 +170,8 @@ final class CreateCardViewController: BaseViewController {
                     .disposed(by: owner.disposeBag)
                 
                 let nv = UINavigationController(rootViewController: vc)
+                owner.setCameraViewNavigation(nv: nv)
                 owner.viewTransition(type: .fullScreen, vc: nv)
-
             }
             .disposed(by: disposeBag)
         
@@ -245,6 +245,22 @@ final class CreateCardViewController: BaseViewController {
                     }
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func setCameraViewNavigation(nv: UINavigationController) {
+        let theme = CurrentTheme.currentTheme.theme
+        let color = CurrentTheme.currentTheme.color
+        let colors = color.setColor(for: theme)
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = colors.background.withAlphaComponent(0.7)
+        
+        appearance.shadowColor = .clear
+        
+        nv.navigationBar.standardAppearance = appearance
+        nv.navigationBar.scrollEdgeAppearance = appearance
+        nv.navigationBar.compactAppearance = appearance
     }
     
     private func openphotoPicker() {

@@ -110,20 +110,6 @@ final class CameraViewController: BaseViewController {
     override func configureNavigation() {
         let leftBarButtonItem = UIBarButtonItem(customView: closeButton)
         navigationItem.leftBarButtonItem = leftBarButtonItem
-        
-        let theme = CurrentTheme.currentTheme.theme
-        let color = CurrentTheme.currentTheme.color
-        let colors = color.setColor(for: theme)
-        
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = colors.background.withAlphaComponent(0.7)
-        
-        appearance.shadowColor = .clear
-        
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.compactAppearance = appearance
     }
     
     override func configureView() {
