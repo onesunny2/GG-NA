@@ -162,7 +162,7 @@ extension HomeViewController {
         var text: String {
             switch self {
             case .폴더변경: return "사진폴더 변경"
-            case .카드테마변경: return "카드테마 변경"
+            case .카드테마변경: return "카드테마 변경"  
             }
         }
     }
