@@ -15,6 +15,7 @@ final class CreateCardViewController: BaseViewController {
 
     private let viewModel: CreateCardViewModel
     private let disposeBag = DisposeBag()
+    
     private let pickedImageData = PublishRelay<Data>()
     private let zoomStatus = PublishRelay<Bool>()
     private let selectedFilter = PublishRelay<FilterInfo>()
@@ -78,6 +79,8 @@ final class CreateCardViewController: BaseViewController {
             .drive(with: self) { owner, image in
                 owner.photoUploadView.switchCollectionViewHidden(isSelectedImg: true)
                 owner.photoUploadView.setImage(image)
+                owner.photoUploadView.pickedImage.accept(image)
+                owner.photoUploadView.reloadCollectionView()
             }
             .disposed(by: disposeBag)
         

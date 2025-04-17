@@ -48,6 +48,7 @@ final class UploadPhotoView: BaseView {
     var zoomStatus = PublishRelay<Bool>()
     var selectedFilter = BehaviorRelay(value: Filter.original)
     var filterValue = PublishRelay<CGFloat>()
+    var pickedImage = BehaviorRelay(value: UIImage())
     
     override init(frame: CGRect) {
         
@@ -78,8 +79,8 @@ final class UploadPhotoView: BaseView {
         switchCollectionViewHidden(isSelectedImg: false)
     }
     
-    func getCurrentImage() -> UIImage? {
-        return cardImageView.image
+    func reloadCollectionView() {
+        filterCollectionView.reloadData()
     }
     
     func switchCollectionViewHidden(isSelectedImg: Bool) {
@@ -145,7 +146,7 @@ final class UploadPhotoView: BaseView {
                 
                 guard let self else { return }
                 
-                cell.configureCell(type: item)
+                cell.configureCell(type: item, selected: pickedImage.value)
                 
                 let isSelected = (self.selectedFilter.value == item)
                 cell.configureSelectedFilter(status: isSelected)
