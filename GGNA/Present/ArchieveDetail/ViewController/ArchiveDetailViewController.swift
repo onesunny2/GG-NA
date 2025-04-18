@@ -141,7 +141,7 @@ final class ArchiveDetailViewController: BaseViewController {
                 case true:
                     if !owner.selectedPhotos.isEmpty {
                         // 한번 더 경고 문구로 삭제 할 것인지 물어보기
-                        owner.deleteFoldersAlert {
+                        owner.deleteFoldersAlert(type: .photo) {
                             owner.deletePhotos.accept(Array(owner.selectedPhotos))
                             owner.toggleSelectionMode()
                         }

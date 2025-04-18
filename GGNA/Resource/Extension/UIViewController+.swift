@@ -106,14 +106,14 @@ extension UIViewController {
         self.present(alert, animated: true)
     }
     
-    func deleteFoldersAlert(completion: @escaping (() -> ())) {
+    func deleteFoldersAlert(type: DeleteType, completion: @escaping (() -> ())) {
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
         
         let alert = UIAlertController(
             title: "경고",
-            message: "해당 폴더에 있는 사진도 함께 삭제됩니다.",
+            message: type.message,
             preferredStyle: .alert
         )
         
