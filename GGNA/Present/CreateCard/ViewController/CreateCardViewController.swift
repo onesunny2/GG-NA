@@ -177,6 +177,7 @@ final class CreateCardViewController: BaseViewController {
         
         output.noChangedData
             .drive(with: self) { owner, _ in
+                DatePickerManager.shared.resetDate()
                 owner.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
@@ -194,6 +195,7 @@ final class CreateCardViewController: BaseViewController {
                 case true:
                     print("저장완료")
                     owner.customToast(type: .카드저장_성공)
+                    DatePickerManager.shared.resetDate()
                 case false:
                     print("저장실패")
                     owner.customToast(type: .카드저장_실패)
