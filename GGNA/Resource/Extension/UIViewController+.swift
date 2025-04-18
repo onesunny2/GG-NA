@@ -182,4 +182,29 @@ extension UIViewController {
              })
          })
     }
+    
+    // TODO: 통일 필요함
+    func deletePhotoFromFolder(folderName: String, imageName: String) {
+        
+        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        let folderURL = documentDirectory.appendingPathComponent(folderName)
+        
+        let imageJpgName = imageName + ".jpg"
+        let imageURL = folderURL.appendingPathComponent(imageJpgName)
+        
+        do {
+            
+            if FileManager.default.fileExists(atPath: imageURL.path) {
+                try FileManager.default.removeItem(at: imageURL)
+            } else {
+                print("삭제할 이미지를 찾을 수 없음: \(imageName)")
+            }
+            
+        } catch {
+            print("이미지 삭제 오류: \(error.localizedDescription)")
+        }
+    }
 }
