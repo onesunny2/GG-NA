@@ -28,6 +28,14 @@ final class FirstThemeCardView: BaseView {
         super.init(frame: frame)
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        // 뷰의 최종 크기가 결정된 후 shadowPath 업데이트
+        let shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: 30).cgPath
+        layer.shadowPath = shadowPath
+    }
+    
     override func configureView() {
         
         cardView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)
@@ -38,6 +46,9 @@ final class FirstThemeCardView: BaseView {
         layer.shadowRadius = 5
         layer.shadowOpacity = 0.6
         layer.masksToBounds = false
+        
+        let shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: 30).cgPath
+        layer.shadowPath = shadowPath
         
         cardCoverView.cornerRadius30()
         cardCoverView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi / 60)

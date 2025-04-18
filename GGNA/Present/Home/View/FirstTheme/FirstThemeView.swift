@@ -8,6 +8,8 @@
 import UIKit
 import GNSwipeAnimation
 import SnapKit
+import RxCocoa
+import RxSwift
 
 final class FirstThemeView: BaseView {
     
@@ -16,6 +18,7 @@ final class FirstThemeView: BaseView {
     private let secondCardView = FirstThemeCardView()
     
     private var cardSwipeManager: GNCardSwipeManager<FirstThemeCardView>!
+    var addButtonStatus = PublishRelay<Bool>()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -41,10 +44,16 @@ final class FirstThemeView: BaseView {
     
     // viewController에서 데이터 전달받을 메서드
     func setupCardViews(with photos: [HomePhotoCardEntity]) {
-        cardSwipeManager.setupWithData(photos)
-        
         guard !photos.isEmpty else { return }
-        setCardNumbering(total: photos.count, current: 0)
+        
+        if photos.count == 1,
+           let firstPhoto = photos.first,
+           firstPhoto.cardDate == "" {
+        } else {
+            setCardNumbering(total: photos.count, current: 0)
+        }
+        
+        cardSwipeManager.setupWithData(photos)
     }
     
     func updateThemeColors(with colors: ColorSet) {

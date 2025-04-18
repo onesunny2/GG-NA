@@ -90,7 +90,7 @@ final class DefaultHomePhotoRepository: HomePhotoRepository {
             videoData: Data(),
             isSelectedMain: true,
             createDate: Date(),
-            cardTitle: "GG.NA",
+            cardTitle: "추억만들기⬇︎⬇︎",
             cardDetail: "",
             cardDate: "",
             cardLocation: "",

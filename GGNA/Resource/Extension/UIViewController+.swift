@@ -106,14 +106,14 @@ extension UIViewController {
         self.present(alert, animated: true)
     }
     
-    func deleteFoldersAlert(completion: @escaping (() -> ())) {
+    func deleteFoldersAlert(type: DeleteType, completion: @escaping (() -> ())) {
         let theme = CurrentTheme.currentTheme.theme
         let color = CurrentTheme.currentTheme.color
         let colors = color.setColor(for: theme)
         
         let alert = UIAlertController(
             title: "경고",
-            message: "해당 폴더에 있는 사진도 함께 삭제됩니다.",
+            message: type.message,
             preferredStyle: .alert
         )
         
@@ -181,5 +181,30 @@ extension UIViewController {
                  self.dismiss(animated: true)
              })
          })
+    }
+    
+    // TODO: 통일 필요함
+    func deletePhotoFromFolder(folderName: String, imageName: String) {
+        
+        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        let folderURL = documentDirectory.appendingPathComponent(folderName)
+        
+        let imageJpgName = imageName + ".jpg"
+        let imageURL = folderURL.appendingPathComponent(imageJpgName)
+        
+        do {
+            
+            if FileManager.default.fileExists(atPath: imageURL.path) {
+                try FileManager.default.removeItem(at: imageURL)
+            } else {
+                print("삭제할 이미지를 찾을 수 없음: \(imageName)")
+            }
+            
+        } catch {
+            print("이미지 삭제 오류: \(error.localizedDescription)")
+        }
     }
 }

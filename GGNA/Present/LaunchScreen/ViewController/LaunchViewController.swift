@@ -35,8 +35,35 @@ final class LaunchViewController: BaseViewController {
         print(realm.configuration.fileURL!)
         
         let data = realm.objects(Folder.self)
-        guard data.isEmpty else { return }
+        guard data.isEmpty else {
+            
+            // 기본 폴더 찾기
+            guard let defaultFolder = data.filter({ $0.folderName == "기본" }).first else { return }
+            // 기본 폴더의 기본 사진 찾기
+            guard let defaultImageIndex = defaultFolder.photoCards.firstIndex(where: {
+                ($0.cardContent?.detail == "우리들의 소중한 추억") && ($0.cardContent?.date == "2024.05.07 화요일")
+            }) else { return }
+            
+            do {
+                try realm.write {
+                    let deletePhoto = defaultFolder.photoCards[defaultImageIndex]
+                    let imageName = deletePhoto.imageName
+                    
+                    // 1. 이미지 document에서 삭제
+                    deletePhotoFromFolder(folderName: "기본", imageName: imageName)
+                    
+                    // 2. Realm에서 포토카드 삭제
+                    defaultFolder.photoCards.remove(at: defaultImageIndex)
+                    print("기본 제공 사진 삭제 완료")
+                }
+            } catch {
+                print("기본 제공 사진 삭제에 실패: \(error)")
+            }
+            
+            return
+        }
         
+        // 기본 폴더 없을 때 생성해주는 기능
         do {
             try realm.write {
                
@@ -47,29 +74,6 @@ final class LaunchViewController: BaseViewController {
                 )
                 
                 realm.add(folder)
-                
-                guard let defaultFolder = realm.objects(Folder.self).filter({ $0.folderName == "기본" }).first else { return }
-                
-                // default 사진 추가
-                let cardContent = CardContent()
-                cardContent.title = "안녕하새오"
-                cardContent.createDate = Date()
-                cardContent.date = "2024.05.07 화요일"
-                cardContent.secretMode = false
-                cardContent.detail = "우리들의 소중한 추억"
-                
-                let defaultPhoto = PhotoCardRecord(
-                    imageScale: true,
-                    videoData: Data(),
-                    filterInfo: FilterInfo(filter: .original, filterValue: 0.0),
-                    isSelectedMain: true,
-                    cardContent: cardContent
-                )
-                
-                defaultFolder.photoCards.append(defaultPhoto)
-                
-                // 이미지 Document 저장
-                UIImage(resource: .ggnaDefault).saveImageToDocument(foldername: "기본", filename: defaultPhoto.imageName)
             }
             
         } catch {
