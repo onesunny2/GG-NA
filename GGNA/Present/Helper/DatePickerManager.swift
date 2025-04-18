@@ -10,13 +10,13 @@ import RxSwift
 import RxCocoa
 
 final class DatePickerManager {
-
+    
     static let shared = DatePickerManager()
     
     private let disposeBag = DisposeBag()
     
     // 현재 선택된 날짜
-    let selectedDate = BehaviorRelay<Date>(value: Date())
+    private let selectedDate = BehaviorRelay<Date>(value: Date())
     
     // 날짜 포맷팅된 결과 (yyyy.MM.dd EEEE)
     let formattedDateString = BehaviorRelay<String>(value: "")
@@ -27,9 +27,9 @@ final class DatePickerManager {
     private var selectedDay: Int
     
     // 버튼 구성
-    let yearButton = UIButton(type: .system)
-    let monthButton = UIButton(type: .system)
-    let dayButton = UIButton(type: .system)
+    private let yearButton = UIButton(type: .system)
+    private let monthButton = UIButton(type: .system)
+    private let dayButton = UIButton(type: .system)
     
     // 스택뷰
     lazy var datePickerStackView: UIStackView = {
@@ -60,8 +60,23 @@ final class DatePickerManager {
         formatter.dateFormat = "yyyy.MM.dd EEEE"
         formatter.locale = Locale(identifier: "ko_KR")
         let dateString = formatter.string(from: Date())
-       
+        
         return dateString
+    }
+    
+    // CreateCardViewController를 Deinit할 때 현재 선택된 날짜를 오늘 값으로 되돌리기
+    func resetDate() {
+        let today = Date()
+        let calendar = Calendar.current
+        
+        selectedYear = calendar.component(.year, from: today)
+        selectedMonth = calendar.component(.month, from: today)
+        selectedDay = calendar.component(.day, from: today)
+        
+        updateButtonTitles()
+        selectedDate.accept(today)
+        updateFormattedDate()
+        updateButtonMenus()
     }
     
     private func configureButtons() {
@@ -172,22 +187,22 @@ final class DatePickerManager {
     }
     
     private func createMonthMenu() -> UIMenu {
-         var monthActions: [UIMenuElement] = []
-         
-         // 12부터 1까지 내림차순 (큰 숫자가 위쪽)
-         for month in stride(from: 12, through: 1, by: -1) {
-             let action = UIAction(title: "\(month)월", state: month == selectedMonth ? .on : .off) { [weak self] _ in
-                 guard let self = self else { return }
-                 self.selectedMonth = month
-                 self.updateButtonTitles()
-                 self.validateSelectedDate()
-                 self.updateFormattedDate()
-             }
-             monthActions.append(action)
-         }
-         
-         return UIMenu(title: "", options: [.displayInline, .singleSelection], children: monthActions)
-     }
+        var monthActions: [UIMenuElement] = []
+        
+        // 12부터 1까지 내림차순 (큰 숫자가 위쪽)
+        for month in stride(from: 12, through: 1, by: -1) {
+            let action = UIAction(title: "\(month)월", state: month == selectedMonth ? .on : .off) { [weak self] _ in
+                guard let self = self else { return }
+                self.selectedMonth = month
+                self.updateButtonTitles()
+                self.validateSelectedDate()
+                self.updateFormattedDate()
+            }
+            monthActions.append(action)
+        }
+        
+        return UIMenu(title: "", options: [.displayInline, .singleSelection], children: monthActions)
+    }
     
     private func createDayMenu() -> UIMenu {
         var dayActions: [UIMenuElement] = []
