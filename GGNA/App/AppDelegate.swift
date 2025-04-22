@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseCore
+import FirebaseMessaging
 import RealmSwift
 
 @main
@@ -16,6 +17,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // 파이어베이스
         FirebaseApp.configure()
+        
+        UNUserNotificationCenter.current().delegate = self
+        
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: { _, _ in }
+        )
+        
+        application.registerForRemoteNotifications()
+        
+        Messaging.messaging().delegate = self
+        
+        // 현재 토큰 정보 가져오기 (꼭 App Delegate일 필요 없고, 다른 설정에서 해도 됨)
+        Messaging.messaging().token { token, error in
+          if let error = error {
+            print("Error fetching FCM registration token: \(error)")
+          } else if let token = token {
+            print("FCM registration token: \(token)")
+          }
+        }
         
         // 카메라 권한 설정
         AppPermissionManager.requestCameraPermission()
@@ -53,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+// Realm Migration
 extension AppDelegate {
     
     func migration() {
@@ -102,5 +125,43 @@ extension AppDelegate {
         }
 
         Realm.Configuration.defaultConfiguration = config
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    // foreground에 띄워줄지말지
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        completionHandler([.list, .banner, .badge, .sound])
+    }
+    
+    // 푸시 클릭 시
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+    
+    // 디바이스 토큰 얻기
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        
+        let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+        print("애플 APNS deviceToken:\(deviceTokenString)")
+        
+        // 애플 디바이스 토큰을 파이어베이스로 보내기
+        Messaging.messaging().apnsToken = deviceToken
+    }
+}
+
+// firebase Messaging
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase registration token: \(String(describing: fcmToken))")
+        
+        let dataDict: [String: String] = ["token": fcmToken ?? ""]
+        NotificationCenter.default.post(
+            name: Notification.Name("FCMToken"),
+            object: nil,
+            userInfo: dataDict
+        )
     }
 }
