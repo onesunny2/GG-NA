@@ -232,6 +232,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GGNA/GGNA.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.4.3;
 				DEVELOPMENT_TEAM = 6CQ3CNQ79S;
@@ -239,6 +240,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GGNA/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "끄나";
+				INFOPLIST_KEY_NSCameraUsageDescription = "사진촬영을 위해 카메라에 접근이 필요합니다.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "끄나는 사용자가 설정해 놓은 잠긴 추억에 안전하게 엑세스 하기 위해 FaceID를 사용합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "사진을 선택하여 포토카드를 만들기 위해 접근이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -267,6 +271,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GGNA/GGNA.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.4.3;
 				DEVELOPMENT_TEAM = 6CQ3CNQ79S;
@@ -274,6 +279,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GGNA/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "끄나";
+				INFOPLIST_KEY_NSCameraUsageDescription = "사진촬영을 위해 카메라에 접근이 필요합니다.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "끄나는 사용자가 설정해 놓은 잠긴 추억에 안전하게 엑세스 하기 위해 FaceID를 사용합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "사진을 선택하여 포토카드를 만들기 위해 접근이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
