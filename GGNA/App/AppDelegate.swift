@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseCore
 import RealmSwift
 
 @main
@@ -13,8 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        // 파이어베이스
+        FirebaseApp.configure()
+        
+        // 카메라 권한 설정
         AppPermissionManager.requestCameraPermission()
         
+        // Realm
         migration()
         
         let realm = try! Realm()
