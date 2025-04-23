@@ -17,8 +17,21 @@
 		43330BC22DB7B0A50023D35B /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 43330BBF2DB797D30023D35B /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		435201A62DA2E89800C10FF4 /* GNSwipeAnimation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 435201A52DA2E89800C10FF4 /* GNSwipeAnimation.framework */; };
 		435201A72DA2E89800C10FF4 /* GNSwipeAnimation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 435201A52DA2E89800C10FF4 /* GNSwipeAnimation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		43B2A6862DB8D47500654147 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43B2A6852DB8D47500654147 /* WidgetKit.framework */; };
+		43B2A6882DB8D47500654147 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43B2A6872DB8D47500654147 /* SwiftUI.framework */; };
+		43B2A6952DB8D47700654147 /* GGNAWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 43B2A6842DB8D47500654147 /* GGNAWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		43D1B9222DB7886400ACE91B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 43D1B9212DB7886400ACE91B /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		43B2A6932DB8D47700654147 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 43D12F2A2D944A4E001E2C93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43B2A6832DB8D47500654147;
+			remoteInfo = GGNAWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		4352F9642D9A88D600C10FF4 /* Embed Frameworks */ = {
@@ -33,15 +46,45 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		43B2A6962DB8D47700654147 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				43B2A6952DB8D47700654147 /* GGNAWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		435201A52DA2E89800C10FF4 /* GNSwipeAnimation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GNSwipeAnimation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		43B2A6842DB8D47500654147 /* GGNAWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GGNAWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		43B2A6852DB8D47500654147 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		43B2A6872DB8D47500654147 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		43B2A69B2DB8D4C000654147 /* GGNAWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GGNAWidgetExtension.entitlements; sourceTree = "<group>"; };
 		43D12F322D944A4E001E2C93 /* GGNA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GGNA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43D1B9212DB7886400ACE91B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		43B2A69A2DB8D47700654147 /* Exceptions for "GGNAWidget" folder in "GGNAWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 43B2A6832DB8D47500654147 /* GGNAWidgetExtension */;
+		};
+		43B2A69F2DB8E07C00654147 /* Exceptions for "GGNAWidget" folder in "GGNA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Source/Enum/WidgetInfo.swift,
+				UserDefaultsManager.swift,
+			);
+			target = 43D12F312D944A4E001E2C93 /* GGNA */;
+		};
 		43D12F442D944A50001E2C93 /* Exceptions for "GGNA" folder in "GGNA" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -52,6 +95,15 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		43B2A6892DB8D47500654147 /* GGNAWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				43B2A69F2DB8E07C00654147 /* Exceptions for "GGNAWidget" folder in "GGNA" target */,
+				43B2A69A2DB8D47700654147 /* Exceptions for "GGNAWidget" folder in "GGNAWidgetExtension" target */,
+			);
+			path = GGNAWidget;
+			sourceTree = "<group>";
+		};
 		43D12F342D944A4E001E2C93 /* GGNA */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -63,6 +115,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		43B2A6812DB8D47500654147 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43B2A6882DB8D47500654147 /* SwiftUI.framework in Frameworks */,
+				43B2A6862DB8D47500654147 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43D12F2F2D944A4E001E2C93 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -85,6 +146,8 @@
 			isa = PBXGroup;
 			children = (
 				435201A52DA2E89800C10FF4 /* GNSwipeAnimation.framework */,
+				43B2A6852DB8D47500654147 /* WidgetKit.framework */,
+				43B2A6872DB8D47500654147 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -92,7 +155,9 @@
 		43D12F292D944A4E001E2C93 = {
 			isa = PBXGroup;
 			children = (
+				43B2A69B2DB8D4C000654147 /* GGNAWidgetExtension.entitlements */,
 				43D12F342D944A4E001E2C93 /* GGNA */,
+				43B2A6892DB8D47500654147 /* GGNAWidget */,
 				435201A42DA2E89800C10FF4 /* Frameworks */,
 				43D12F332D944A4E001E2C93 /* Products */,
 				43D1B9212DB7886400ACE91B /* GoogleService-Info.plist */,
@@ -103,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				43D12F322D944A4E001E2C93 /* GGNA.app */,
+				43B2A6842DB8D47500654147 /* GGNAWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -110,6 +176,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		43B2A6832DB8D47500654147 /* GGNAWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43B2A6992DB8D47700654147 /* Build configuration list for PBXNativeTarget "GGNAWidgetExtension" */;
+			buildPhases = (
+				43B2A6802DB8D47500654147 /* Sources */,
+				43B2A6812DB8D47500654147 /* Frameworks */,
+				43B2A6822DB8D47500654147 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				43B2A6892DB8D47500654147 /* GGNAWidget */,
+			);
+			name = GGNAWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = GGNAWidgetExtension;
+			productReference = 43B2A6842DB8D47500654147 /* GGNAWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		43D12F312D944A4E001E2C93 /* GGNA */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43D12F452D944A50001E2C93 /* Build configuration list for PBXNativeTarget "GGNA" */;
@@ -119,10 +207,12 @@
 				43D12F302D944A4E001E2C93 /* Resources */,
 				4352F9642D9A88D600C10FF4 /* Embed Frameworks */,
 				43330BC12DB7AC6D0023D35B /* ShellScript */,
+				43B2A6962DB8D47700654147 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				43B2A6942DB8D47700654147 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				43D12F342D944A4E001E2C93 /* GGNA */,
@@ -151,6 +241,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					43B2A6832DB8D47500654147 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					43D12F312D944A4E001E2C93 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -179,11 +272,19 @@
 			projectRoot = "";
 			targets = (
 				43D12F312D944A4E001E2C93 /* GGNA */,
+				43B2A6832DB8D47500654147 /* GGNAWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		43B2A6822DB8D47500654147 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43D12F302D944A4E001E2C93 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -217,6 +318,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		43B2A6802DB8D47500654147 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43D12F2E2D944A4E001E2C93 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -226,7 +334,84 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		43B2A6942DB8D47700654147 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43B2A6832DB8D47500654147 /* GGNAWidgetExtension */;
+			targetProxy = 43B2A6932DB8D47700654147 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		43B2A6972DB8D47700654147 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = GGNAWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6CQ3CNQ79S;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GGNAWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GGNAWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.4.4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Tynee.GGNA.GGNAWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		43B2A6982DB8D47700654147 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = GGNAWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CQ3CNQ79S;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GGNAWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GGNAWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.4.4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Tynee.GGNA.GGNAWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		43D12F462D944A50001E2C93 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -437,6 +622,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		43B2A6992DB8D47700654147 /* Build configuration list for PBXNativeTarget "GGNAWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43B2A6972DB8D47700654147 /* Debug */,
+				43B2A6982DB8D47700654147 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		43D12F2D2D944A4E001E2C93 /* Build configuration list for PBXProject "GGNA" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
