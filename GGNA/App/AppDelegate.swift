@@ -169,5 +169,16 @@ extension AppDelegate: MessagingDelegate {
             object: nil,
             userInfo: dataDict
         )
+        
+        // Topic 구독: "all_users" Topic에 등록
+        if let fcmToken = fcmToken {
+            Messaging.messaging().subscribe(toTopic: "all_users") { error in
+                if let error = error {
+                    print("Topic 구독 실패: \(error)")
+                } else {
+                    print("all_users Topic 구독 성공")
+                }
+            }
+        }
     }
 }
