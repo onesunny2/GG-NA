@@ -71,7 +71,7 @@ struct GGNAWidgetEntryView_1 : View {
                     .scaledToFit()
                     .frame(width: iconSize(for: family), height: iconSize(for: family))
                     .clipShape(.rect(cornerRadius: 10))
-                    .padding([.top, .leading], 10)
+                    .padding([.top, .leading], iconPadding(for: family))
             }
     }
     
@@ -115,11 +115,11 @@ struct GGNAWidgetEntryView_1 : View {
         }
     }
     
-    func iconPadding(for family: WidgetFamily) -> (leading: CGFloat, bottom: CGFloat) {
+    func iconPadding(for family: WidgetFamily) -> CGFloat {
         switch family {
-        case .systemSmall: return (15, 10)
-        case .systemLarge: return (25, 15)
-        default: return (15, 10)
+        case .systemSmall: return 10
+        case .systemLarge: return 20
+        default: return 10
         }
     }
 }
@@ -154,7 +154,7 @@ struct GGNAWidgetEntryView_2 : View {
                     .font(.system(size: iconSize(for: family)))
                     .foregroundStyle(.darkPink)
                     .padding(.leading, iconPadding(for: family).leading)
-                    .padding(.bottom, iconPadding(for: family).bottom)
+                    .padding(.top, iconPadding(for: family).top)
             })
     }
     
@@ -194,11 +194,11 @@ struct GGNAWidgetEntryView_2 : View {
         }
     }
     
-    func iconPadding(for family: WidgetFamily) -> (leading: CGFloat, bottom: CGFloat) {
+    func iconPadding(for family: WidgetFamily) -> (leading: CGFloat, top: CGFloat) {
         switch family {
-        case .systemSmall: return (15, 10)
-        case .systemLarge: return (25, 15)
-        default: return (15, 10)
+        case .systemSmall: return (15, 1)
+        case .systemLarge: return (20, 1)
+        default: return (15, 2)
         }
     }
 }
