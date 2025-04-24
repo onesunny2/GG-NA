@@ -42,82 +42,176 @@ struct SimpleEntry: TimelineEntry {
 }
 
 struct GGNAWidgetEntryView_1 : View {
+    @Environment(\.widgetFamily) private var family
     var entry: Provider.Entry
     
     var body: some View {
         Image(.zzamong)
             .resizable()
-            .aspectRatio(1.0, contentMode: .fill)
+            .aspectRatio(ratio(for: family), contentMode: .fill)
             .overlay(alignment: .bottomTrailing) {
                 VStack(alignment: .trailing, spacing: 0) {
                     Text(entry.configuration.selectedFolder?.photos.first!.title ?? "하아아품")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: fontSize(for: family).title, weight: .bold))
                         .foregroundStyle(.white)
                         .lineLimit(1)
                     Text(entry.configuration.selectedFolder?.folder ?? "포오오올더")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
                         .foregroundStyle(.white)
                         .lineLimit(1)
                 }
                 .shadow(radius: 1)
-                .padding([.trailing, .bottom], 8)
+                .padding([.trailing, .bottom], padding(for: family))
             }
             .background(Color.gray)
-            .clipShape(.rect(cornerRadius: 15))
+            .clipShape(.rect(cornerRadius: cornerRadius(for: family)))
             .overlay(alignment: .topLeading) {
                 Image(.darkIcon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 40, height: 40)
+                    .frame(width: iconSize(for: family), height: iconSize(for: family))
                     .clipShape(.rect(cornerRadius: 10))
                     .padding([.top, .leading], 10)
             }
     }
+    
+    func ratio(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 1.0
+        case .systemLarge: return 0.94
+        default: return 1.0
+        }
+    }
+    
+    func padding(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 10
+        case .systemLarge: return 12
+        default: return 8
+        }
+    }
+    
+    func cornerRadius(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 15
+        case .systemLarge: return 20
+        default: return 15
+        }
+    }
+    
+    func fontSize(for family: WidgetFamily) -> (title: CGFloat, subtitle: CGFloat) {
+        switch family {
+        case .systemSmall: return (20, 16)
+        case .systemLarge: return (30, 24)
+        default: return (20, 16)
+        }
+    }
+    
+    func iconSize(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 40
+        case .systemLarge: return 60
+        default: return 30
+        }
+    }
+    
+    func iconPadding(for family: WidgetFamily) -> (leading: CGFloat, bottom: CGFloat) {
+        switch family {
+        case .systemSmall: return (15, 10)
+        case .systemLarge: return (25, 15)
+        default: return (15, 10)
+        }
+    }
 }
 
 struct GGNAWidgetEntryView_2 : View {
+    @Environment(\.widgetFamily) private var family
     var entry: Provider.Entry
     
     var body: some View {
         Image(.zzamong)
             .resizable()
-            .aspectRatio(1.0, contentMode: .fill)
+            .aspectRatio(ratio(for: family), contentMode: .fill)
             .overlay(alignment: .bottomTrailing) {
                 VStack(alignment: .trailing, spacing: 0) {
                     Text(entry.configuration.selectedFolder?.photos.first!.title ?? "하아아품")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: fontSize(for: family).title, weight: .bold))
                         .foregroundStyle(.white)
                         .lineLimit(1)
                     Text(entry.configuration.selectedFolder?.folder ?? "포오오올더")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
                         .foregroundStyle(.white)
                         .lineLimit(1)
                 }
                 .shadow(radius: 1)
-                .padding([.trailing, .bottom], 8)
+                .padding([.trailing, .bottom], padding(for: family))
             }
             .background(Color.gray)
-            .clipShape(.rect(cornerRadius: 15))
-            .padding(8)
+            .clipShape(.rect(cornerRadius: cornerRadius(for: family)))
+            .padding(padding(for: family))
             .overlay(alignment: .topLeading, content: {
                 Image(systemName: "bookmark.fill")
-                    .font(.system(size: 30))
+                    .font(.system(size: iconSize(for: family)))
                     .foregroundStyle(.darkPink)
-                    .padding(.leading, 15)
-                    .padding(.bottom, 10)
+                    .padding(.leading, iconPadding(for: family).leading)
+                    .padding(.bottom, iconPadding(for: family).bottom)
             })
+    }
+    
+    func ratio(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 1.0
+        case .systemLarge: return 0.94
+        default: return 1.0
+        }
+    }
+    
+    func padding(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 8
+        case .systemLarge: return 12
+        default: return 8
+        }
+    }
+    
+    func cornerRadius(for family: WidgetFamily) -> CGFloat {
+        return 15
+    }
+    
+    func fontSize(for family: WidgetFamily) -> (title: CGFloat, subtitle: CGFloat) {
+        switch family {
+        case .systemSmall: return (20, 16)
+        case .systemLarge: return (30, 24)
+        default: return (20, 16)
+        }
+    }
+    
+    func iconSize(for family: WidgetFamily) -> CGFloat {
+        switch family {
+        case .systemSmall: return 30
+        case .systemLarge: return 42
+        default: return 30
+        }
+    }
+    
+    func iconPadding(for family: WidgetFamily) -> (leading: CGFloat, bottom: CGFloat) {
+        switch family {
+        case .systemSmall: return (15, 10)
+        case .systemLarge: return (25, 15)
+        default: return (15, 10)
+        }
     }
 }
 
 struct GGNAWidget_1: Widget {
     let kind: String = WidgetInfo.firstWidgetKind.text
-
+    
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: SelectFolderAppIntent.self, provider: Provider()) { entry in
             GGNAWidgetEntryView_1(entry: entry)
                 .containerBackground(.gnWhite, for: .widget)
         }
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies([.systemSmall, .systemLarge])
         .contentMarginsDisabled()
         .configurationDisplayName(WidgetInfo.firstDisplayName.text)
         .description(WidgetInfo.widgetDescription.text)
@@ -126,13 +220,13 @@ struct GGNAWidget_1: Widget {
 
 struct GGNAWidget_2: Widget {
     let kind: String = WidgetInfo.secondWidgetKind.text
-
+    
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: SelectFolderAppIntent.self, provider: Provider()) { entry in
             GGNAWidgetEntryView_2(entry: entry)
                 .containerBackground(.gnWhite, for: .widget)
         }
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies([.systemSmall, .systemLarge])
         .contentMarginsDisabled()
         .configurationDisplayName(WidgetInfo.secondDisplayName.text)
         .description(WidgetInfo.widgetDescription.text)
@@ -145,7 +239,7 @@ struct GGNAWidget_2: Widget {
 //        intent.selectedFolder =
 //        return intent
 //    }
-//    
+//
 //    fileprivate static var 인생: SelectFolderAppIntent {
 //        let intent = SelectFolderAppIntent()
 //        intent.selectedFolder = .인생

@@ -56,32 +56,3 @@ struct WidgetCardQuery: EntityQuery {
         WidgetCard.allFolders.first
     }
 }
-
-extension SelectFolderAppIntent {
-    
-    // MARK: 폴더 선택을 위한 정의
-    enum FolderOption: String, AppEnum {
-        case 기본 = "기본"
-        case 인생 = "20살의 나"
-        
-        var title: LocalizedStringResource {
-            switch self {
-            case .기본: return "기본"
-            case .인생: return "20살의 나"
-            }
-        }
-        
-        static var typeDisplayRepresentation: TypeDisplayRepresentation {
-            return TypeDisplayRepresentation(name: "폴더")
-        }
-        
-        static var caseDisplayRepresentations: [FolderOption: DisplayRepresentation] {
-            return [
-                .기본: DisplayRepresentation(title: "기본"),
-                .인생: DisplayRepresentation(title: "20살의 나")
-            ]
-        }
-    }
-}
-
-let folderExample = ["기본", "원선", "기영"]
