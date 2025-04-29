@@ -89,7 +89,9 @@
 		43B2A6CD2DB953FC00654147 /* Exceptions for "GGNA" folder in "GGNAWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Resource/AppGroupShare/ShareWithWidget.swift,
 				"Resource/AppGroupShare/UserDefaults+.swift",
+				Resource/Enum/Filter.swift,
 			);
 			target = 43B2A6832DB8D47500654147 /* GGNAWidgetExtension */;
 		};
