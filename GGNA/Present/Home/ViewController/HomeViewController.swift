@@ -31,6 +31,8 @@ final class HomeViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 위젯에 처음에 기본폴더도 없으면 filemanager 복사하도록
+        ShareDefaultsManager.shared.setupInitialSharedImages()
     }
     
     override func viewWillAppear(_ animated: Bool) {

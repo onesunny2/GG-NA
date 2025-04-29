@@ -23,8 +23,73 @@ final class ShareDefaultsManager {
     static let encoder = JSONEncoder()
     static let decoder = JSONDecoder()
     
+    func setupInitialSharedImages() {
+        // 앱의 Documents 디렉토리에서 기본 폴더가 있는지 확인
+        guard let appDocumentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        // 공유 컨테이너 URL 가져오기
+        guard let sharedContainerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.ws.ggna.widget") else {
+            print("공유 컨테이너 URL을 가져올 수 없습니다")
+            return
+        }
+        
+        // Realm에서 폴더 정보 가져오기
+        let folderData = getFolderInfo()
+        
+        if !folderData.isEmpty {
+            let defaultFolderName = "기본"
+            
+            // 공유 컨테이너에 해당 폴더가 있는지 확인
+            let sharedFolderURL = sharedContainerURL.appendingPathComponent(defaultFolderName)
+            
+            // 공유 컨테이너에 기본 폴더가 없거나 비어있으면 모든 이미지 복사
+            if !FileManager.default.fileExists(atPath: sharedFolderURL.path) {
+                print("공유 컨테이너에 기본 폴더가 없습니다. 이미지 복사를 시작합니다.")
+                copyImagesToShareContainer()
+                return
+            }
+        }
+    }
+    
+    // 단일 이미지만 복사하는 메서드
+    func copyImageToSharedContainer(folderName: String, imageName: String) {
+        guard let sharedContainerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.ws.ggna.widget") else {
+            print("공유 컨테이너 URL을 가져올 수 없습니다")
+            return
+        }
+        
+        // 폴더 경로 생성
+        let sharedFolderURL = sharedContainerURL.appendingPathComponent(folderName, isDirectory: true)
+        
+        // 폴더가 없으면 생성
+        try? FileManager.default.createDirectory(at: sharedFolderURL, withIntermediateDirectories: true)
+        
+        // 원본 이미지 경로
+        let appDocumentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let sourceImageURL = appDocumentsURL.appendingPathComponent(folderName).appendingPathComponent("\(imageName).jpg")
+        
+        // 대상 이미지 경로
+        let destinationImageURL = sharedFolderURL.appendingPathComponent("\(imageName).jpg")
+        
+        // 파일 복사
+        if FileManager.default.fileExists(atPath: destinationImageURL.path) {
+            try? FileManager.default.removeItem(at: destinationImageURL)
+        }
+        
+        do {
+            try FileManager.default.copyItem(at: sourceImageURL, to: destinationImageURL)
+            saveToUserdefaults()
+            WidgetCenter.shared.reloadAllTimelines()
+            
+        } catch {
+            print("이미지 복사 실패: \(folderName)/\(imageName).jpg, 에러: \(error)")
+        }
+    }
+    
     // 이미지 공유 컨테이너로 복사하기 (앱이 background or 죽을 때 복사할 예정)
-    func copyImagesToShareContainer() {
+    private func copyImagesToShareContainer() {
         guard let sharedContainerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.ws.ggna.widget") else {
             print("공유 컨테이너 url 호출 오류")
             return
@@ -55,10 +120,10 @@ final class ShareDefaultsManager {
                 }
                 
                 do {
-                     try FileManager.default.copyItem(at: sourceImageUrl, to: destinationImageUrl)
-                 } catch {
-                     print("이미지 복사 실패: \(folderName)/\(imageName).jpg, 에러: \(error)")
-                 }
+                    try FileManager.default.copyItem(at: sourceImageUrl, to: destinationImageUrl)
+                } catch {
+                    print("이미지 복사 실패: \(folderName)/\(imageName).jpg, 에러: \(error)")
+                }
             }
         }
         

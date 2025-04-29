@@ -77,12 +77,48 @@ struct Provider: AppIntentTimelineProvider {
             let randomURL = imageURLs.randomElement()!
             
             // 이미지 로드
-            return UIImage(contentsOfFile: randomURL.path)
+            guard let originalImage = UIImage(contentsOfFile: randomURL.path) else {
+                return nil
+            }
             
+            // 위젯 사이즈에 맞게 리사이징 (위젯 크기에 맞게 조정)
+            return resizeImageForWidget(originalImage)
         } catch {
             print("폴더 내용을 읽는 중 오류 발생: \(error)")
             return nil
         }
+    }
+
+    // 위젯용 이미지 리사이징 메서드
+    private func resizeImageForWidget(_ image: UIImage) -> UIImage {
+        // 위젯 크기에 맞게 조정 (예: 중간 크기 위젯 기준)
+        let targetSize: CGSize
+        
+        // 위젯 패밀리에 따라 다른 크기 설정도 가능
+        // 여기서는 기본적으로 중간 크기 위젯을 기준으로 함
+        targetSize = CGSize(width: 200, height: 200)
+        
+        let size = image.size
+        
+        let widthRatio = targetSize.width / size.width
+        let heightRatio = targetSize.height / size.height
+        
+        // 비율을 유지하면서 크기 조정
+        var newSize: CGSize
+        if widthRatio > heightRatio {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        }
+        
+        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage ?? image
     }
     
     //    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
@@ -114,11 +150,11 @@ struct GGNAWidgetEntryView_1 : View {
         }
         .overlay(alignment: .bottomTrailing) {
             VStack(alignment: .trailing, spacing: 0) {
-                Text(entry.configuration.selectedFolder?.photos.first!.title ?? "")
+                Text(entry.configuration.selectedFolder?.photos.first!.title ?? "끄나로 기록하는")
                     .font(.system(size: fontSize(for: family).title, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
-                Text(entry.configuration.selectedFolder?.folder ?? "")
+                Text(entry.configuration.selectedFolder?.folder ?? "그 때의 나")
                     .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
@@ -282,7 +318,7 @@ struct GGNAWidget_1: Widget {
             GGNAWidgetEntryView_1(entry: entry)
                 .containerBackground(.gnWhite, for: .widget)
         }
-        .supportedFamilies([.systemSmall, .systemLarge])
+        .supportedFamilies([.systemSmall])
         .contentMarginsDisabled()
         .configurationDisplayName(WidgetInfo.firstDisplayName.text)
         .description(WidgetInfo.widgetDescription.text)
@@ -297,7 +333,7 @@ struct GGNAWidget_2: Widget {
             GGNAWidgetEntryView_2(entry: entry)
                 .containerBackground(.gnWhite, for: .widget)
         }
-        .supportedFamilies([.systemSmall, .systemLarge])
+        .supportedFamilies([.systemSmall])
         .contentMarginsDisabled()
         .configurationDisplayName(WidgetInfo.secondDisplayName.text)
         .description(WidgetInfo.widgetDescription.text)
