@@ -202,7 +202,7 @@ struct GGNAWidgetEntryView_2 : View {
         }
     }
 }
-
+                                           
 struct GGNAWidget_1: Widget {
     let kind: String = WidgetInfo.firstWidgetKind.text
     

@@ -29,7 +29,7 @@ struct WidgetCard: AppEntity {
     }
     
     static let allFolders: [WidgetCard] = [
-        WidgetCard(id: "기본1", folder: "냥팔자상팔자", photos: [CardDetail(imageName: "몰루", title: "이짜몽후루루")]),
+        WidgetCard(id: "기본1", folder: "냥팔자상팔자", photos: [CardDetail(imageName: "몰루00", title: "이짜몽후루루00"), CardDetail(imageName: "몰루", title: "이짜몽후루루")]),
         WidgetCard(id: "기본2", folder: "이원선상팔자", photos: [CardDetail(imageName: "몰루", title: "선선선선후루")]),
         WidgetCard(id: "기본3", folder: "김기영상팔자", photos: [CardDetail(imageName: "몰루", title: "버네너후루루")])
     ]
@@ -53,6 +53,6 @@ struct WidgetCardQuery: EntityQuery {
     }
     
     func defaultResult() async -> WidgetCard? {
-        WidgetCard.allFolders.first
+        WidgetCard.allFolders.randomElement()
     }
 }
