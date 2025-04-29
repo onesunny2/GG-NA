@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "darkIcon.png",
+      "filename" : "defaultWidgetImage.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "darkIcon 1.png",
+      "filename" : "defaultWidgetImage@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "darkIcon 2.png",
+      "filename" : "defaultWidgetImage@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

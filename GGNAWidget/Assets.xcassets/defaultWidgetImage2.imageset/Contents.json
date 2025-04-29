@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "zzamong.png",
+      "filename" : "defaultWidgetImage2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "zzamong 1.png",
+      "filename" : "defaultWidgetImage2@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "zzamong 2.png",
+      "filename" : "defaultWidgetImage2@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

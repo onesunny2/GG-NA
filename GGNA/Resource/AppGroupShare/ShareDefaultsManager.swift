@@ -64,7 +64,7 @@ final class ShareDefaultsManager {
         
         saveToUserdefaults()
         
-//        WidgetCenter.shared.reloadAllTimelines()
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     // userDafaults에 구조체 데이터 저장

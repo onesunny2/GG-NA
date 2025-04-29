@@ -10,35 +10,90 @@ import SwiftUI
 
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: SelectFolderAppIntent())
+        SimpleEntry(date: Date(), configuration: SelectFolderAppIntent(), randomImage: nil)
     }
-
+    
     func snapshot(for configuration: SelectFolderAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
+        let randomImage = loadRandomImage(for: configuration.selectedFolder?.folder)
+        return SimpleEntry(date: Date(), configuration: configuration, randomImage: randomImage)
     }
     
     func timeline(for configuration: SelectFolderAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
-
+        
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
+        let updateInterval: TimeInterval = 2 * 60 * 60  // 2hour
+        
+        for hourOffset in 0 ..< 12 {
+            let entryDate = Calendar.current.date(byAdding: .second, value: Int(Double(hourOffset) * updateInterval), to: currentDate)!
+            
+            let randomImage = loadRandomImage(for: configuration.selectedFolder?.folder)
+            let entry = SimpleEntry(date: entryDate, configuration: configuration, randomImage: randomImage)
             entries.append(entry)
         }
-
+        
         return Timeline(entries: entries, policy: .atEnd)
     }
-
-//    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
+    
+    private func loadRandomImage(for folderName: String?) -> UIImage? {
+        // 선택된 폴더가 없으면 nil 반환
+        guard let folderName = folderName else {
+            return nil
+        }
+        
+        // 공유 컨테이너 URL 가져오기
+        guard let sharedContainerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.ws.ggna.widget") else {
+            print("공유 컨테이너 URL을 가져올 수 없습니다")
+            return nil
+        }
+        
+        // 해당 폴더 경로
+        let folderURL = sharedContainerURL.appendingPathComponent(folderName)
+        
+        // 폴더가 존재하는지 확인
+        guard FileManager.default.fileExists(atPath: folderURL.path) else {
+            print("폴더를 찾을 수 없습니다: \(folderName)")
+            return nil
+        }
+        
+        do {
+            // 폴더 내 모든 파일 가져오기
+            let fileURLs = try FileManager.default.contentsOfDirectory(
+                at: folderURL,
+                includingPropertiesForKeys: nil,
+                options: [.skipsHiddenFiles]
+            )
+            
+            // jpg 파일만 필터링
+            let imageURLs = fileURLs.filter { $0.pathExtension.lowercased() == "jpg" }
+            
+            if imageURLs.isEmpty {
+                print("폴더에 이미지가 없습니다: \(folderName)")
+                return nil
+            }
+            
+            // 랜덤 이미지 선택
+            let randomURL = imageURLs.randomElement()!
+            
+            // 이미지 로드
+            return UIImage(contentsOfFile: randomURL.path)
+            
+        } catch {
+            print("폴더 내용을 읽는 중 오류 발생: \(error)")
+            return nil
+        }
+    }
+    
+    //    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
+    //        // Generate a list containing the contexts this widget is relevant in.
+    //    }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let configuration: SelectFolderAppIntent
+    let randomImage: UIImage?
 }
 
 struct GGNAWidgetEntryView_1 : View {
@@ -46,33 +101,41 @@ struct GGNAWidgetEntryView_1 : View {
     var entry: Provider.Entry
     
     var body: some View {
-        Image(.zzamong)
-            .resizable()
-            .aspectRatio(ratio(for: family), contentMode: .fill)
-            .overlay(alignment: .bottomTrailing) {
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text(entry.configuration.selectedFolder?.photos.first!.title ?? "하아아품")
-                        .font(.system(size: fontSize(for: family).title, weight: .bold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                    Text(entry.configuration.selectedFolder?.folder ?? "포오오올더")
-                        .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                }
-                .shadow(radius: 1)
-                .padding([.trailing, .bottom], padding(for: family))
-            }
-            .background(Color.gray)
-            .clipShape(.rect(cornerRadius: cornerRadius(for: family)))
-            .overlay(alignment: .topLeading) {
-                Image(.darkIcon)
+        ZStack {
+            if let randomImage = entry.randomImage {
+                Image(uiImage: randomImage)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: iconSize(for: family), height: iconSize(for: family))
-                    .clipShape(.rect(cornerRadius: 10))
-                    .padding([.top, .leading], iconPadding(for: family))
+                    .aspectRatio(ratio(for: family), contentMode: .fill)
+            } else {
+                Image(.defaultWidgetImage2)
+                    .resizable()
+                    .aspectRatio(ratio(for: family), contentMode: .fill)
             }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(entry.configuration.selectedFolder?.photos.first!.title ?? "")
+                    .font(.system(size: fontSize(for: family).title, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                Text(entry.configuration.selectedFolder?.folder ?? "")
+                    .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+            }
+            .shadow(radius: 1)
+            .padding([.trailing, .bottom], padding(for: family))
+        }
+        .background(Color.gray)
+        .clipShape(.rect(cornerRadius: cornerRadius(for: family)))
+        .overlay(alignment: .topLeading) {
+            Image(.darkIcon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: iconSize(for: family), height: iconSize(for: family))
+                .clipShape(.rect(cornerRadius: 10))
+                .padding([.top, .leading], iconPadding(for: family))
+        }
     }
     
     func ratio(for family: WidgetFamily) -> CGFloat {
@@ -129,33 +192,41 @@ struct GGNAWidgetEntryView_2 : View {
     var entry: Provider.Entry
     
     var body: some View {
-        Image(.zzamong)
-            .resizable()
-            .aspectRatio(ratio(for: family), contentMode: .fill)
-            .overlay(alignment: .bottomTrailing) {
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text(entry.configuration.selectedFolder?.photos.first!.title ?? "하아아품")
-                        .font(.system(size: fontSize(for: family).title, weight: .bold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                    Text(entry.configuration.selectedFolder?.folder ?? "포오오올더")
-                        .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                }
-                .shadow(radius: 1)
-                .padding([.trailing, .bottom], padding(for: family))
+        ZStack {
+            if let randomImage = entry.randomImage {
+                Image(uiImage: randomImage)
+                    .resizable()
+                    .aspectRatio(ratio(for: family), contentMode: .fill)
+            } else {
+                Image(.defaultWidget)
+                    .resizable()
+                    .aspectRatio(ratio(for: family), contentMode: .fill)
             }
-            .background(Color.gray)
-            .clipShape(.rect(cornerRadius: cornerRadius(for: family)))
-            .padding(padding(for: family))
-            .overlay(alignment: .topLeading, content: {
-                Image(systemName: "bookmark.fill")
-                    .font(.system(size: iconSize(for: family)))
-                    .foregroundStyle(.darkPink)
-                    .padding(.leading, iconPadding(for: family).leading)
-                    .padding(.top, iconPadding(for: family).top)
-            })
+        }
+        .overlay(alignment: .bottomTrailing) {
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(entry.configuration.selectedFolder?.photos.first!.title ?? "")
+                    .font(.system(size: fontSize(for: family).title, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                Text(entry.configuration.selectedFolder?.folder ?? "")
+                    .font(.system(size: fontSize(for: family).subtitle, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+            }
+            .shadow(radius: 1)
+            .padding([.trailing, .bottom], padding(for: family))
+        }
+        .background(Color.gray)
+        .clipShape(.rect(cornerRadius: cornerRadius(for: family)))
+        .padding(padding(for: family))
+        .overlay(alignment: .topLeading, content: {
+            Image(systemName: "bookmark.fill")
+                .font(.system(size: iconSize(for: family)))
+                .foregroundStyle(.darkPink)
+                .padding(.leading, iconPadding(for: family).leading)
+                .padding(.top, iconPadding(for: family).top)
+        })
     }
     
     func ratio(for family: WidgetFamily) -> CGFloat {
@@ -202,7 +273,7 @@ struct GGNAWidgetEntryView_2 : View {
         }
     }
 }
-                                           
+
 struct GGNAWidget_1: Widget {
     let kind: String = WidgetInfo.firstWidgetKind.text
     
@@ -232,23 +303,3 @@ struct GGNAWidget_2: Widget {
         .description(WidgetInfo.widgetDescription.text)
     }
 }
-
-//extension SelectFolderAppIntent {
-//    fileprivate static var 기본: SelectFolderAppIntent {
-//        let intent = SelectFolderAppIntent()
-//        intent.selectedFolder =
-//        return intent
-//    }
-//
-//    fileprivate static var 인생: SelectFolderAppIntent {
-//        let intent = SelectFolderAppIntent()
-//        intent.selectedFolder = .인생
-//        return intent
-//    }
-//}
-
-//#Preview(as: .systemSmall) {
-//    GGNAWidget()
-//} timeline: {
-//    SimpleEntry(date: .now, configuration: SelectFolderAppIntent())
-//}
