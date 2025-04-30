@@ -81,7 +81,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Source/Enum/WidgetInfo.swift,
-				Source/ShareModels.swift,
 				UserDefaultsManager.swift,
 			);
 			target = 43D12F312D944A4E001E2C93 /* GGNA */;

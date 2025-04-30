@@ -88,45 +88,45 @@ struct Provider: AppIntentTimelineProvider {
             return nil
         }
     }
-    
-    // 위젯용 이미지 리사이징 메서드
-    private func resizeImageForWidget(_ image: UIImage, for family: WidgetFamily) -> UIImage {
-        // 위젯 패밀리에 따라 타겟 크기 설정
-        let targetSize: CGSize
-        switch family {
-        case .systemSmall:
-            targetSize = CGSize(width: 150, height: 150) // systemSmall에 적합
-        case .systemMedium:
-            targetSize = CGSize(width: 200, height: 200) // systemMedium에 적합
-        case .systemLarge:
-            targetSize = CGSize(width: 300, height: 300) // systemLarge에 적합
-        default:
-            targetSize = CGSize(width: 200, height: 200) // 기본값
-        }
-        
-        // 1:1 비율로 자르기
-        let side = min(image.size.width, image.size.height)
-        let cropRect = CGRect(
-            x: (image.size.width - side) / 2,
-            y: (image.size.height - side) / 2,
-            width: side,
-            height: side
-        )
-        
-        // 이미지를 1:1로 자르기
-        guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
-            return image
-        }
-        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
-        
-        // 리사이징
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
-        let newImage = renderer.image { context in
-            croppedImage.draw(in: CGRect(origin: .zero, size: targetSize))
-        }
-        
-        return newImage
+}
+
+// 위젯용 이미지 리사이징 메서드
+func resizeImageForWidget(_ image: UIImage, for family: WidgetFamily) -> UIImage {
+    // 위젯 패밀리에 따라 타겟 크기 설정
+    let targetSize: CGSize
+    switch family {
+    case .systemSmall:
+        targetSize = CGSize(width: 150, height: 150) // systemSmall에 적합
+    case .systemMedium:
+        targetSize = CGSize(width: 200, height: 200) // systemMedium에 적합
+    case .systemLarge:
+        targetSize = CGSize(width: 300, height: 300) // systemLarge에 적합
+    default:
+        targetSize = CGSize(width: 200, height: 200) // 기본값
     }
+    
+    // 1:1 비율로 자르기
+    let side = min(image.size.width, image.size.height)
+    let cropRect = CGRect(
+        x: (image.size.width - side) / 2,
+        y: (image.size.height - side) / 2,
+        width: side,
+        height: side
+    )
+    
+    // 이미지를 1:1로 자르기
+    guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+        return image
+    }
+    let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+    
+    // 리사이징
+    let renderer = UIGraphicsImageRenderer(size: targetSize)
+    let newImage = renderer.image { context in
+        croppedImage.draw(in: CGRect(origin: .zero, size: targetSize))
+    }
+    
+    return newImage
 }
 
 struct SimpleEntry: TimelineEntry {
@@ -146,7 +146,7 @@ struct GGNAWidgetEntryView_1 : View {
                     .resizable()
                     .aspectRatio(ratio(for: family), contentMode: .fill)
             } else {
-                Image(.defaultWidgetImage2)
+                Image(uiImage: resizeImageForWidget(UIImage(resource: .defaultWidgetImage2), for: family))
                     .resizable()
                     .aspectRatio(ratio(for: family), contentMode: .fill)
             }
@@ -235,12 +235,12 @@ struct GGNAWidgetEntryView_2 : View {
             if let randomImage = entry.randomImage {
                 Image(uiImage: randomImage)
                     .resizable()
-                    .aspectRatio(1.0, contentMode: .fit)
+                    .aspectRatio(ratio(for: family), contentMode: .fill)
                     .clipped()
             } else {
-                Image(.defaultWidget)
+                Image(uiImage: resizeImageForWidget(UIImage(resource: .defaultWidget), for: family))
                     .resizable()
-                    .aspectRatio(1.0, contentMode: .fit)
+                    .aspectRatio(ratio(for: family), contentMode: .fit)
                     .clipped()
             }
         }

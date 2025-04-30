@@ -41,6 +41,8 @@ struct WidgetCardQuery: EntityQuery {
     func entities(for identifiers: [WidgetCard.ID]) async throws -> [WidgetCard] {
         WidgetCard.allFolders.filter {
             identifiers.contains($0.id)
+        }.filter {
+            !$0.photos.isEmpty
         }
     }
     
@@ -85,7 +87,7 @@ func loadWidgetCardsFromSharedDefaults() -> [WidgetCard] {
             )
         }
         
-        return widgetCards
+        return widgetCards.filter { !$0.photos.isEmpty }
     } catch {
         print("위젯: 데이터 디코딩 실패: \(error)")
         return []
@@ -100,8 +102,6 @@ extension WidgetCard {
     }
    
     static let fallbackFolders: [WidgetCard] = [
-        WidgetCard(id: "기본1", folder: "냥팔자상팔자", photos: [CardDetail(imageName: "몰루00", title: "이짜몽후루루00", filter: .bloom, filterValue: 0.5), CardDetail(imageName: "몰루", title: "이짜몽후루루", filter: .bloom, filterValue: 0.5)]),
-        WidgetCard(id: "기본2", folder: "이원선상팔자", photos: [CardDetail(imageName: "몰루", title: "선선선선후루", filter: .bloom, filterValue: 0.5)]),
-        WidgetCard(id: "기본3", folder: "김기영상팔자", photos: [CardDetail(imageName: "몰루", title: "버네너후루루", filter: .bloom, filterValue: 0.5)])
+        WidgetCard(id: "noData", folder: "No Photo", photos: [CardDetail(imageName: "", title: "저장된 사진없음", filter: .bloom, filterValue: 0.5)])
     ]
 }

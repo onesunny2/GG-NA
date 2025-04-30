@@ -25,7 +25,7 @@ final class ShareDefaultsManager {
     
     func setupInitialSharedImages() {
         // 앱의 Documents 디렉토리에서 기본 폴더가 있는지 확인
-        guard let appDocumentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first != nil else {
             return
         }
         
@@ -86,6 +86,68 @@ final class ShareDefaultsManager {
         } catch {
             print("이미지 복사 실패: \(folderName)/\(imageName).jpg, 에러: \(error)")
         }
+    }
+    
+    func deleteSharedFolder(folderName: String) {
+        guard let sharedContainerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.ws.ggna.widget") else {
+            print("공유 컨테이너 URL을 가져올 수 없습니다")
+            return
+        }
+        
+        // 공유 공간의 폴더 경로 생성
+        let sharedFolderURL = sharedContainerURL.appendingPathComponent(folderName, isDirectory: true)
+        
+        // 폴더가 존재하면 삭제
+        if FileManager.default.fileExists(atPath: sharedFolderURL.path) {
+            do {
+                try FileManager.default.removeItem(at: sharedFolderURL)
+                print("공유 공간에서 폴더 삭제 성공: \(folderName)")
+                
+                // UserDefaults 업데이트
+                saveToUserdefaults()
+                
+                // 위젯 리로드
+                WidgetCenter.shared.reloadAllTimelines()
+            } catch {
+                print("공유 공간에서 폴더 삭제 실패: \(folderName), 에러: \(error)")
+            }
+        } else {
+            print("공유 공간에 삭제할 폴더가 존재하지 않습니다: \(folderName)")
+        }
+    }
+    
+    func deleteSharedImages(folderName: String, imageName: String) {
+            guard let sharedContainerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.ws.ggna.widget") else {
+                print("공유 컨테이너 URL을 가져올 수 없습니다")
+                return
+            }
+            
+            // 공유 공간의 폴더 경로 생성
+            let sharedFolderURL = sharedContainerURL.appendingPathComponent(folderName, isDirectory: true)
+            
+            // 폴더가 존재하지 않으면 종료
+            if !FileManager.default.fileExists(atPath: sharedFolderURL.path) {
+                print("공유 공간에 폴더가 존재하지 않습니다: \(folderName)")
+                return
+            }
+        
+        // 이미지 삭제
+        let imageURL = sharedFolderURL.appendingPathComponent("\(imageName).jpg")
+        
+        if FileManager.default.fileExists(atPath: imageURL.path) {
+            do {
+                try FileManager.default.removeItem(at: imageURL)
+                print("공유 공간에서 이미지 삭제 성공: \(folderName)/\(imageName).jpg")
+            } catch {
+                print("공유 공간에서 이미지 삭제 실패: \(folderName)/\(imageName).jpg, 에러: \(error)")
+            }
+        } else {
+            print("공유 공간에 삭제할 이미지가 존재하지 않습니다: \(folderName)/\(imageName).jpg")
+        }
+        
+        saveToUserdefaults()
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     // 이미지 공유 컨테이너로 복사하기 (앱이 background or 죽을 때 복사할 예정)

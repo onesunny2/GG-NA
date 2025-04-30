@@ -71,6 +71,7 @@ extension ArchiveDetailViewModel {
                     if let photoToDelete = photos.filter("imageName == %@", entity.imageName).first {
                         
                         deletePhotoFromFolder(folderName: folderName, imageName: entity.imageName)
+                        ShareDefaultsManager.shared.deleteSharedImages(folderName: folderName, imageName: entity.imageName)
                         realm.delete(photoToDelete)
                     }
                 }
