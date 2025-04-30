@@ -18,32 +18,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 파이어베이스
         FirebaseApp.configure()
         
-        UNUserNotificationCenter.current().delegate = self
-        
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { granted, error in
-            if let error = error {
-                print("Notification authorization error: \(error)")
-            } else {
-                print("Notification authorization granted: \(granted)")
-                DispatchQueue.main.async {
-                    application.registerForRemoteNotifications()
-                }
-            }
-        }
-        
-        application.registerForRemoteNotifications()
-        
-        Messaging.messaging().delegate = self
-        
-        // 현재 토큰 정보 가져오기 (꼭 App Delegate일 필요 없고, 다른 설정에서 해도 됨)
-        Messaging.messaging().token { token, error in
-          if let error = error {
-            print("Error fetching FCM registration token: \(error)")
-          } else if let token = token {
-            print("FCM registration token: \(token)")
-          }
-        }
+//        UNUserNotificationCenter.current().delegate = self
+//        
+//        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+//        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { granted, error in
+//            if let error = error {
+//                print("Notification authorization error: \(error)")
+//            } else {
+//                print("Notification authorization granted: \(granted)")
+//                DispatchQueue.main.async {
+//                    application.registerForRemoteNotifications()
+//                }
+//            }
+//        }
+//        
+//        application.registerForRemoteNotifications()
+//        
+//        Messaging.messaging().delegate = self
+//        
+//        // 현재 토큰 정보 가져오기 (꼭 App Delegate일 필요 없고, 다른 설정에서 해도 됨)
+//        Messaging.messaging().token { token, error in
+//          if let error = error {
+//            print("Error fetching FCM registration token: \(error)")
+//          } else if let token = token {
+//            print("FCM registration token: \(token)")
+//          }
+//        }
         
         // 카메라 권한 설정
         AppPermissionManager.requestCameraPermission()
@@ -134,7 +134,7 @@ extension AppDelegate {
     }
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
+/* extension AppDelegate: UNUserNotificationCenterDelegate {
     
     // foreground에 띄워줄지말지
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -156,10 +156,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         // 애플 디바이스 토큰을 파이어베이스로 보내기
         Messaging.messaging().apnsToken = deviceToken
     }
-}
+} */
 
 // firebase Messaging
-extension AppDelegate: MessagingDelegate {
+/* extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         print("Firebase registration token: \(String(describing: fcmToken))")
         
@@ -181,4 +181,4 @@ extension AppDelegate: MessagingDelegate {
             }
         }
     }
-}
+} */

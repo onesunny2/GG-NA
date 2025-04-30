@@ -52,7 +52,7 @@ final class PhotoCardRecord: Object, Identifiable {
                 return nil
             }
             
-            if let jsonString = String(data: self.filterInfo, encoding: .utf8) {
+            if String(data: self.filterInfo, encoding: .utf8) != nil {
 //                print("Raw JSON: \(jsonString)")
             } else {
                 print("Could not convert filter data to string - possibly corrupt")
