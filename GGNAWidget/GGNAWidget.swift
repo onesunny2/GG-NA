@@ -14,7 +14,7 @@ struct Provider: AppIntentTimelineProvider {
     }
     
     func snapshot(for configuration: SelectFolderAppIntent, in context: Context) async -> SimpleEntry {
-        let randomImage = loadRandomImage(for: configuration.selectedFolder?.folder)
+        let randomImage = loadRandomImage(for: configuration.selectedFolder?.folder, widgetFamily: context.family)
         return SimpleEntry(date: Date(), configuration: configuration, randomImage: randomImage)
     }
     
@@ -23,12 +23,12 @@ struct Provider: AppIntentTimelineProvider {
         
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
-        let updateInterval: TimeInterval = 2 * 60 * 60  // 2hour
+        let updateInterval: TimeInterval = 2 * 60 * 60  // 2 hours
         
         for hourOffset in 0 ..< 12 {
             let entryDate = Calendar.current.date(byAdding: .second, value: Int(Double(hourOffset) * updateInterval), to: currentDate)!
             
-            let randomImage = loadRandomImage(for: configuration.selectedFolder?.folder)
+            let randomImage = loadRandomImage(for: configuration.selectedFolder?.folder, widgetFamily: context.family)
             let entry = SimpleEntry(date: entryDate, configuration: configuration, randomImage: randomImage)
             entries.append(entry)
         }
@@ -36,7 +36,7 @@ struct Provider: AppIntentTimelineProvider {
         return Timeline(entries: entries, policy: .atEnd)
     }
     
-    private func loadRandomImage(for folderName: String?) -> UIImage? {
+    private func loadRandomImage(for folderName: String?, widgetFamily: WidgetFamily) -> UIImage? {
         // 선택된 폴더가 없으면 nil 반환
         guard let folderName = folderName else {
             return nil
@@ -81,49 +81,52 @@ struct Provider: AppIntentTimelineProvider {
                 return nil
             }
             
-            // 위젯 사이즈에 맞게 리사이징 (위젯 크기에 맞게 조정)
-            return resizeImageForWidget(originalImage)
+            // 위젯 사이즈에 맞게 리사이징
+            return resizeImageForWidget(originalImage, for: widgetFamily)
         } catch {
             print("폴더 내용을 읽는 중 오류 발생: \(error)")
             return nil
         }
     }
-
+    
     // 위젯용 이미지 리사이징 메서드
-    private func resizeImageForWidget(_ image: UIImage) -> UIImage {
-        // 위젯 크기에 맞게 조정 (예: 중간 크기 위젯 기준)
+    private func resizeImageForWidget(_ image: UIImage, for family: WidgetFamily) -> UIImage {
+        // 위젯 패밀리에 따라 타겟 크기 설정
         let targetSize: CGSize
-        
-        // 위젯 패밀리에 따라 다른 크기 설정도 가능
-        // 여기서는 기본적으로 중간 크기 위젯을 기준으로 함
-        targetSize = CGSize(width: 200, height: 200)
-        
-        let size = image.size
-        
-        let widthRatio = targetSize.width / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        // 비율을 유지하면서 크기 조정
-        var newSize: CGSize
-        if widthRatio > heightRatio {
-            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
-        } else {
-            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        switch family {
+        case .systemSmall:
+            targetSize = CGSize(width: 150, height: 150) // systemSmall에 적합
+        case .systemMedium:
+            targetSize = CGSize(width: 200, height: 200) // systemMedium에 적합
+        case .systemLarge:
+            targetSize = CGSize(width: 300, height: 300) // systemLarge에 적합
+        default:
+            targetSize = CGSize(width: 200, height: 200) // 기본값
         }
         
-        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        // 1:1 비율로 자르기
+        let side = min(image.size.width, image.size.height)
+        let cropRect = CGRect(
+            x: (image.size.width - side) / 2,
+            y: (image.size.height - side) / 2,
+            width: side,
+            height: side
+        )
         
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        // 이미지를 1:1로 자르기
+        guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+            return image
+        }
+        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
         
-        return newImage ?? image
+        // 리사이징
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        let newImage = renderer.image { context in
+            croppedImage.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+        
+        return newImage
     }
-    
-    //    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
-    //        // Generate a list containing the contexts this widget is relevant in.
-    //    }
 }
 
 struct SimpleEntry: TimelineEntry {
@@ -232,11 +235,13 @@ struct GGNAWidgetEntryView_2 : View {
             if let randomImage = entry.randomImage {
                 Image(uiImage: randomImage)
                     .resizable()
-                    .aspectRatio(ratio(for: family), contentMode: .fill)
+                    .aspectRatio(1.0, contentMode: .fit)
+                    .clipped()
             } else {
                 Image(.defaultWidget)
                     .resizable()
-                    .aspectRatio(ratio(for: family), contentMode: .fill)
+                    .aspectRatio(1.0, contentMode: .fit)
+                    .clipped()
             }
         }
         .overlay(alignment: .bottomTrailing) {
