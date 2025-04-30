@@ -323,6 +323,8 @@ extension CreateCardViewModel {
                 
                 folder.photoCards.append(cardRecord)
                 print("Save Realm complete")
+                
+                ShareDefaultsManager.shared.copyImageToSharedContainer(folderName: folderName, imageName: cardRecord.imageName)
             }
             
         } catch {

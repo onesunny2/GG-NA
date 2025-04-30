@@ -91,6 +91,7 @@ extension ArchiveFolderViewModel {
                     realm.delete(photoRecords)
                     realm.delete(folder)
                     deleteFolderContents(folderName: $0.folderName)
+                    ShareDefaultsManager.shared.deleteSharedFolder(folderName: $0.folderName)
                 }
             }
             
