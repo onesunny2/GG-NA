@@ -437,7 +437,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GGNA/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "끄나";
-				INFOPLIST_KEY_NSCameraUsageDescription = "사진촬영을 위해 카메라에 접근이 필요합니다.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "끄나에 사용자의 추억을 기록하기 위한 사진 촬영을 위해 카메라에 접근이 필요합니다.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "끄나는 사용자가 설정해 놓은 잠긴 추억에 안전하게 엑세스 하기 위해 FaceID를 사용합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "사진을 선택하여 포토카드를 만들기 위해 접근이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -478,7 +478,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GGNA/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "끄나";
-				INFOPLIST_KEY_NSCameraUsageDescription = "사진촬영을 위해 카메라에 접근이 필요합니다.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "끄나에 사용자의 추억을 기록하기 위한 사진 촬영을 위해 카메라에 접근이 필요합니다.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "끄나는 사용자가 설정해 놓은 잠긴 추억에 안전하게 엑세스 하기 위해 FaceID를 사용합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "사진을 선택하여 포토카드를 만들기 위해 접근이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

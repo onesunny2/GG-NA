@@ -8,6 +8,7 @@
 import WidgetKit
 import SwiftUI
 
+// TODO: 위젯 사진 외 타이틀도 바뀌도록 변경
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), configuration: SelectFolderAppIntent(), randomImage: nil)
