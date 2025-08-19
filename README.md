@@ -21,6 +21,19 @@
 |   FaceID 기반 보안 기능   |   위젯 지원   |    다양한 색상 테마 지원   |
 |  :-------------: |  :-------------: |  :-------------: |
 | <img width=200 src="https://github.com/user-attachments/assets/948a1d7c-4cc5-4005-a413-a135204c57ea"> | <img width=200 src="https://github.com/user-attachments/assets/64febe7d-b920-4c10-8fac-23a77b156866"> | <img width=200 src="https://github.com/user-attachments/assets/5490a5c7-dc02-4e0f-b516-05246bebb0c8"> |
+## 사용기능
+- **MVVM + Input-Output + Repository 패턴과 RxSwift, RxCocoa를 활용한 아키텍처**
+</br> 사용자 인터랙션의 실시간 반영, 데이터베이스의 복잡한 데이터 스트림 처리, 이미지 및 FileManager를 통한 비동기 작업 처리 
+</br> 등의 책임을 명확하게 분리하기 위해 도입
+- **Compositional Layout을 활용한 적응형 UI 구현**
+</br> 디바이스 해상도와 화면 크기에 따른 동적 레이아웃과 반응형 UI 구현
+- **CollectionView 셀 재사용 최적화**
+</br> prepareForReuse 메서드를 통해 셀 재사용 시 상태를 초기화하여 메모리 누수 방지
+- **Realm DB를 활용한 복잡한 구조의 데이터 관리**
+</br> Folder → List<PhotoCardRecord> → EmbeddedObject<CardContent> 구조로 1:N:1 관계 설정
+- **스와이프 애니메이션 모듈 분리 - GNSwipeAnimation**
+</br> 애니메이션 로직의 변경이 메인 애플리케이션 코드와 비즈니스 로직에 영향을 주지 않도록 모듈화
+</br> 도메인 특화 데이터 타입에 의존하지 않는 범용적인 UIView 확장으로 구현하여 재사용성 확보
 
 ## 상세기능
 ### 1. AVFoundation 커스텀 카메라 구현
