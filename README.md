@@ -51,7 +51,6 @@ VideoView (렌더링 뷰)
 #### 성능 최적화 전략
 1. RxSwift 기반 상태 관리
    </br>
-   
   - BehaviorRelay를 활용해 카메라 위치(전후면) 상태 관리
   - Driver를 통한 메인 스레드 UI업데이트 보장
   - PublishRelay로 촬영 결과 비동기 전달 
@@ -72,5 +71,12 @@ VideoView (렌더링 뷰)
  - 비디오 처리 전용 큐 사용
 - UI 업데이트 분리
 
-</br>
+### 2. 시스템 테마색상 상태관리
+- 사용자가 시스템 테마를 선택했을 때, 실시간으로 앱의 모든 컬러가 이를 감지하여 업데이트 되도록 구현
+- @propertyWrapper와 RxCocoa의 UserDefaults 옵저버 기능을 결합해 현재 테마 색상을 조회하거나 변경할 수 있도록 설계
+- enum에 테마 컬러를 쉽게 추가할 수 있도록 유지보수성과 확장성 고려
+<img width="1246" height="415" alt="image" src="https://github.com/user-attachments/assets/4777c878-5e3f-4411-9305-cc478cef1c05" />
+
+
+
 
